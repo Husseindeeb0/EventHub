@@ -17,7 +17,10 @@ export default function Navbar() {
         <nav className="sticky top-0 z-50 border-b border-purple-100/50 bg-gradient-to-r from-white via-purple-50/30 to-blue-50/30 backdrop-blur-md shadow-sm">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-4">
+                        <Link href="/login" className="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40">
+                            Login / Sign Up
+                        </Link>
                         <Link href="/" className="flex items-center gap-2 group">
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 text-white font-bold text-lg shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-all group-hover:scale-105">
                                 E
