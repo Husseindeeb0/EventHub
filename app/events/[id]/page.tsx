@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { bookEventAction } from "@/app/actions";
 import BookingForm from "./BookingForm";
 import CopyButton from "./CopyButton";
+import { AnimatedHero, AnimatedContent, AnimatedCard, AnimatedSuccessMessage } from "./AnimatedEventContent";
 
 async function getEvent(id: string) {
     await connectDb();
@@ -71,7 +72,8 @@ export default async function EventDetailsPage({
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] pointer-events-none"></div>
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none"></div>
             {/* Hero Section */}
-            <div className="relative h-[500px] w-full overflow-hidden bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200">
+            <AnimatedHero>
+                <div className="relative h-[500px] w-full overflow-hidden bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200">
                 {event.coverImageUrl ? (
                     <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,11 +125,14 @@ export default async function EventDetailsPage({
                     </div>
                 </div>
             </div>
+            </AnimatedHero>
 
+                <AnimatedContent>
                 <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
                 {/* Success Message */}
                 {resolvedSearchParams?.booked === "true" && (
-                    <div className="mb-8 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg">
+                    <AnimatedSuccessMessage>
+                        <div className="mb-8 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,14 +144,16 @@ export default async function EventDetailsPage({
                                 <p className="text-sm text-white/90">You've successfully booked a spot for this event.</p>
                             </div>
                         </div>
-                    </div>
+                        </div>
+                    </AnimatedSuccessMessage>
                 )}
 
                 <div className="grid gap-12 lg:grid-cols-3">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Description */}
-                        <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-lg">
+                        <AnimatedCard delay={0.4}>
+                            <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-lg">
                             <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
                                 About this event
                             </h2>
@@ -159,10 +166,12 @@ export default async function EventDetailsPage({
                                     No description provided for this event.
                                 </p>
                             )}
-                        </div>
+                            </div>
+                        </AnimatedCard>
 
                         {/* Invite Section */}
-                        <div className="rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-blue-50 p-8 shadow-lg">
+                        <AnimatedCard delay={0.5}>
+                            <div className="rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-blue-50 p-8 shadow-lg">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 text-white">
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,12 +209,14 @@ export default async function EventDetailsPage({
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            </div>
+                        </AnimatedCard>
                     </div>
 
                     {/* Booking Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="sticky top-24 rounded-3xl border border-purple-100 bg-white p-6 shadow-xl">
+                        <AnimatedCard delay={0.6}>
+                            <div className="sticky top-24 rounded-3xl border border-purple-100 bg-white p-6 shadow-xl">
                             <h3 className="text-xl font-bold text-slate-900 mb-6">Book Your Spot</h3>
                             
                             <div className="space-y-4 mb-6">
@@ -235,10 +246,12 @@ export default async function EventDetailsPage({
                             ) : (
                                 <BookingForm eventId={resolvedParams.id} />
                             )}
-                        </div>
+                            </div>
+                        </AnimatedCard>
                     </div>
                 </div>
-            </div>
+                </div>
+            </AnimatedContent>
         </main>
     );
 }
