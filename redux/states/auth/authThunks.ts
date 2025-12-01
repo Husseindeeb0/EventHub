@@ -9,7 +9,6 @@ export const signupThunk = createAsyncThunk(
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
-
       const response = await signupUser(data);
 
       if (response.success) {

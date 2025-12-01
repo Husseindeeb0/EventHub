@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import StoreProvider from "@/redux/StoreProvider";
+import AuthInitializer from "@/components/auth/AuthInitializer";
 
 export const metadata: Metadata = {
   title: "EventHub - Discover and Manage Events",
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="">
         <StoreProvider>
+          <AuthInitializer />
           <Navbar />
           {children}
         </StoreProvider>
