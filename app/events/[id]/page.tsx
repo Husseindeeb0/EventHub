@@ -1,11 +1,8 @@
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import User from "@/models/User";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { bookEventAction } from "@/app/actions";
 import BookingForm from "./BookingForm";
-import CopyButton from "./CopyButton";
 import { AnimatedHero, AnimatedContent, AnimatedCard, AnimatedSuccessMessage } from "./AnimatedEventContent";
 
 async function getEvent(id: string) {
@@ -166,49 +163,6 @@ export default async function EventDetailsPage({
                                     No description provided for this event.
                                 </p>
                             )}
-                            </div>
-                        </AnimatedCard>
-
-                        {/* Invite Section */}
-                        <AnimatedCard delay={0.5}>
-                            <div className="rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-blue-50 p-8 shadow-lg">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 text-white">
-                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900">Share this event</h3>
-                            </div>
-                            <p className="text-slate-600 mb-4">Invite others to join this event by sharing the link or event ID.</p>
-                            
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Event Link</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            readOnly
-                                            value={`/events/${resolvedParams.id}`}
-                                            className="flex-1 rounded-xl border-2 border-purple-100 bg-white px-4 py-2 text-sm font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                                        />
-                                        <CopyButton text={`/events/${resolvedParams.id}`} />
-                                    </div>
-                                    <p className="mt-1 text-xs text-slate-500">Share this relative path or the full URL</p>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Event ID</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            readOnly
-                                            value={resolvedParams.id}
-                                            className="flex-1 rounded-xl border-2 border-purple-100 bg-white px-4 py-2 text-sm font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                                        />
-                                        <CopyButton text={resolvedParams.id} />
-                                    </div>
-                                </div>
-                            </div>
                             </div>
                         </AnimatedCard>
                     </div>

@@ -2,6 +2,9 @@ import Link from "next/link";
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import User from "@/models/User";
+import AnimatedPageHeader from "@/components/animations/AnimatedPageHeader";
+import AnimatedGrid from "@/components/animations/AnimatedGrid";
+import AnimatedEventCard from "@/components/events/AnimatedEventCard";
 
 export const dynamic = "force-dynamic";
 
@@ -162,16 +165,18 @@ export default async function Home() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] pointer-events-none"></div>
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
             <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-12">
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent sm:text-5xl">
-                            Explore Events
-                        </h1>
-                        <p className="mt-3 text-lg text-slate-600">
-                            Discover and book amazing events happening around you.
-                        </p>
+                <AnimatedPageHeader>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-12">
+                        <div>
+                            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent sm:text-5xl">
+                                Explore Events
+                            </h1>
+                            <p className="mt-3 text-lg text-slate-600">
+                                Discover and book amazing events happening around you.
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </AnimatedPageHeader>
 
                 <div className="mt-10">
                     {events.length === 0 ? (
@@ -187,11 +192,13 @@ export default async function Home() {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                            {events.map((e) => (
-                                <EventCard key={e.id} e={e} />
-                            ))}
-                        </div>
+                        <AnimatedGrid>
+                            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                                {events.map((e, index) => (
+                                    <AnimatedEventCard key={e.id} e={e} index={index} />
+                                ))}
+                            </div>
+                        </AnimatedGrid>
                     )}
                 </div>
             </div>

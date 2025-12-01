@@ -24,22 +24,13 @@ export default async function InvitePage({
                         Event Created!
                     </h1>
                     <p className="mt-3 text-lg text-slate-600">
-                        Your event is ready. Share the ID below to invite attendees.
+                        Your event has been successfully created.
                     </p>
                 </div>
 
                 <div className="overflow-hidden rounded-3xl border border-purple-100 bg-white p-8 shadow-2xl shadow-purple-500/10">
                     <div className="h-2 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600"></div>
                     <div className="pt-6">
-                        <div className="mb-6">
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                                Event ID Invitation
-                            </label>
-                            <div className="flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-100 px-4 py-4 font-mono text-xl font-bold tracking-widest text-slate-900">
-                                {eventId}
-                            </div>
-                        </div>
-
                         <div className="flex flex-col gap-3">
                             <Link
                                 href={`/events/${eventId}`}
