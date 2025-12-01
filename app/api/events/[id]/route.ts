@@ -4,16 +4,17 @@ import connectDb from "../../../../lib/connectDb";
 import EventModel from "../../../../models/Event";
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function GET(_req: Request, { params }: Params) {
   try {
     await connectDb();
 
-    const evt = await EventModel.findById(params.id).lean();
+    const { id } = await params;
+    const evt = await EventModel.findById(id).lean();
     if (!evt) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
@@ -29,15 +30,18 @@ export async function PUT(request: Request, { params }: Params) {
   try {
     await connectDb();
 
+    const { id } = await params;
     const body = await request.json();
 
     // Build update object only with allowed keys
     const update: Record<string, unknown> = {};
     if (typeof body.title === "string") update.title = body.title.trim();
-    if (typeof body.description === "string") update.description = body.description.trim();
+    if (typeof body.description === "string")
+      update.description = body.description.trim();
     if (body.date) update.date = new Date(body.date);
     if (typeof body.time === "string") update.time = body.time;
-    if (typeof body.location === "string") update.location = body.location.trim();
+    if (typeof body.location === "string")
+      update.location = body.location.trim();
     if (typeof body.posterUrl === "string") update.posterUrl = body.posterUrl;
 
     // capacity handling (number)
@@ -49,11 +53,15 @@ export async function PUT(request: Request, { params }: Params) {
         update.availableSeats = body.availableSeats;
       } else {
         // fetch current event to compute new availableSeats
-        const current = await EventModel.findById(params.id).lean();
+        const current = await EventModel.findById(id).lean();
         if (current) {
           // determine used seats = capacity - availableSeats (old)
-          const oldCapacity = typeof current.capacity === "number" ? current.capacity : 0;
-          const oldAvailable = typeof current.availableSeats === "number" ? current.availableSeats : 0;
+          const oldCapacity =
+            typeof current.capacity === "number" ? current.capacity : 0;
+          const oldAvailable =
+            typeof current.availableSeats === "number"
+              ? current.availableSeats
+              : 0;
           const usedSeats = Math.max(0, oldCapacity - oldAvailable);
 
           // compute new available seats = newCapacity - usedSeats (not negative)
@@ -68,7 +76,9 @@ export async function PUT(request: Request, { params }: Params) {
       update.availableSeats = body.availableSeats;
     }
 
-    const updated = await EventModel.findByIdAndUpdate(params.id, update, { new: true }).lean();
+    const updated = await EventModel.findByIdAndUpdate(id, update, {
+      new: true,
+    }).lean();
     if (!updated) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
@@ -85,7 +95,8 @@ export async function DELETE(_req: Request, { params }: Params) {
   try {
     await connectDb();
 
-    const deleted = await EventModel.findByIdAndDelete(params.id).lean();
+    const { id } = await params;
+    const deleted = await EventModel.findByIdAndDelete(id).lean();
     if (!deleted) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
