@@ -48,7 +48,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
 export async function POST(request: Request) {
   try {
     await connectDb();
@@ -87,7 +86,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const newEvent = await EventModel.create({
+    // شكل المدخلات الآمنة كـ object مستقل عن الـ Document type
+    const newEventData = {
       title: title.trim(),
       description: description.trim(),
       date: new Date(date),
@@ -96,11 +96,15 @@ export async function POST(request: Request) {
       capacity,
       posterUrl: posterUrl ?? "",
       createdBy: createdBy.trim(),
-      attendees: [],
-      availableSeats: capacity, // availableSeats = capacity at creation
-    });
+      attendees: [] as string[],
+      availableSeats: capacity,
+    };
 
-    return NextResponse.json({ event: newEvent }, { status: 201 });
+    // create via constructor + save (أفضل توافق مع TypeScript)
+    const doc = new EventModel(newEventData);
+    const saved = await doc.save();
+
+    return NextResponse.json({ event: saved }, { status: 201 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown server error";
     console.error("POST /api/events error:", message, err);
