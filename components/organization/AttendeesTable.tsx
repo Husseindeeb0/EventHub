@@ -91,3 +91,16 @@ const EventAttendeesList: React.FC<EventAttendeesListProps> = ({ eventId }) => {
 };
 
 export default EventAttendeesList;
+
+// Example: app/(organizer)/events/attendees/page.tsx
+
+const EventAttendeesPage = () => {
+    return (
+        <div>
+            {/* ... Content ... */}
+        </div>
+    );
+};
+
+// 🔑 Must be the default export
+export default EventAttendeesPage;
