@@ -2,19 +2,68 @@ import mongoose, { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema(
   {
-    eventId: {
-      type: Schema.Types.ObjectId,
-      ref: "Event",
+    name: {
+      type: String,
       required: true,
+      trim: true,
     },
-    firstName: {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
       type: String,
       required: true,
     },
-    lastName: {
+    role: {
       type: String,
-      required: true,
+      enum: ["user", "organizer"],
+      default: "user",
     },
+    description: {
+      type: String,
+      default: "",
+    },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
+    bookedEvents: [
+      {
+        eventId: {
+          type: Schema.Types.ObjectId,
+          ref: "Event",
+        },
+        bookedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        numberOfSeats: {
+          type: Number,
+          default: 1,
+        },
+      },
+    ],
+    attendedEvents: [
+      {
+        eventId: {
+          type: Schema.Types.ObjectId,
+          ref: "Event",
+        },
+        attendedAt: {
+          type: Date,
+        },
+      },
+    ],
+    createdEvents: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Event",
+      },
+    ],
   },
   {
     timestamps: true,
