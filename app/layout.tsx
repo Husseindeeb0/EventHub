@@ -1,25 +1,29 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import StoreProvider from "@/redux/StoreProvider";
+// app/layout.tsx
 
+import './globals.css';
+import type { Metadata } from 'next';
+
+// 1. FIX: Use default imports (no curly braces)
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+
+// Define Metadata as needed
 export const metadata: Metadata = {
-  title: "EventHub - Discover and Manage Events",
-  description: "Discover and book events happening around you",
+  title: 'EventHub',
+  description: 'Your platform for events.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="">
-        <StoreProvider>
-          <Navbar />
-          {children}
-        </StoreProvider>
+    <html lang="en">
+      <body>
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

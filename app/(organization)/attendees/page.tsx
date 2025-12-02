@@ -4,7 +4,7 @@ import Booking from "@/models/Booking";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+'use client';
 
 async function getOrganizerId() {
   // TODO: replace with session user id
