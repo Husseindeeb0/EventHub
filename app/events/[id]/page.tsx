@@ -9,6 +9,7 @@ import {
   AnimatedCard,
   AnimatedSuccessMessage,
 } from "./AnimatedEventContent";
+import EventImage from "./EventImage";
 
 async function getEvent(id: string) {
   await connectDb();
@@ -24,7 +25,10 @@ async function getEvent(id: string) {
 async function getBookedCount(eventId: string) {
   await connectDb();
   try {
-    return await Booking.countDocuments({ eventId });
+    return await Booking.countDocuments({
+      event: eventId,
+      status: { $ne: "cancelled" },
+    });
   } catch (error) {
     return 0;
   }
@@ -50,24 +54,39 @@ function formatEventDate(date: any): string {
   }
 }
 
+import { getCurrentUser } from "@/lib/serverAuth";
+
 export default async function EventDetailsPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ booked?: string }>;
+  params: Promise<{ id: string }> | { id: string };
+  searchParams:
+    | Promise<{ booked?: string; cancelled?: string }>
+    | { booked?: string; cancelled?: string };
 }) {
-  const { id } = await params;
-  const resolvedSearchParams = await searchParams;
-  const event = await getEvent(id);
+  const resolvedParams = await Promise.resolve(params);
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const event = await getEvent(resolvedParams.id);
+  const currentUser = await getCurrentUser();
 
   if (!event) {
     notFound();
   }
 
-  const bookedCount = await getBookedCount(id);
+  const bookedCount = await getBookedCount(resolvedParams.id);
   const remainingSeats = event.capacity ? event.capacity - bookedCount : null;
   const isFull = event.capacity ? bookedCount >= event.capacity : false;
+
+  let userBooking = null;
+  if (currentUser) {
+    await connectDb();
+    userBooking = await Booking.findOne({
+      user: currentUser.userId,
+      event: resolvedParams.id,
+      status: { $ne: "cancelled" },
+    }).lean();
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-100/70 via-purple-100/80 via-blue-100/90 to-cyan-100/60 relative overflow-hidden">
@@ -79,15 +98,7 @@ export default async function EventDetailsPage({
           {event.coverImageUrl ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={event.coverImageUrl}
-                alt={event.title}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  // Hide image on error to show clean gradient background
-                  e.currentTarget.style.display = "none";
-                }}
-              />
+              <EventImage src={event.coverImageUrl} alt={event.title} />
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -199,6 +210,37 @@ export default async function EventDetailsPage({
             </AnimatedSuccessMessage>
           )}
 
+          {/* Cancelled Message */}
+          {resolvedSearchParams?.cancelled === "true" && (
+            <AnimatedSuccessMessage>
+              <div className="mb-8 rounded-2xl bg-gradient-to-r from-red-500 to-pink-500 p-6 text-white shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">Booking Cancelled</h3>
+                    <p className="text-sm text-white/90">
+                      Your booking has been successfully cancelled.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSuccessMessage>
+          )}
+
           <div className="grid gap-12 lg:grid-cols-3">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
@@ -226,7 +268,7 @@ export default async function EventDetailsPage({
               <AnimatedCard delay={0.6}>
                 <div className="sticky top-24 rounded-3xl border border-purple-100 bg-white p-6 shadow-xl">
                   <h3 className="text-xl font-bold text-slate-900 mb-6">
-                    Book Your Spot
+                    {userBooking ? "Your Booking" : "Book Your Spot"}
                   </h3>
 
                   <div className="space-y-4 mb-6">
@@ -254,7 +296,7 @@ export default async function EventDetailsPage({
                     </div>
                   </div>
 
-                  {isFull ? (
+                  {isFull && !userBooking ? (
                     <div className="rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 p-4 text-center">
                       <div className="flex items-center justify-center gap-2 text-red-700 font-semibold">
                         <svg
@@ -274,7 +316,14 @@ export default async function EventDetailsPage({
                       </div>
                     </div>
                   ) : (
-                    <BookingForm eventId={id} />
+                    <BookingForm
+                      eventId={resolvedParams.id}
+                      initialBooking={
+                        userBooking
+                          ? JSON.parse(JSON.stringify(userBooking))
+                          : null
+                      }
+                    />
                   )}
                 </div>
               </AnimatedCard>

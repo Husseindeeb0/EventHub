@@ -1,102 +1,184 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authMiddleware } from "@/middleware/authMiddleware";
 import connectDb from "@/lib/connectDb";
-import User from "@/models/User";
+import Booking from "@/models/Booking";
 import Event from "@/models/Event";
-import { cookies } from "next/headers";
-import { verifyToken, TokenPayload } from "@/lib/auth";
+import User from "@/models/User";
+import mongoose from "mongoose";
+
+export async function POST(req: NextRequest) {
+  try {
+    // Authenticate user
+    const authResult = await authMiddleware(req);
+    if (authResult.error) {
+      return authResult.response;
+    }
+
+    const { userId } = authResult.user!;
+
+    // Parse request body
+    const { eventId, seats } = await req.json();
+
+    // Validate input
+    if (!eventId || !seats || seats < 1) {
+      return NextResponse.json(
+        { success: false, message: "Invalid booking data" },
+        { status: 400 }
+      );
+    }
+
+    // Connect to database
+    await connectDb();
+
+    // Start a session for transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Find event
+      const event = await Event.findById(eventId).session(session);
+      if (!event) {
+        await session.abortTransaction();
+        return NextResponse.json(
+          { success: false, message: "Event not found" },
+          { status: 404 }
+        );
+      }
+
+      // Check if event has enough available seats
+      if (event.availableSeats < seats) {
+        await session.abortTransaction();
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Only ${event.availableSeats} seats available`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Check if user already booked this event
+      const existingBooking = await Booking.findOne({
+        user: userId,
+        event: eventId,
+        status: "confirmed",
+      }).session(session);
+
+      if (existingBooking) {
+        await session.abortTransaction();
+        return NextResponse.json(
+          { success: false, message: "You have already booked this event" },
+          { status: 400 }
+        );
+      }
+
+      // Create booking
+      const booking = await Booking.create(
+        [
+          {
+            user: userId,
+            event: eventId,
+            seats,
+            status: "confirmed",
+          },
+        ],
+        { session }
+      );
+
+      // Update event: decrement available seats and add user to attendees
+      await Event.findByIdAndUpdate(
+        eventId,
+        {
+          $inc: { availableSeats: -seats },
+          $addToSet: { attendees: userId },
+        },
+        { session }
+      );
+
+      // Update user: add event to bookedEvents
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          $addToSet: { bookedEvents: eventId },
+        },
+        { session }
+      );
+
+      // Commit transaction
+      await session.commitTransaction();
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Booking created successfully",
+          booking: booking[0],
+        },
+        { status: 201 }
+      );
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to create booking" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function GET(req: NextRequest) {
   try {
-    // Get token from cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized - No token provided" },
-        { status: 401 }
-      );
+    // Authenticate user
+    const authResult = await authMiddleware(req);
+    if (authResult.error) {
+      return authResult.response;
     }
 
-    // Verify token using auth library
-    const decoded = verifyToken(token, "access") as TokenPayload | null;
-
-    if (!decoded || !decoded.userId) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized - Invalid token" },
-        { status: 401 }
-      );
-    }
+    const { userId } = authResult.user!;
 
     await connectDb();
 
-    // Find user and populate booked events
-    const user = await User.findById(decoded.userId)
-      .select("bookedEvents")
+    // Find bookings for user and populate event details
+    const bookings = await Booking.find({
+      user: userId,
+      status: { $ne: "cancelled" },
+    })
+      .populate("event")
+      .sort({ bookingDate: -1 })
       .lean();
 
-    if (!user) {
-      console.log("User not found for ID:", decoded.userId);
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
-      );
-    }
-
-    const bookedEvents = user.bookedEvents || [];
-    console.log(
-      `Found ${bookedEvents.length} bookings for user ${decoded.userId}`
-    );
-
-    // Get all event IDs from booked events
-    const eventIds = bookedEvents.map((booking: any) => booking.eventId);
-
-    // Fetch all events
-    const events = await Event.find({ _id: { $in: eventIds } }).lean();
-    console.log(`Found ${events.length} events matching bookings`);
-
-    // Create a map of events by ID for quick lookup
-    const eventMap = new Map();
-    events.forEach((event: any) => {
-      eventMap.set(event._id.toString(), event);
-    });
-
-    // Combine booking info with event details
-    const bookingsWithDetails = bookedEvents
+    // Map to expected format
+    const formattedBookings = bookings
       .map((booking: any) => {
-        if (!booking.eventId) return null;
-        const event = eventMap.get(booking.eventId.toString());
-        if (!event) return null;
+        if (!booking.event) return null; // Skip if event was deleted
 
         return {
           _id: booking._id,
-          eventId: event._id,
-          title: event.title,
-          location: event.location,
-          startsAt: event.startsAt,
-          coverImageUrl: event.coverImageUrl,
-          capacity: event.capacity,
-          description: event.description,
-          numberOfSeats: booking.numberOfSeats,
-          bookedAt: booking.bookedAt,
+          eventId: booking.event._id,
+          title: booking.event.title,
+          location: booking.event.location,
+          startsAt: booking.event.startsAt,
+          coverImageUrl: booking.event.coverImageUrl,
+          capacity: booking.event.capacity,
+          description: booking.event.description,
+          numberOfSeats: booking.seats,
+          bookedAt: booking.bookingDate,
         };
       })
-      .filter(Boolean); // Remove null entries
+      .filter(Boolean);
 
     return NextResponse.json({
       success: true,
-      bookings: bookingsWithDetails,
+      bookings: formattedBookings,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching bookings:", error);
-    // Log stack trace if available
-    if (error.stack) console.error(error.stack);
-
     return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error: " + (error.message || "Unknown error"),
-      },
+      { success: false, message: "Failed to fetch bookings" },
       { status: 500 }
     );
   }

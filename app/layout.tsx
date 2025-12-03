@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StoreProvider from "@/redux/StoreProvider";
+import AuthInitializer from "@/components/auth/AuthInitializer";
 
 // Define Metadata as needed
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <StoreProvider>
+          <AuthInitializer />
           <Navbar />
           <main>{children}</main>
           <Footer />

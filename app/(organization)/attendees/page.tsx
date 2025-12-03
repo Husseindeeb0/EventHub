@@ -2,7 +2,8 @@ import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import Booking from "@/models/Booking";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/serverAuth";
 
 'use client';
 

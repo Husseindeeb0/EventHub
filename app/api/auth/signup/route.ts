@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
     await connectDb();
 
     const { name, email, password, role, description } = await req.json();
-
     if (!name || !email || !password) {
       return NextResponse.json(
         { success: false, message: "Name, email, and password are required" },
