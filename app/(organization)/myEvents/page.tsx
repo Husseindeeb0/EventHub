@@ -82,7 +82,7 @@ function EventCard({ e }: { e: MyEventVM }) {
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20">
-      <Link href={`/events/${e.id}`} className="flex-1">
+      <Link href={`/home/${e.id}`} className="flex-1">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-purple-100 via-blue-100 to-indigo-100">
           {e.coverImageUrl ? (
             <>
@@ -238,7 +238,7 @@ function EventCard({ e }: { e: MyEventVM }) {
               Attendees
             </Link>
             <Link
-              href={`/events/${e.id}/edit`}
+              href={`/home/${e.id}/edit`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg hover:shadow-purple-500/40"
             >
               Manage

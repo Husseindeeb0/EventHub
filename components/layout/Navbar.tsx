@@ -19,7 +19,7 @@ interface NavLink {
 
 // --- Navigation Links Data ---
 const navLinks: NavLink[] = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/bookings", label: "My Bookings", isProtected: true },
   // Organizer-specific links
@@ -48,14 +48,12 @@ export const Navbar = () => {
   const userRole: UserRole = user?.role || null;
 
   const filteredLinks = navLinks.filter((link) => {
-    if (!link.isProtected) return true; // Always show public links
-    if (isAuthenticated) {
-      if (link.minRole && userRole !== link.minRole) {
-        return false; // Hide if specific role required and user doesn't have it
-      }
-      return true; // Show protected links for authenticated users
+    if (!isAuthenticated) return false; // Hide all links if not authenticated
+
+    if (link.minRole && userRole !== link.minRole) {
+      return false; // Hide if specific role required and user doesn't have it
     }
-    return false;
+    return true; // Show all links for authenticated users
   });
 
   // Close profile menu when clicking outside

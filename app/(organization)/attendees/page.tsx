@@ -5,8 +5,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/serverAuth";
 
-'use client';
-
 async function getOrganizerId() {
   // TODO: replace with session user id
   return "user_organizer_1";
@@ -35,14 +33,11 @@ async function getEventAttendees(eventId: string) {
       .sort({ createdAt: -1 })
       .lean();
     return attendees.map((a: any) => {
-      // firstName and lastName are required, so they should always be present
-      const firstName = a.firstName || "";
-      const lastName = a.lastName || "";
-      const fullName =
-        `${firstName} ${lastName}`.trim() || a.attendeeName || ""; // Fallback for old records
       return {
         id: a._id.toString(),
-        name: fullName,
+        name: a.name || "Unknown",
+        email: a.email || "N/A",
+        phone: a.phone || "N/A",
         bookedAt: a.createdAt,
       };
     });
@@ -54,14 +49,21 @@ async function getEventAttendees(eventId: string) {
 export default async function AttendeesPage({
   searchParams,
 }: {
-  searchParams: { eventId?: string };
+  searchParams: Promise<{ eventId?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const organizerId = await getOrganizerId();
   const events = await getOrganizerEvents(organizerId);
-  const selectedEventId = searchParams.eventId || events[0]?.id;
+  const selectedEventId = resolvedSearchParams.eventId || events[0]?.id;
 
   let selectedEvent = null;
-  let attendees: Array<{ id: string; name: string; bookedAt: any }> = [];
+  let attendees: Array<{
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    bookedAt: any;
+  }> = [];
 
   if (selectedEventId) {
     const event = await Event.findById(selectedEventId).lean();
@@ -140,7 +142,7 @@ export default async function AttendeesPage({
                       </p>
                     </div>
                     <Link
-                      href={`/events/${selectedEvent.id}`}
+                      href={`/home/${selectedEvent.id}`}
                       className="rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg"
                     >
                       View Event
@@ -170,7 +172,7 @@ export default async function AttendeesPage({
                         No attendees yet
                       </h3>
                       <p className="text-sm text-slate-500">
-                        Attendees will appear here once they book a spot.
+                        This event has no bookings yet.
                       </p>
                     </div>
                   ) : (
@@ -178,19 +180,26 @@ export default async function AttendeesPage({
                       {attendees.map((attendee, index) => (
                         <div
                           key={attendee.id}
-                          className="flex items-center justify-between rounded-xl border border-purple-100 bg-gradient-to-r from-purple-50/50 to-blue-50/50 p-4 hover:shadow-md transition-all"
+                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-purple-100 bg-gradient-to-r from-purple-50/50 to-blue-50/50 p-4 hover:shadow-md transition-all gap-4"
                         >
                           <div className="flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-blue-600 text-white font-bold text-sm shadow-md">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-blue-600 text-white font-bold text-sm shadow-md">
                               {index + 1}
                             </div>
                             <div>
                               <div className="font-semibold text-slate-900">
                                 {attendee.name}
                               </div>
+                              <div className="text-sm text-slate-600">
+                                {attendee.email}
+                              </div>
+                              <div className="text-sm text-slate-500">
+                                {attendee.phone}
+                              </div>
                             </div>
                           </div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-slate-500 whitespace-nowrap">
+                            Booked on{" "}
                             {attendee.bookedAt
                               ? new Date(attendee.bookedAt).toLocaleDateString(
                                   "en-US",
@@ -229,14 +238,8 @@ export default async function AttendeesPage({
                   No events found
                 </h3>
                 <p className="text-sm text-slate-500 mb-6">
-                  Create an event to start tracking attendees.
+                  You haven't created any events yet.
                 </p>
-                <Link
-                  href="/createEvent"
-                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl"
-                >
-                  Create Event
-                </Link>
               </div>
             )}
           </div>

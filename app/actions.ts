@@ -112,7 +112,7 @@ export async function updateEventAction(formData: FormData) {
     coverImageUrl: imageUrl, // undefined means no image
   });
 
-  redirect(`/events/${id}`);
+  redirect(`/home/${id}`);
 }
 
 export async function deleteEventAction(formData: FormData) {

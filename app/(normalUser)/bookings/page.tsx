@@ -54,7 +54,7 @@ const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
   });
 
   return (
-    <Link href={`/events/${eventId}`}>
+    <Link href={`/home/${eventId}`}>
       <div
         className={`flex flex-col md:flex-row bg-white rounded-xl shadow-lg transition duration-300 overflow-hidden cursor-pointer
             ${
@@ -253,7 +253,7 @@ const BookingPage = () => {
               <p className="mt-1">
                 Head over to the{" "}
                 <Link
-                  href="/events"
+                  href="/home"
                   className="text-indigo-600 hover:text-indigo-800 font-semibold"
                 >
                   Events Page
