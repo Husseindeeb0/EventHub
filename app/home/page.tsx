@@ -1,10 +1,8 @@
-import Link from "next/link";
-import connectDb from "@/lib/connectDb";
-import Event from "@/models/Event";
-import User from "@/models/User";
-import EventImage from "@/components/events/EventImage";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import EventImage from "@/components/events/EventImage";
 
 type EventVM = {
   id: string;
@@ -15,55 +13,6 @@ type EventVM = {
   capacity?: number;
   bookedCount: number;
 };
-
-function toISO(d: any) {
-  if (!d) return new Date().toISOString();
-  if (typeof d === "string") return new Date(d).toISOString();
-  return (d as Date).toISOString();
-}
-
-async function fetchAllEvents(): Promise<EventVM[]> {
-  await connectDb();
-
-  const rawEvents: any[] = await Event.find({})
-    .sort({ startsAt: 1 }) // Ascending order for upcoming events
-    .lean();
-
-  const ids = rawEvents.map((e) => e._id);
-
-  // Get booking counts for all events - using ObjectId matching
-  const counts: Array<{ _id: any; count: number }> = await User.aggregate([
-    { $match: { eventId: { $in: ids } } },
-    { $group: { _id: "$eventId", count: { $sum: 1 } } },
-  ]);
-
-  const map = new Map<string, number>();
-  for (const c of counts) {
-    // Convert ObjectId to string for matching
-    map.set(String(c._id), c.count);
-  }
-
-  return rawEvents.map((e) => {
-    const title = e.title ?? e.name ?? "Untitled event";
-    const location = e.location ?? e.venue ?? "TBA";
-    const startsAt = toISO(e.startsAt ?? e.date ?? e.startDate);
-    const coverImageUrl = e.coverImageUrl ?? e.imageUrl ?? e.image;
-    const capacity = e.capacity ?? e.maxSeats ?? undefined;
-
-    const id = String(e._id);
-    const bookedCount = map.get(id) ?? 0;
-
-    return {
-      id,
-      title,
-      location,
-      startsAt,
-      coverImageUrl,
-      capacity,
-      bookedCount,
-    };
-  });
-}
 
 function EventCard({ e }: { e: EventVM }) {
   const isFull = e.capacity != null && e.bookedCount >= e.capacity;
@@ -196,8 +145,74 @@ function EventCard({ e }: { e: EventVM }) {
   );
 }
 
-export default async function EventsPage() {
-  const events = await fetchAllEvents();
+export default function EventsPage() {
+  const [events, setEvents] = useState<EventVM[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/events");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch events");
+        }
+
+        if (data.success) {
+          setEvents(data.events || []);
+        } else {
+          throw new Error(data.message || "Failed to fetch events");
+        }
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-100 via-indigo-100/60 via-purple-100/70 to-blue-100/80 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading events...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-100 via-indigo-100/60 via-purple-100/70 to-blue-100/80 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-600 font-medium">Error: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-slate-100 via-indigo-100/60 via-purple-100/70 to-blue-100/80 relative overflow-hidden">
