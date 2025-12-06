@@ -26,7 +26,10 @@ const UserSchema = new Schema<IUser>(
     attendedEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
     createdEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    autoIndex: process.env.NODE_ENV !== "production",
+  }
 );
 
 UserSchema.index({ role: 1 });
