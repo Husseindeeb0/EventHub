@@ -56,7 +56,7 @@ export async function createEventAction(formData: FormData) {
     $push: { createdEvents: newEvent._id },
   });
 
-  redirect(`/events/${newEvent._id}/invite`);
+  redirect("/myEvents");
 }
 
 export async function updateEventAction(formData: FormData) {
@@ -112,7 +112,7 @@ export async function updateEventAction(formData: FormData) {
     coverImageUrl: imageUrl, // undefined means no image
   });
 
-  redirect(`/home/${id}`);
+  redirect("/myEvents");
 }
 
 export async function deleteEventAction(formData: FormData) {

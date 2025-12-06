@@ -87,9 +87,7 @@ export const Navbar = () => {
               href="/"
               className="flex items-center space-x-2 text-xl font-bold text-white"
             >
-              <span className="text-2xl font-extrabold tracking-tight">
-                EventHub
-              </span>
+              <img src="/logo.png" alt="EventHub Logo" className="w-44 h-16" />
             </Link>
           </div>
 
