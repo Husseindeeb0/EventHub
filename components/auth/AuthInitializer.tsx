@@ -1,15 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { useAppDispatch } from "@/redux/store/store";
-import { checkAuthSessionThunk } from "@/redux/states/auth/authThunks";
+import { useCheckSessionQuery } from "@/redux/features/auth/authApi";
+import { useAppDispatch } from "@/redux/store";
 
 export default function AuthInitializer() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(checkAuthSessionThunk());
-  }, [dispatch]);
+  // Automatically triggers the query on mount
+  useCheckSessionQuery();
 
   return null;
 }

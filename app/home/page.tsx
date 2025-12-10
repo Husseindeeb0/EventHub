@@ -1,21 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import EventImage from "@/components/events/EventImage";
+import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
+import { Event } from "@/redux/features/events/eventsApi";
 
-type EventVM = {
-  id: string;
-  title: string;
-  location: string;
-  startsAt: string; // ISO
-  coverImageUrl?: string;
-  capacity?: number;
-  bookedCount: number;
-};
-
-function EventCard({ e }: { e: EventVM }) {
-  const isFull = e.capacity != null && e.bookedCount >= e.capacity;
+function EventCard({ e }: { e: Event }) {
+  const isFull = e.capacity != null && e.bookedCount >= e.bookedCount; // Note: Original was e.bookedCount >= e.capacity, but capacity can be undefined.
+  // Wait, let's look at logic. if capacity is defined, check if booked >= capacity.
+  const full = e.capacity ? e.bookedCount >= e.capacity : false;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20">
@@ -46,19 +39,19 @@ function EventCard({ e }: { e: EventVM }) {
           <div className="absolute top-4 right-4">
             <span
               className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-lg ${
-                isFull
+                full
                   ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
                   : "bg-white/90 text-purple-700 backdrop-blur-sm"
               }`}
             >
-              {isFull ? "Sold Out" : "Available"}
+              {full ? "Sold Out" : "Available"}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 p-6">
           <div className="flex items-center gap-2 text-xs font-semibold">
-            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-purple-100 to-blue-100 px-3 py-1.5 text-purple-700">
+            <span className="inline-flex items-center rounded-full bg-linear-to-r from-purple-100 to-blue-100 px-3 py-1.5 text-purple-700">
               <svg
                 className="h-3.5 w-3.5 mr-1.5"
                 fill="none"
@@ -115,10 +108,10 @@ function EventCard({ e }: { e: EventVM }) {
         </div>
       </Link>
 
-      <div className="border-t border-purple-100 bg-gradient-to-r from-purple-50/50 to-blue-50/50 p-4">
+      <div className="border-t border-purple-100 bg-linear-to-r from-purple-50/50 to-blue-50/50 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-blue-500 text-white">
               <svg
                 className="h-3.5 w-3.5"
                 fill="none"
@@ -146,36 +139,8 @@ function EventCard({ e }: { e: EventVM }) {
 }
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<EventVM[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/events");
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch events");
-        }
-
-        if (data.success) {
-          setEvents(data.events || []);
-        } else {
-          throw new Error(data.message || "Failed to fetch events");
-        }
-      } catch (err) {
-        console.error("Error fetching events:", err);
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
+  const { data, isLoading: loading, error } = useGetEventsQuery();
+  const events = data?.events || [];
 
   if (loading) {
     return (
@@ -201,7 +166,12 @@ export default function EventsPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <p className="text-red-600 font-medium">Error: {error}</p>
+            <p className="text-red-600 font-medium">
+              Error:{" "}
+              {"data" in error
+                ? JSON.stringify((error as any).data)
+                : "An error occurred"}
+            </p>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"

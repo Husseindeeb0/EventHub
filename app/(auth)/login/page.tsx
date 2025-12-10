@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Loader2 } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/store/store";
-import { loginThunk } from "@/redux/states/auth/authThunks";
-
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 export default function LoginPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
-  console.log("Loading state:", loading);
+  const [login, { isLoading: loading, error: loginError }] = useLoginMutation();
+
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -66,7 +63,8 @@ export default function LoginPage() {
 
     try {
       // Dispatch login thunk
-      const result = await dispatch(loginThunk(formData)).unwrap();
+      // const result = await dispatch(loginThunk(formData)).unwrap();
+      const result = await login(formData).unwrap();
 
       if (result.success) {
         router.push("/home");
@@ -104,13 +102,15 @@ export default function LoginPage() {
           </div>
 
           {/* Error Message */}
-          {error && (
+          {loginError && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
             >
-              {error}
+              {typeof loginError === "string"
+                ? loginError
+                : (loginError as any).data?.message || "Login failed"}
             </motion.div>
           )}
 

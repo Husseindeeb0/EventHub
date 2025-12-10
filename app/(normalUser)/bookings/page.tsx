@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Users, Ticket, Clock, X } from "lucide-react";
-import { useAppSelector } from "@/redux/store/store";
+import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

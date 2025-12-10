@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { Menu, X, LogIn, User, LogOut, UserCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useAppSelector, useAppDispatch } from "@/redux/store/store";
-import { logoutThunk } from "@/redux/states/auth/authThunks";
+import { useAppSelector } from "@/redux/store";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 
 // --- Types ---
@@ -40,7 +40,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
-  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
   const router = useRouter();
 
   // --- Redux State ---
@@ -72,7 +72,7 @@ export const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    await dispatch(logoutThunk());
+    await logout().unwrap();
     setShowProfileMenu(false);
     router.push("/login");
   };
@@ -87,7 +87,7 @@ export const Navbar = () => {
               href="/"
               className="flex items-center space-x-2 text-xl font-bold text-white"
             >
-              <img src="/logo.png" alt="EventHub Logo" className="w-44 h-16" />
+              <img src="/logo2.png" alt="EventHub Logo" className="w-60" />
             </Link>
           </div>
 

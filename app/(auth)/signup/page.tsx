@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, FileText, UserCircle, Loader2 } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/store/store";
-import { signupThunk } from "@/redux/states/auth/authThunks";
+import { useSignupMutation } from "@/redux/features/auth/authApi";
 
 export default function SignupPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const [signup, { isLoading: loading, error: signupError }] =
+    useSignupMutation();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -85,7 +84,8 @@ export default function SignupPage() {
 
     try {
       // Dispatch signup thunk
-      const result = await dispatch(signupThunk(formData)).unwrap();
+      // const result = await dispatch(signupThunk(formData)).unwrap();
+      const result = await signup(formData).unwrap();
 
       if (result.success) {
         // Redirect to home page on success (auto-login)
@@ -124,13 +124,15 @@ export default function SignupPage() {
           </div>
 
           {/* Error Message */}
-          {error && (
+          {signupError && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
             >
-              {error}
+              {typeof signupError === "string"
+                ? signupError
+                : (signupError as any).data?.message || "Signup failed"}
             </motion.div>
           )}
 
