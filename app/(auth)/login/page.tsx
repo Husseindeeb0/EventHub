@@ -12,7 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
-  console.log("Loading state:", loading);
+
   // Form state
   const [formData, setFormData] = useState({
     email: "",

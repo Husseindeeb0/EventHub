@@ -209,7 +209,7 @@ export async function bookEventAction(formData: FormData) {
     $push: { bookedEvents: eventId },
   });
 
-  redirect(`/events/${eventId}?booked=true`);
+  redirect("/home?booked=true");
 }
 
 export async function cancelBookingAction(formData: FormData) {
@@ -241,5 +241,5 @@ export async function cancelBookingAction(formData: FormData) {
     $pull: { bookedEvents: eventId },
   });
 
-  redirect(`/events/${eventId}?cancelled=true`);
+  redirect("/home?cancelled=true");
 }

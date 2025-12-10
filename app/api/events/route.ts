@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
-import User from "@/models/User";
+import Booking from "@/models/Booking";
 
 function toISO(d: any) {
   if (!d) return new Date().toISOString();
@@ -19,10 +19,16 @@ export async function GET() {
 
     const ids = rawEvents.map((e) => e._id);
 
-    // Get booking counts for all events - using ObjectId matching
-    const counts: Array<{ _id: any; count: number }> = await User.aggregate([
-      { $match: { eventId: { $in: ids } } },
-      { $group: { _id: "$eventId", count: { $sum: 1 } } },
+    // Get booking counts for all events from Booking collection
+    // Count only confirmed bookings (exclude cancelled ones)
+    const counts: Array<{ _id: any; count: number }> = await Booking.aggregate([
+      { 
+        $match: { 
+          event: { $in: ids },
+          status: { $ne: "cancelled" }
+        } 
+      },
+      { $group: { _id: "$event", count: { $sum: 1 } } },
     ]);
 
     const map = new Map<string, number>();

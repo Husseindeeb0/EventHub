@@ -42,7 +42,7 @@ export function Hero() {
             <Link href="/home">
               <Button
                 size="lg"
-                className="h-16 px-10 text-lg rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transition-all hover:-translate-y-1"
+                className="h-16 px-10 text-lg rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transition-all hover:-translate-y-1 text-white"
               >
                 Explore Events
               </Button>

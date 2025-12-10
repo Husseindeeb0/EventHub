@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import EventImage from "@/components/events/EventImage";
 
@@ -149,6 +150,29 @@ export default function EventsPage() {
   const [events, setEvents] = useState<EventVM[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showCancelled, setShowCancelled] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check if booking was successful
+    if (searchParams.get("booked") === "true") {
+      setShowSuccess(true);
+      // Remove the query parameter from URL without reloading
+      window.history.replaceState({}, "", "/home");
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000);
+    }
+    
+    // Check if booking was cancelled
+    if (searchParams.get("cancelled") === "true") {
+      setShowCancelled(true);
+      // Remove the query parameter from URL without reloading
+      window.history.replaceState({}, "", "/home");
+      // Hide cancellation message after 5 seconds
+      setTimeout(() => setShowCancelled(false), 5000);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -219,6 +243,64 @@ export default function EventsPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg animate-in fade-in slide-in-from-top-5 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Booking Confirmed!</h3>
+                <p className="text-sm text-white/90">
+                  You've successfully reserved your spot. Check out more events below!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancellation Message */}
+        {showCancelled && (
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-6 text-white shadow-lg animate-in fade-in slide-in-from-top-5 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Booking Cancelled</h3>
+                <p className="text-sm text-white/90">
+                  Your booking has been cancelled successfully. Explore more events below!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">

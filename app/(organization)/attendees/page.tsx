@@ -29,16 +29,24 @@ async function getOrganizerEvents(organizerId: string) {
 async function getEventAttendees(eventId: string) {
   await connectDb();
   try {
-    const attendees = await Booking.find({ eventId })
+    const attendees = await Booking.find({ 
+      event: eventId,
+      status: { $ne: "cancelled" }
+    })
+      .populate("user", "name email")
       .sort({ createdAt: -1 })
       .lean();
     return attendees.map((a: any) => {
+      // Use populated user data if available, otherwise use booking data
+      const userName = a.user?.name || a.name || "Unknown";
+      const userEmail = a.user?.email || a.email || "N/A";
+      
       return {
         id: a._id.toString(),
-        name: a.name || "Unknown",
-        email: a.email || "N/A",
+        name: userName,
+        email: userEmail,
         phone: a.phone || "N/A",
-        bookedAt: a.createdAt,
+        bookedAt: a.createdAt || a.bookingDate,
       };
     });
   } catch (error) {

@@ -39,7 +39,7 @@ export default function AboutPage() {
       linkedinUrl: "####",
     },
     {
-      name: "Hadi",
+      name: "Hadi Deeb",
       role: "Front End",
       icon: Code2,
       bgClass: "bg-cyan-50",
