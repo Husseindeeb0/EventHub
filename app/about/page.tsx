@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppSelector } from "@/redux/store/store";
+import { useAppSelector } from "@/redux/store";
 import {
   AnimatedPageHeader,
   AnimatedPageContent,
@@ -24,11 +24,11 @@ export default function AboutPage() {
   const teamMembers = [
     {
       name: "Hussein Deeb",
-      role: "Team Leader",
+      role: "Team Leader | Full Stack",
       icon: Users,
       bgClass: "bg-indigo-50",
       iconClass: "text-indigo-600",
-      linkedinUrl: "####",
+      linkedinUrl: "https://www.linkedin.com/in/hussein-deeb0/",
     },
     {
       name: "Ali Ghaith",
