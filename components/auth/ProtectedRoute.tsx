@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/redux/store/store";
+import { useAppSelector } from "@/redux/store";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

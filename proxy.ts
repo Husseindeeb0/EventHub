@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 // Define protected routes
 const protectedRoutes = ["/home", "/bookings", "/myEvents", "/profile"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the current path is a protected route

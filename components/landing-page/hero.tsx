@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-white">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-10 pb-20 bg-white">
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50/50 via-white to-white" />
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-100/30 rounded-full blur-[100px] -z-10" />
@@ -26,7 +26,7 @@ export function Hero() {
             The Future of Event Management
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-gray-900 leading-[1.1]">
+          <h1 className="text-6xl md:text-7xl font-bold tracking-tighter text-gray-900 leading-[1.1]">
             Host Events <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600">
               Like a Pro
@@ -38,11 +38,11 @@ export function Hero() {
             own events with ease.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto pt-6">
+          <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
             <Link href="/home">
               <Button
                 size="lg"
-                className="h-16 px-10 text-lg rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transition-all hover:-translate-y-1"
+                className="h-16 px-10 text-lg cursor-pointer text-white rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transition-all hover:-translate-y-1"
               >
                 Explore Events
               </Button>

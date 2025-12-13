@@ -1,37 +1,61 @@
-import { MapPin, Calendar, Mail, Link as LinkIcon } from 'lucide-react';
+"use client";
+import { useState } from "react";
+import { Calendar, Mail, Edit2 } from "lucide-react";
+import { useAppSelector } from "@/redux/store";
+import { selectUser } from "@/redux/features/auth/authSlice";
+import EditProfileForm from "./EditProfileForm";
+import { AnimatePresence } from "framer-motion";
 
 export default function ProfileInfo() {
-    return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">About</h2>
+  const user = useAppSelector(selectUser);
+  const [isEditing, setIsEditing] = useState(false);
 
-            <div className="space-y-4">
-                <p className="text-gray-600">
-                    Passionate event enthusiast and community builder. I love attending tech conferences and music festivals. Always looking for the next great experience!
-                </p>
+  if (!user) return null;
 
-                <div className="flex flex-col space-y-3 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>San Francisco, CA</span>
-                    </div>
+  const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
-                    <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
-                        <span>username@example.com</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <LinkIcon className="w-4 h-4" />
-                        <a href="#" className="text-blue-600 hover:underline">username.dev</a>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>Joined March 2024</span>
-                    </div>
-                </div>
-            </div>
+  return (
+    <>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">About</h2>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+            title="Edit Profile"
+          >
+            <Edit2 className="w-5 h-5" />
+          </button>
         </div>
-    );
+
+        <div className="space-y-4">
+          {user.description ? (
+            <p className="text-gray-600 leading-relaxed">{user.description}</p>
+          ) : (
+            <p className="text-gray-400 italic">No description provided...</p>
+          )}
+
+          <div className="flex flex-col space-y-3 text-sm text-gray-500 pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-gray-400" />
+              <span>{user.email}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span>Joined {joinedDate}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isEditing && (
+          <EditProfileForm user={user} onClose={() => setIsEditing(false)} />
+        )}
+      </AnimatePresence>
+    </>
+  );
 }

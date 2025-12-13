@@ -4,13 +4,15 @@
 
 import React from "react";
 import Link from "next/link";
-import { Facebook, Instagram, X, Mail, Phone, Copyright } from "lucide-react";
+import { FaXTwitter } from "react-icons/fa6";
+import { Facebook, Instagram, Mail, Phone, Copyright } from "lucide-react";
 
 // Navigation links matching the navbar
 const navigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "My Bookings", href: "/bookings" },
+  { name: "Bookings", href: "/bookings" },
+  { name: "Profile", href: "/profile" },
 ];
 
 const contact = [
@@ -25,7 +27,7 @@ const social = [
     href: "https://instagram.com/eventhub",
     label: "Instagram",
   },
-  { icon: X, href: "https://x.com/eventhub", label: "X" },
+  { icon: FaXTwitter, href: "https://x.com/eventhub", label: "X" },
 ];
 
 const legal = [
@@ -40,10 +42,8 @@ const Footer: React.FC = () => {
         {/* Main 3-column layout for large screens, stacked for mobile */}
         <div className="lg:grid lg:grid-cols-3 lg:gap-8 xl:gap-12">
           {/* Section 1: Logo and Mission */}
-          <div className="space-y-6 lg:col-span-1 mb-8 lg:mb-0">
-            <h3 className="text-2xl font-bold tracking-tight text-white">
-              Event<span className="text-purple-300">Hub</span>
-            </h3>
+          <div className="space-y-6 lg:col-span-1 lg:mb-0">
+            <img src="/logo.png" alt="EventHub Logo" className="w-44" />
             <p className="text-gray-300 text-sm max-w-xs">
               Your one-stop platform for finding and booking the best events.
               Never miss out on what's happening.

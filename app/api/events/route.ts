@@ -1,113 +1,134 @@
-// app/api/events/route.ts
 import { NextResponse } from "next/server";
-import connectDb from "../../../lib/connectDb";
-import EventModel from "../../../models/Event";
+import connectDb from "@/lib/connectDb";
+import Event from "@/models/Event";
+import User from "@/models/User";
 
-export async function GET(request: Request) {
+function toISO(d: any) {
+  if (!d) return new Date().toISOString();
+  if (typeof d === "string") return new Date(d).toISOString();
+  return (d as Date).toISOString();
+}
+
+export async function GET(req: Request) {
   try {
     await connectDb();
 
-    const url = new URL(request.url);
-    const searchParam = url.searchParams.get("search") ?? "";
-    const dateParam = url.searchParams.get("date") ?? "";
-    const page = Number(url.searchParams.get("page") ?? "1");
-    const limit = Number(url.searchParams.get("limit") ?? "20");
-    const skip = (page - 1) * limit;
+    const { searchParams } = new URL(req.url);
+    const organizerId = searchParams.get("organizerId");
 
-    const filterObj: Record<string, unknown> = {};
-
-    if (searchParam) {
-      filterObj.$or = [
-        { title: { $regex: searchParam, $options: "i" } },
-        { description: { $regex: searchParam, $options: "i" } },
-        { location: { $regex: searchParam, $options: "i" } },
-      ];
+    const query: any = {};
+    if (organizerId) {
+      query.organizerId = organizerId;
     }
 
-    if (dateParam) {
-      // filter for the given UTC date (YYYY-MM-DD)
-      const start = new Date(dateParam);
-      const end = new Date(dateParam);
-      end.setDate(end.getDate() + 1);
-      filterObj.date = { $gte: start, $lt: end };
+    const idsParam = searchParams.get("ids");
+    if (idsParam) {
+      const idsArray = idsParam.split(",");
+      query._id = { $in: idsArray };
     }
 
-    const filter: Record<string, unknown> = filterObj;
-
-    const total = await EventModel.countDocuments(filter);
-    const events = await EventModel.find(filter)
-      .sort({ date: 1, time: 1 })
-      .skip(skip)
-      .limit(limit)
+    const rawEvents: any[] = await Event.find(query)
+      .sort({ startsAt: organizerId ? -1 : 1 }) // Descending for organizer (newest first), Ascending for public (soonest first)
       .lean();
 
-    return NextResponse.json({ events, total, page, limit });
+    const ids = rawEvents.map((e) => e._id);
+
+    // Get booking counts for all events - using ObjectId matching
+    const counts: Array<{ _id: any; count: number }> = await User.aggregate([
+      { $match: { eventId: { $in: ids } } },
+      { $group: { _id: "$eventId", count: { $sum: 1 } } },
+    ]);
+
+    const map = new Map<string, number>();
+    for (const c of counts) {
+      // Convert ObjectId to string for matching
+      map.set(String(c._id), c.count);
+    }
+
+    const events = rawEvents.map((e) => {
+      const title = e.title ?? e.name ?? "Untitled event";
+      const location = e.location ?? e.venue ?? "TBA";
+      const startsAt = toISO(e.startsAt ?? e.date ?? e.startDate);
+      const coverImageUrl = e.coverImageUrl ?? e.imageUrl ?? e.image;
+      const capacity = e.capacity ?? e.maxSeats ?? undefined;
+      const organizerId = e.organizerId;
+
+      const id = String(e._id);
+      const bookedCount = map.get(id) ?? 0;
+
+      return {
+        id,
+        title,
+        location,
+        startsAt,
+        coverImageUrl,
+        capacity,
+        bookedCount,
+        organizerId,
+      };
+    });
+
+    return NextResponse.json({ success: true, events });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown server error";
     console.error("GET /api/events error:", message, err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }
-export async function POST(request: Request) {
+
+export async function POST(req: Request) {
   try {
     await connectDb();
-
-    const body = await request.json();
+    const body = await req.json();
 
     const {
       title,
-      description,
-      date,
-      time,
       location,
+      startsAt,
       capacity,
-      posterUrl,
-      createdBy,
-    } = body as {
-      title?: string;
-      description?: string;
-      date?: string;
-      time?: string;
-      location?: string;
-      capacity?: number;
-      posterUrl?: string;
-      createdBy?: string;
-    };
+      description,
+      coverImageUrl,
+      organizerId,
+    } = body;
 
-    if (
-      !title ||
-      !description ||
-      !date ||
-      !time ||
-      !location ||
-      capacity === undefined ||
-      !createdBy
-    ) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Basic validation
+    if (!title || !location || !startsAt || !organizerId) {
+      return NextResponse.json(
+        { success: false, message: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
-    // شكل المدخلات الآمنة كـ object مستقل عن الـ Document type
-    const newEventData = {
-      title: title.trim(),
-      description: description.trim(),
-      date: new Date(date),
-      time,
-      location: location.trim(),
+    // Validate capacity
+    if (capacity !== undefined && (isNaN(capacity) || capacity < 1)) {
+      return NextResponse.json(
+        { success: false, message: "Capacity must be a positive number" },
+        { status: 400 }
+      );
+    }
+
+    const newEvent = await Event.create({
+      title,
+      location,
+      startsAt: new Date(startsAt),
+      organizerId,
       capacity,
-      posterUrl: posterUrl ?? "",
-      createdBy: createdBy.trim(),
-      attendees: [] as string[],
-      availableSeats: capacity,
-    };
+      description: description || undefined,
+      coverImageUrl: coverImageUrl || undefined,
+    });
 
-    // create via constructor + save (أفضل توافق مع TypeScript)
-    const doc = new EventModel(newEventData);
-    const saved = await doc.save();
+    // Add event to user's createdEvents array
+    await User.findByIdAndUpdate(organizerId, {
+      $push: { createdEvents: newEvent._id },
+    });
 
-    return NextResponse.json({ event: saved }, { status: 201 });
+    return NextResponse.json(
+      { success: true, event: newEvent },
+      { status: 201 }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown server error";
     console.error("POST /api/events error:", message, err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

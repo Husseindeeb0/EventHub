@@ -1,32 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { useAppDispatch } from "@/redux/store/store";
-import { setUser, setLoading } from "@/redux/states/auth/authSlice";
-import axios from "axios";
+import { useCheckSessionQuery } from "@/redux/features/auth/authApi";
+import { useAppDispatch } from "@/redux/store";
 
 export default function AuthInitializer() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        dispatch(setLoading(true));
-        const response = await axios.get("/api/auth/me");
-
-        if (response.data.success && response.data.user) {
-          dispatch(setUser(response.data.user));
-        }
-      } catch (error) {
-        // User is not authenticated, do nothing
-        console.log("No active session");
-      } finally {
-        dispatch(setLoading(false));
-      }
-    };
-
-    initAuth();
-  }, [dispatch]);
+  // Automatically triggers the query on mount
+  useCheckSessionQuery();
 
   return null;
 }
