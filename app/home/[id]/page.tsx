@@ -1,7 +1,7 @@
-"use client";
-
-import { useGetEventByIdQuery } from "@/redux/features/events/eventsApi";
-import { notFound, useParams, useSearchParams } from "next/navigation";
+import connectDb from "@/lib/connectDb";
+import Event from "@/models/Event";
+import Booking from "@/models/Booking";
+import { notFound } from "next/navigation";
 import BookingForm from "./BookingForm";
 import {
   AnimatedHero,
@@ -10,11 +10,30 @@ import {
   AnimatedSuccessMessage,
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
-import { useAppSelector } from "@/redux/store";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
-// Local helper for date formatting if not already in utils
+async function getEvent(id: string) {
+  await connectDb();
+  try {
+    const event = await Event.findById(id).lean();
+    if (!event) return null;
+    return { ...event, _id: event._id.toString() };
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getBookedCount(eventId: string) {
+  await connectDb();
+  try {
+    return await Booking.countDocuments({
+      event: eventId,
+      status: { $ne: "cancelled" },
+    });
+  } catch (error) {
+    return 0;
+  }
+}
+
 function formatEventDate(date: any): string {
   if (!date) return "Date TBA";
 
@@ -35,43 +54,39 @@ function formatEventDate(date: any): string {
   }
 }
 
-export default function EventDetailsPage() {
-  const { id } = useParams() as { id: string };
-  const searchParams = useSearchParams();
-  const bookedParam = searchParams.get("booked");
-  const cancelledParam = searchParams.get("cancelled");
+import { getCurrentUser } from "@/lib/serverAuth";
 
-  const { data, isLoading, error } = useGetEventByIdQuery(id);
-  const event = data?.event;
+export default async function EventDetailsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+  searchParams:
+  | Promise<{ booked?: string; cancelled?: string }>
+  | { booked?: string; cancelled?: string };
+}) {
+  const resolvedParams = await Promise.resolve(params);
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const event = await getEvent(resolvedParams.id);
+  const currentUser = await getCurrentUser();
 
-  const { user } = useAppSelector((state) => state.auth);
-  // We need to know if the user acts has a booking.
-
-  const hasUserBooked = user?.bookedEvents?.includes(id);
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-gradient-to-br from-indigo-100/70 via-purple-100/80 via-blue-100/90 to-cyan-100/60 relative overflow-hidden flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </main>
-    );
+  if (!event) {
+    notFound();
   }
 
-  if (!event || error) {
-    if (error && "status" in error && error.status === 404) notFound();
-    return (
-      <div className="p-8 text-center text-red-500">
-        Error loading event.{" "}
-        <button onClick={() => window.location.reload()} className="underline">
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  const bookedCount = (event as any).bookedCount || 0; // Fallback until I fix the route
+  const bookedCount = await getBookedCount(resolvedParams.id);
   const remainingSeats = event.capacity ? event.capacity - bookedCount : null;
   const isFull = event.capacity ? bookedCount >= event.capacity : false;
+
+  let userBooking = null;
+  if (currentUser) {
+    await connectDb();
+    userBooking = await Booking.findOne({
+      user: currentUser.userId,
+      event: resolvedParams.id,
+      status: { $ne: "cancelled" },
+    }).lean();
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-100/70 via-purple-100/80 via-blue-100/90 to-cyan-100/60 relative overflow-hidden">
@@ -108,10 +123,10 @@ export default function EventDetailsPage() {
             </div>
           )}
           {event.coverImageUrl && (
-            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-800/70 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-800/70 to-transparent pointer-events-none"></div>
           )}
-          <div className="absolute inset-0 flex items-end p-8 sm:p-12">
-            <div className="mx-auto w-full max-w-5xl">
+          <div className="absolute inset-0 flex items-end p-8 sm:p-12 pointer-events-none">
+            <div className="mx-auto w-full max-w-5xl pointer-events-auto">
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg">
                 {event.title}
               </h1>
@@ -164,7 +179,8 @@ export default function EventDetailsPage() {
 
       <AnimatedContent>
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-          {bookedParam === "true" && (
+          {/* Success Message */}
+          {resolvedSearchParams?.booked === "true" && (
             <AnimatedSuccessMessage>
               <div className="mb-8 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg">
                 <div className="flex items-center gap-3">
@@ -194,7 +210,8 @@ export default function EventDetailsPage() {
             </AnimatedSuccessMessage>
           )}
 
-          {cancelledParam === "true" && (
+          {/* Cancelled Message */}
+          {resolvedSearchParams?.cancelled === "true" && (
             <AnimatedSuccessMessage>
               <div className="mb-8 rounded-2xl bg-gradient-to-r from-red-500 to-pink-500 p-6 text-white shadow-lg">
                 <div className="flex items-center gap-3">
@@ -225,7 +242,9 @@ export default function EventDetailsPage() {
           )}
 
           <div className="grid gap-12 lg:grid-cols-3">
+            {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
+              {/* Description */}
               <AnimatedCard delay={0.4}>
                 <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-lg">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
@@ -244,11 +263,12 @@ export default function EventDetailsPage() {
               </AnimatedCard>
             </div>
 
+            {/* Booking Sidebar */}
             <div className="lg:col-span-1">
               <AnimatedCard delay={0.6}>
                 <div className="sticky top-24 rounded-3xl border border-purple-100 bg-white p-6 shadow-xl">
                   <h3 className="text-xl font-bold text-slate-900 mb-6">
-                    {hasUserBooked ? "Your Booking" : "Book Your Spot"}
+                    {userBooking ? "Your Booking" : "Book Your Spot"}
                   </h3>
 
                   <div className="space-y-4 mb-6">
@@ -265,9 +285,8 @@ export default function EventDetailsPage() {
                         Bookings
                       </span>
                       <span
-                        className={`text-lg font-bold ${
-                          isFull ? "text-red-600" : "text-slate-900"
-                        }`}
+                        className={`text-lg font-bold ${isFull ? "text-red-600" : "text-slate-900"
+                          }`}
                       >
                         {event.capacity != null
                           ? `${bookedCount} / ${event.capacity}`
@@ -276,7 +295,7 @@ export default function EventDetailsPage() {
                     </div>
                   </div>
 
-                  {isFull && !hasUserBooked ? (
+                  {isFull && !userBooking ? (
                     <div className="rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 p-4 text-center">
                       <div className="flex items-center justify-center gap-2 text-red-700 font-semibold">
                         <svg
@@ -297,11 +316,10 @@ export default function EventDetailsPage() {
                     </div>
                   ) : (
                     <BookingForm
-                      // @ts-ignore
-                      eventId={id}
+                      eventId={resolvedParams.id}
                       initialBooking={
-                        hasUserBooked
-                          ? { status: "confirmed", user: user?._id }
+                        userBooking
+                          ? JSON.parse(JSON.stringify(userBooking))
                           : null
                       }
                     />
