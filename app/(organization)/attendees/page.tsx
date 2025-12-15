@@ -5,40 +5,27 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/serverAuth";
 
-async function getOrganizerId() {
-  // TODO: replace with session user id
-  return "user_organizer_1";
-}
-
-async function getOrganizerEvents(organizerId: string) {
-  await connectDb();
-  try {
-    const events = await Event.find({ organizerId })
-      .sort({ startsAt: -1, createdAt: -1 })
-      .lean();
-    return events.map((e) => ({
-      id: e._id.toString(),
-      title: e.title || "Untitled Event",
-      startsAt: e.startsAt,
-    }));
-  } catch (error) {
-    return [];
-  }
-}
-
 async function getEventAttendees(eventId: string) {
   await connectDb();
   try {
-    const attendees = await Booking.find({ eventId })
+    const attendees = await Booking.find({ 
+      event: eventId,
+      status: { $ne: "cancelled" }
+    })
+      .populate("user", "name email")
       .sort({ createdAt: -1 })
       .lean();
     return attendees.map((a: any) => {
+       // Use populated user data if available, otherwise use booking data
+       const userName = a.user?.name || a.name || "Unknown";
+       const userEmail = a.user?.email || a.email || "N/A";
+       
       return {
         id: a._id.toString(),
-        name: a.name || "Unknown",
-        email: a.email || "N/A",
+        name: userName,
+        email: userEmail,
         phone: a.phone || "N/A",
-        bookedAt: a.createdAt,
+        bookedAt: a.createdAt || a.bookingDate,
       };
     });
   } catch (error) {
@@ -52,9 +39,7 @@ export default async function AttendeesPage({
   searchParams: Promise<{ eventId?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const organizerId = await getOrganizerId();
-  const events = await getOrganizerEvents(organizerId);
-  const selectedEventId = resolvedSearchParams.eventId || events[0]?.id;
+  const eventId = resolvedSearchParams.eventId;
 
   let selectedEvent = null;
   let attendees: Array<{
@@ -65,14 +50,14 @@ export default async function AttendeesPage({
     bookedAt: any;
   }> = [];
 
-  if (selectedEventId) {
-    const event = await Event.findById(selectedEventId).lean();
+  if (eventId) {
+    const event = await Event.findById(eventId).lean();
     if (event) {
       selectedEvent = {
         id: event._id.toString(),
         title: event.title || "Untitled Event",
       };
-      attendees = await getEventAttendees(selectedEventId);
+      attendees = await getEventAttendees(eventId);
     }
   }
 
@@ -90,44 +75,8 @@ export default async function AttendeesPage({
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-4">
-          {/* Events Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="rounded-3xl border border-purple-100 bg-white p-6 shadow-lg">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">
-                Your Events
-              </h2>
-              {events.length === 0 ? (
-                <p className="text-sm text-slate-500">No events found</p>
-              ) : (
-                <div className="space-y-2">
-                  {events.map((event) => (
-                    <Link
-                      key={event.id}
-                      href={`/attendees?eventId=${event.id}`}
-                      className={`block rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                        selectedEventId === event.id
-                          ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
-                          : "bg-purple-50 text-slate-700 hover:bg-purple-100"
-                      }`}
-                    >
-                      <div className="font-semibold line-clamp-1">
-                        {event.title}
-                      </div>
-                      {event.startsAt && (
-                        <div className="text-xs mt-1 opacity-80">
-                          {new Date(event.startsAt).toLocaleDateString()}
-                        </div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Attendees List */}
-          <div className="lg:col-span-3">
+        {/* Attendees List */}
+        <div>
             {selectedEvent ? (
               <div className="rounded-3xl border border-purple-100 bg-white shadow-xl">
                 <div className="border-b border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50 px-6 py-4">
@@ -235,14 +184,19 @@ export default async function AttendeesPage({
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  No events found
+                  No event selected
                 </h3>
                 <p className="text-sm text-slate-500 mb-6">
-                  You haven't created any events yet.
+                  Please select an event to view attendees.
                 </p>
+                <Link
+                  href="/myEvents"
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg"
+                >
+                  Go to My Events
+                </Link>
               </div>
             )}
-          </div>
         </div>
       </div>
     </main>

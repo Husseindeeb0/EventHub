@@ -56,16 +56,6 @@ export async function DELETE(
         );
       }
 
-      // Update event: increment available seats and remove user from attendees
-      await Event.findByIdAndUpdate(
-        booking.event,
-        {
-          $inc: { availableSeats: booking.seats },
-          $pull: { attendees: userId },
-        },
-        { session }
-      );
-
       // Update user: remove event from bookedEvents
       await User.findByIdAndUpdate(
         userId,

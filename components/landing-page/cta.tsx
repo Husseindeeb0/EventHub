@@ -2,8 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useAppSelector } from "@/redux/store";
 
 export function CTA() {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  
   return (
     <section className="pt-40 pb-0 relative overflow-hidden">
       {/* Full Gradient Background */}
@@ -35,12 +39,14 @@ export function CTA() {
           </p>
 
           <div className="pt-8 flex flex-col sm:flex-row gap-6 justify-center">
-            <Button
-              size="lg"
-              className="h-20 px-12 text-2xl rounded-full bg-white text-indigo-900 hover:bg-indigo-50 shadow-2xl shadow-indigo-900/50 hover:scale-105 transition-all duration-300 font-bold"
-            >
-              Get Started Now
-            </Button>
+            <Link href={isAuthenticated ? "/home" : "/signup"}>
+              <Button
+                size="lg"
+                className="h-20 px-12 text-2xl rounded-full bg-white text-indigo-900 hover:bg-indigo-50 shadow-2xl shadow-indigo-900/50 hover:scale-105 transition-all duration-300 font-bold"
+              >
+                Get Started Now
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>

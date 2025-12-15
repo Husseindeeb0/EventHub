@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useAppSelector } from "@/redux/store";
 
 export function Hero() {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-10 pb-20 bg-white">
       {/* Background Elements */}
@@ -47,13 +50,15 @@ export function Hero() {
                 Explore Events
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-16 px-10 text-lg rounded-full border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all"
-            >
-              Become Organizer
-            </Button>
+            <Link href={isAuthenticated ? "/home" : "/signup"}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-16 px-10 text-lg rounded-full border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all"
+              >
+                Become Organizer
+              </Button>
+            </Link>
           </div>
         </motion.div>
 
