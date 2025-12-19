@@ -8,6 +8,7 @@ export interface IEvent extends Document {
   coverImageUrl?: string;
   coverImageFileId?: string;
   capacity?: number;
+  availableSeats?: number;
   description?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -36,6 +37,9 @@ const EventSchema = new Schema<IEvent>(
       type: String,
     },
     capacity: {
+      type: Number,
+    },
+    availableSeats: {
       type: Number,
     },
     description: {

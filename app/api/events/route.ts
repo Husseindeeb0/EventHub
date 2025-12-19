@@ -37,11 +37,11 @@ export async function GET(req: Request) {
     // Get booking counts for all events from Booking collection
     // Count only confirmed bookings (exclude cancelled ones)
     const counts: Array<{ _id: any; count: number }> = await Booking.aggregate([
-      { 
-        $match: { 
+      {
+        $match: {
           event: { $in: ids },
-          status: { $ne: "cancelled" }
-        } 
+          status: { $ne: "cancelled" },
+        },
       },
       { $group: { _id: "$event", count: { $sum: 1 } } },
     ]);
@@ -120,6 +120,7 @@ export async function POST(req: Request) {
       startsAt: new Date(startsAt),
       organizerId,
       capacity,
+      availableSeats: capacity, // Initialize availableSeats with capacity
       description: description || undefined,
       coverImageUrl: coverImageUrl || undefined,
     });
