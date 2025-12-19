@@ -110,10 +110,19 @@ export const Navbar = () => {
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="p-2 border-2 border-white/30 hover:border-white rounded-full transition duration-150 ease-in-out"
+                  className="relative p-0 border-2 border-white/30 hover:border-white rounded-full transition duration-150 ease-in-out overflow-hidden h-11 w-11 flex items-center justify-center"
                   title="Profile"
                 >
-                  <User className="h-6 w-6 text-white" />
+                  {user?.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.imageUrl}
+                      alt={user.name || "User"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-6 w-6 text-white" />
+                  )}
                 </button>
 
                 {/* Profile Dropdown Menu */}

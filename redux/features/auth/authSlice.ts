@@ -88,7 +88,27 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
-      });
+      })
+      // Update Profile
+      .addMatcher(authApi.endpoints.updateProfile.matchPending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addMatcher(
+        authApi.endpoints.updateProfile.matchFulfilled,
+        (state, { payload }) => {
+          state.loading = false;
+          state.user = payload.user || state.user;
+        }
+      )
+      .addMatcher(
+        authApi.endpoints.updateProfile.matchRejected,
+        (state, { payload, error }) => {
+          state.loading = false;
+          state.error =
+            (payload as any)?.message || error.message || "Update profile failed";
+        }
+      );
   },
 });
 

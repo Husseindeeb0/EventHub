@@ -5,13 +5,15 @@ import { IKUpload, ImageKitProvider } from "imagekitio-next";
 import { Loader2, Image as ImageIcon } from "lucide-react";
 
 interface ImageKitUploadProps {
-    onSuccess: (url: string) => void;
+    onSuccess: (res: { url: string; fileId: string }) => void;
     defaultImage?: string;
+    aspectRatio?: "aspect-video" | "aspect-square";
 }
 
 export default function ImageKitUpload({
     onSuccess,
     defaultImage,
+    aspectRatio = "aspect-video",
 }: ImageKitUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [preview, setPreview] = useState<string | null>(defaultImage || null);
@@ -50,7 +52,7 @@ export default function ImageKitUpload({
         console.log("Upload Success:", res);
         setUploading(false);
         setPreview(res.url);
-        onSuccess(res.url);
+        onSuccess({ url: res.url, fileId: res.fileId });
         setError(null);
     };
 
@@ -112,7 +114,7 @@ export default function ImageKitUpload({
                     )}
 
                     {preview && !uploading && (
-                        <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-md">
+                        <div className={`relative ${aspectRatio} w-full overflow-hidden rounded-lg shadow-md`}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={preview}

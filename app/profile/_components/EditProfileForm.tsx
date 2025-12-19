@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { useUpdateProfileMutation } from "@/redux/features/auth/authApi";
 import { X, Loader2, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ImageKitUpload from "@/components/ImageKitUpload";
 
 interface EditProfileFormProps {
   user: {
     name: string;
     email: string;
     description?: string;
+    imageUrl?: string;
+    imageFileId?: string;
   };
   onClose: () => void;
 }
@@ -22,6 +25,8 @@ export default function EditProfileForm({
     name: user.name,
     email: user.email,
     description: user.description || "",
+    imageUrl: user.imageUrl || "",
+    imageFileId: user.imageFileId || "",
   });
 
   const [updateProfile, { isLoading, error }] = useUpdateProfileMutation();
@@ -92,6 +97,28 @@ export default function EditProfileForm({
               required
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Profile Picture
+            </label>
+            <div className="w-32 mx-auto space-y-2">
+              <ImageKitUpload
+                onSuccess={(res) => setFormData((prev) => ({ ...prev, imageUrl: res.url, imageFileId: res.fileId }))}
+                defaultImage={formData.imageUrl}
+                aspectRatio="aspect-square"
+              />
+              {formData.imageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setFormData((prev) => ({ ...prev, imageUrl: "", imageFileId: "" }))}
+                  className="text-xs text-red-500 hover:text-red-600 font-medium w-full text-center hover:underline"
+                >
+                  Remove Picture
+                </button>
+              )}
+            </div>
           </div>
 
           <div>

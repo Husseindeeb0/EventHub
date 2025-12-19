@@ -69,11 +69,33 @@ export default function LoginPage() {
       if (result.success) {
         router.push("/home");
       }
-    } catch (err) {
-      // Error is handled by Redux state
-      console.error("Login failed:", err);
+    } catch (err: any) {
+      // Error is handled by Redux state, but also checking for specific verification error
+      // The Redux mutation hook handles 'error' state, but we might need to inspect the payload here if possible
+      // Or rely on the 'error' object returned by useLoginMutation
+      console.error("Login component caught error:", err);
     }
   };
+
+  const handleResendVerification = async () => {
+    try {
+      await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      alert("Verification email resent! Please check your inbox.");
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+    } catch (error) {
+      alert("Failed to resend verification email.");
+    }
+  };
+
+  // Need to parse the error object to see if it is a 403 verification error
+  const isVerificationError =
+    loginError &&
+    "status" in loginError &&
+    (loginError as any).status === 403;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -108,9 +130,20 @@ export default function LoginPage() {
               animate={{ opacity: 1, x: 0 }}
               className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
             >
-              {typeof loginError === "string"
-                ? loginError
-                : (loginError as any).data?.message || "Login failed"}
+              <p>
+                {typeof loginError === "string"
+                  ? loginError
+                  : (loginError as any).data?.message || "Login failed"}
+              </p>
+              {isVerificationError && (
+                <button
+                  onClick={handleResendVerification}
+                  type="button"
+                  className="mt-2 text-sm font-semibold underline hover:text-red-800"
+                >
+                  Resend Verification Email
+                </button>
+              )}
             </motion.div>
           )}
 
@@ -128,11 +161,10 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
-                    validationErrors.email
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${validationErrors.email
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
                   placeholder="john@example.com"
                 />
               </div>
@@ -155,13 +187,20 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
-                    validationErrors.password
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${validationErrors.password
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
                   placeholder="••••••••"
                 />
+              </div>
+              <div className="flex justify-end mt-1">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
               </div>
               {validationErrors.password && (
                 <p className="mt-1 text-sm text-red-600">

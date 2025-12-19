@@ -38,7 +38,7 @@ export const authApi = api.injectEndpoints({
     }),
     updateProfile: builder.mutation<
       AuthResponse,
-      { name?: string; email?: string; description?: string }
+      { name?: string; email?: string; description?: string; imageUrl?: string; imageFileId?: string; coverImageUrl?: string; coverImageFileId?: string; }
     >({
       query: (data) => ({
         url: "/auth/me",

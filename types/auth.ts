@@ -12,6 +12,10 @@ export interface User {
   email: string;
   role: "user" | "organizer";
   description?: string;
+  imageUrl?: string;
+  imageFileId?: string;
+  coverImageUrl?: string;
+  coverImageFileId?: string;
   bookedEvents: string[];
   attendedEvents: string[];
   createdEvents: string[];
@@ -29,6 +33,7 @@ export interface AuthState {
 export interface LoginCredentials {
   email: string;
   password: string;
+  confirmPassword?: string;
 }
 
 export interface SignupData {

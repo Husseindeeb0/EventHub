@@ -29,7 +29,9 @@ export default async function EditEventPage({
   }
 
   // Format date for datetime-local input (YYYY-MM-DDThh:mm)
-  const defaultDate = new Date(event.startsAt).toISOString().slice(0, 16);
+  const defaultDate = event.startsAt
+    ? new Date(event.startsAt).toISOString().slice(0, 16)
+    : "";
 
   return (
     <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-gradient-to-br from-violet-100 via-purple-100 via-indigo-100 to-blue-100 p-4 sm:p-8 relative overflow-hidden">

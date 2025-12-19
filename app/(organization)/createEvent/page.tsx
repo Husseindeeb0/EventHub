@@ -35,6 +35,7 @@ function SubmitButton() {
 
 export default function CreateEventPage() {
     const [coverImageUrl, setCoverImageUrl] = useState("");
+    const [coverImageFileId, setCoverImageFileId] = useState("");
 
     return (
         <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 via-blue-100 to-cyan-100 p-4 sm:p-8 relative overflow-hidden">
@@ -167,8 +168,12 @@ export default function CreateEventPage() {
                                 Cover Image <span className="text-slate-400 font-normal">(Optional)</span>
                             </label>
 
-                            <ImageKitUpload onSuccess={(url) => setCoverImageUrl(url)} />
+                            <ImageKitUpload onSuccess={(res) => {
+                                setCoverImageUrl(res.url);
+                                setCoverImageFileId(res.fileId);
+                            }} />
                             <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
+                            <input type="hidden" name="coverImageFileId" value={coverImageFileId} />
 
                             <p className="mt-2 text-xs text-slate-500">
                                 Upload a cover image for your event. If left empty, a clean gradient background will be displayed.

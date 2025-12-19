@@ -24,7 +24,10 @@ export default function MyEventsPage() {
 
   const { data, isLoading } = useGetEventsQuery(
     user?._id ? { organizerId: user._id } : { organizerId: "skip" },
-    { skip: !user?._id || user.role !== "organizer" }
+    {
+      skip: !user?._id || user.role !== "organizer",
+      refetchOnMountOrArgChange: true
+    }
   );
 
   const events = data?.events || [];

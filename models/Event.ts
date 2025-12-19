@@ -6,7 +6,9 @@ export interface IEvent extends Document {
   location?: string;
   startsAt?: Date;
   coverImageUrl?: string;
+  coverImageFileId?: string;
   capacity?: number;
+  availableSeats?: number;
   description?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -31,7 +33,13 @@ const EventSchema = new Schema<IEvent>(
     coverImageUrl: {
       type: String,
     },
+    coverImageFileId: {
+      type: String,
+    },
     capacity: {
+      type: Number,
+    },
+    availableSeats: {
       type: Number,
     },
     description: {
@@ -43,6 +51,10 @@ const EventSchema = new Schema<IEvent>(
   }
 );
 
-const Event = models.Event || model<IEvent>("Event", EventSchema);
+if (models.Event) {
+  delete models.Event;
+}
+
+const Event = model<IEvent>("Event", EventSchema);
 
 export default Event;

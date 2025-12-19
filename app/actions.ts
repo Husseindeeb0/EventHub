@@ -1,11 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
 import { requireOrganizer, requireAuth } from "@/lib/serverAuth";
+import imagekit from "@/lib/imagekit";
 
 export async function createEventAction(formData: FormData) {
   // Require organizer authentication
@@ -17,6 +19,7 @@ export async function createEventAction(formData: FormData) {
   const capacityStr = formData.get("capacity") as string;
   const description = formData.get("description") as string;
   const coverImageUrl = formData.get("coverImageUrl") as string;
+  const coverImageFileId = formData.get("coverImageFileId") as string;
 
   if (!title || !location || !startsAt) {
     throw new Error("Missing required fields");
@@ -41,6 +44,11 @@ export async function createEventAction(formData: FormData) {
       ? coverImageUrl.trim()
       : undefined;
 
+  const imageFileId =
+    coverImageFileId && coverImageFileId.trim() !== ""
+      ? coverImageFileId.trim()
+      : undefined;
+
   const newEvent = await Event.create({
     title,
     location,
@@ -49,6 +57,7 @@ export async function createEventAction(formData: FormData) {
     capacity: capacity, // undefined means unlimited
     description: description || undefined,
     coverImageUrl: imageUrl, // undefined means no image
+    coverImageFileId: imageFileId,
   });
 
   // Add event to user's createdEvents array
@@ -56,61 +65,98 @@ export async function createEventAction(formData: FormData) {
     $push: { createdEvents: newEvent._id },
   });
 
+  revalidatePath("/myEvents");
   redirect("/myEvents");
 }
 
 export async function updateEventAction(formData: FormData) {
-  // Require organizer authentication
-  const currentUser = await requireOrganizer();
+  console.log("updateEventAction started");
+  try {
+    // Require organizer authentication
+    const currentUser = await requireOrganizer();
+    console.log("User authorized:", currentUser.userId);
 
-  const id = formData.get("eventId") as string;
-  const title = formData.get("title") as string;
-  const location = formData.get("location") as string;
-  const startsAt = formData.get("startsAt") as string;
-  const capacityStr = formData.get("capacity") as string;
-  const description = formData.get("description") as string;
-  const coverImageUrl = formData.get("coverImageUrl") as string;
+    const id = formData.get("eventId") as string;
+    const title = formData.get("title") as string;
+    const location = formData.get("location") as string;
+    const startsAt = formData.get("startsAt") as string;
+    const capacityStr = formData.get("capacity") as string;
+    const description = formData.get("description") as string;
+    const coverImageUrl = formData.get("coverImageUrl") as string;
+    const coverImageFileId = formData.get("coverImageFileId") as string;
 
-  if (!id || !title || !location || !startsAt) {
-    throw new Error("Missing required fields");
+    console.log("Form data parsed:", { id, title, location });
+
+    if (!id || !title || !location || !startsAt) {
+      throw new Error("Missing required fields");
+    }
+
+    await connectDb();
+    console.log("DB connected");
+
+    // Verify the user owns this event
+    const event = await Event.findById(id);
+    if (!event) {
+      throw new Error("Event not found");
+    }
+    if (event.organizerId !== currentUser.userId) {
+      throw new Error("You don't have permission to edit this event");
+    }
+    console.log("Event found and owned");
+
+    // Parse capacity - if provided and valid, convert to number, otherwise undefined (unlimited)
+    const capacity =
+      capacityStr && capacityStr.trim() !== ""
+        ? parseInt(capacityStr, 10)
+        : undefined;
+
+    // Validate capacity if provided
+    if (capacity !== undefined && (isNaN(capacity) || capacity < 1)) {
+      throw new Error("Capacity must be a positive number");
+    }
+
+    // Validate and clean coverImageUrl - only set if it's a valid non-empty URL
+    const imageUrl =
+      coverImageUrl && coverImageUrl.trim() !== ""
+        ? coverImageUrl.trim()
+        : undefined;
+
+    const imageFileId =
+      coverImageFileId && coverImageFileId.trim() !== ""
+        ? coverImageFileId.trim()
+        : undefined;
+
+    console.log("Addressing image changes...", { oldUrl: event.coverImageUrl, newUrl: imageUrl });
+
+    // Handle Cover Image Deletion/Replacement
+    if (imageUrl !== event.coverImageUrl) {
+      console.log("Image URL changed");
+      if (event.coverImageFileId) {
+        console.log("Attempting to delete old image:", event.coverImageFileId);
+        try {
+          await imagekit.deleteFile(event.coverImageFileId);
+          console.log("Deleted old event cover:", event.coverImageFileId);
+        } catch (error) {
+          console.error("Failed to delete old event cover:", error);
+        }
+      }
+    }
+
+    await Event.findByIdAndUpdate(id, {
+      title,
+      location,
+      startsAt: new Date(startsAt),
+      capacity: capacity, // undefined means unlimited
+      description: description || undefined,
+      coverImageUrl: imageUrl, // undefined means no image
+      coverImageFileId: imageFileId,
+    });
+    console.log("Event updated in DB");
+
+  } catch (error) {
+    console.error("Error in updateEventAction:", error);
+    throw error;
   }
-
-  await connectDb();
-
-  // Verify the user owns this event
-  const event = await Event.findById(id);
-  if (!event) {
-    throw new Error("Event not found");
-  }
-  if (event.organizerId !== currentUser.userId) {
-    throw new Error("You don't have permission to edit this event");
-  }
-
-  // Parse capacity - if provided and valid, convert to number, otherwise undefined (unlimited)
-  const capacity =
-    capacityStr && capacityStr.trim() !== ""
-      ? parseInt(capacityStr, 10)
-      : undefined;
-
-  // Validate capacity if provided
-  if (capacity !== undefined && (isNaN(capacity) || capacity < 1)) {
-    throw new Error("Capacity must be a positive number");
-  }
-
-  // Validate and clean coverImageUrl - only set if it's a valid non-empty URL
-  const imageUrl =
-    coverImageUrl && coverImageUrl.trim() !== ""
-      ? coverImageUrl.trim()
-      : undefined;
-
-  await Event.findByIdAndUpdate(id, {
-    title,
-    location,
-    startsAt: new Date(startsAt),
-    capacity: capacity, // undefined means unlimited
-    description: description || undefined,
-    coverImageUrl: imageUrl, // undefined means no image
-  });
 
   redirect("/myEvents");
 }
@@ -136,6 +182,18 @@ export async function deleteEventAction(formData: FormData) {
     throw new Error("You don't have permission to delete this event");
   }
 
+
+
+  // Delete cover image if exists
+  if (event.coverImageFileId) {
+    try {
+      await imagekit.deleteFile(event.coverImageFileId);
+      console.log("Deleted event cover:", event.coverImageFileId);
+    } catch (error) {
+      console.error("Failed to delete event cover:", error);
+    }
+  }
+
   // Delete the event
   await Event.findByIdAndDelete(id);
 
@@ -147,6 +205,7 @@ export async function deleteEventAction(formData: FormData) {
     $pull: { createdEvents: id },
   });
 
+  revalidatePath("/myEvents");
   redirect("/myEvents");
 }
 

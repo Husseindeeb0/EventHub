@@ -37,6 +37,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!user.isVerified) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please verify your email address before logging in",
+          isVerified: false,
+        },
+        { status: 403 }
+      );
+    }
+
     const accessToken = generateAccessToken({
       userId: user._id.toString(),
       email: user.email,

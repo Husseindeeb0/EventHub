@@ -88,8 +88,8 @@ export default function SignupPage() {
       const result = await signup(formData).unwrap();
 
       if (result.success) {
-        // Redirect to home page on success (auto-login)
-        router.push("/home");
+        // Redirect to verification page
+        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       }
     } catch (err) {
       // Error is handled by Redux state
@@ -150,9 +150,8 @@ export default function SignupPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
-                    validationErrors.name ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.name ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="John Doe"
                 />
               </div>
@@ -175,11 +174,10 @@ export default function SignupPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
-                    validationErrors.email
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.email
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                   placeholder="john@example.com"
                 />
               </div>
@@ -202,11 +200,10 @@ export default function SignupPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
-                    validationErrors.password
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.password
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                   placeholder="••••••••"
                 />
               </div>
@@ -229,11 +226,10 @@ export default function SignupPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
-                    validationErrors.confirmPassword
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.confirmPassword
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                   placeholder="••••••••"
                 />
               </div>

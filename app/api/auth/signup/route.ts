@@ -7,6 +7,8 @@ import {
   generateRefreshToken,
   setTokenCookies,
 } from "@/lib/auth";
+import crypto from "crypto";
+import { sendEmail } from "@/lib/sendEmail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,13 +60,40 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await hashPassword(password);
 
+    // Generate 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     const newUser = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
       role: role || "user",
       description: description || "",
+      isVerified: false,
+      verificationToken: verificationCode,
+      verificationTokenExpire: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     });
+
+    const message = `
+      <h1>Email Verification</h1>
+      <p>Your verification code is:</p>
+      <h2 style="color: #4F46E5; letter-spacing: 5px;">${verificationCode}</h2>
+      <p>This code will expire in 24 hours.</p>
+    `;
+
+    try {
+      const result = await sendEmail({
+        to: newUser.email,
+        subject: "Email Verification",
+        html: message,
+      });
+      if (!result.success) {
+        console.error("Error sending verification email:", result.error);
+      }
+    } catch (emailError) {
+      console.error("Unexpected error sending verification email", emailError);
+    }
+
 
     // Generate tokens for auto-login
     const accessToken = generateAccessToken({
