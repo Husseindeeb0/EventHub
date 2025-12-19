@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
           event: eventId,
           status: { $ne: "cancelled" },
         }).session(session);
-        
+
         const availableSeats = event.capacity - bookedCount;
         if (availableSeats < seats) {
           await session.abortTransaction();
@@ -159,12 +159,16 @@ export async function GET(req: NextRequest) {
           eventId: booking.event._id,
           title: booking.event.title,
           location: booking.event.location,
-          startsAt: booking.event.startsAt,
-          coverImageUrl: booking.event.coverImageUrl,
+          startsAt: booking.event.startsAt
+            ? new Date(booking.event.startsAt).toISOString()
+            : null,
+          coverImageUrl: booking.event.coverImageUrl || "",
           capacity: booking.event.capacity,
-          description: booking.event.description,
+          description: booking.event.description || "",
           numberOfSeats: booking.seats,
-          bookedAt: booking.bookingDate,
+          bookedAt: booking.bookingDate
+            ? new Date(booking.bookingDate).toISOString()
+            : new Date().toISOString(),
         };
       })
       .filter(Boolean);

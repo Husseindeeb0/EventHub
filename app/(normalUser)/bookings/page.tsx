@@ -21,8 +21,10 @@ interface Booking {
 }
 
 // Helper function to check if an event is in the past
-const isPastEvent = (dateString: string) => {
+const isPastEvent = (dateString: string | null | undefined) => {
+  if (!dateString) return false;
   const eventDate = new Date(dateString);
+  if (isNaN(eventDate.getTime())) return false;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return eventDate < today;
@@ -41,27 +43,31 @@ const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
   } = booking;
   const isPast = isPastEvent(startsAt);
 
-  const formattedDate = new Date(startsAt).toLocaleDateString("en-US", {
-    weekday: "short",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const dateObj = startsAt ? new Date(startsAt) : null;
+  const isValidDate = dateObj && !isNaN(dateObj.getTime());
 
-  const formattedTime = new Date(startsAt).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const formattedDate = isValidDate
+    ? dateObj.toLocaleDateString("en-US", {
+        weekday: "short",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Date TBA";
+
+  const formattedTime = isValidDate
+    ? dateObj.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Time TBA";
 
   return (
     <Link href={`/home/${eventId}`}>
       <div
-        className={`flex flex-col md:flex-row bg-white rounded-xl shadow-lg transition duration-300 overflow-hidden cursor-pointer
-            ${
-              isPast
-                ? "opacity-60 grayscale"
-                : "hover:shadow-2xl hover:scale-[1.01]"
-            } border border-gray-100`}
+        className={
+          "flex flex-col md:flex-row bg-white rounded-xl shadow-lg transition duration-300 overflow-hidden cursor-pointer border border-gray-100"
+        }
       >
         {/* Event Poster Image */}
         <div className="w-full md:w-1/4 h-48 md:h-auto bg-gradient-to-br from-purple-100 via-blue-100 to-indigo-100 flex-shrink-0 relative">
@@ -239,7 +245,7 @@ const BookingPage = () => {
             Upcoming Bookings ({upcomingBookings.length})
           </h2>
           {upcomingBookings.length > 0 ? (
-            <div className="space-y-8">
+            <div className="flex flex-col gap-6">
               {upcomingBookings.map((booking) => (
                 <BookingCard key={booking._id} booking={booking} />
               ))}
@@ -272,7 +278,7 @@ const BookingPage = () => {
             Attended Events ({pastBookings.length})
           </h2>
           {pastBookings.length > 0 ? (
-            <div className="space-y-8">
+            <div className="flex flex-col gap-6">
               {pastBookings.map((booking) => (
                 <BookingCard key={booking._id} booking={booking} />
               ))}

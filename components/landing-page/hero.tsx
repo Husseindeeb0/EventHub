@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/store";
 
 export function Hero() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-10 pb-20 bg-white">
       {/* Background Elements */}
@@ -28,19 +28,16 @@ export function Hero() {
             <span className="flex h-2 w-2 rounded-full bg-indigo-600 mr-2 animate-pulse"></span>
             The Future of Event Management
           </div>
-
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tighter text-gray-900 leading-[1.1]">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-900 leading-[1.1]">
             Host Events <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600">
               Like a Pro
             </span>
           </h1>
-
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-[600px] font-light">
             The all-in-one platform to find your next experience or manage your
             own events with ease.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
             <Link href="/home">
               <Button
@@ -158,7 +155,7 @@ export function Hero() {
             <motion.div
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-12 top-24 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 max-w-[200px]"
+              className="absolute right-4 lg:-right-16 top-24 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 max-w-[160px] md:max-w-[200px] z-20"
             >
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
@@ -172,7 +169,6 @@ export function Hero() {
                 Your event "Tech Summit 2025" just reached capacity.
               </p>
             </motion.div>
-
             <motion.div
               animate={{ y: [0, 15, 0] }}
               transition={{
@@ -181,7 +177,7 @@ export function Hero() {
                 ease: "easeInOut",
                 delay: 1,
               }}
-              className="absolute -left-12 bottom-32 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 flex items-center gap-4"
+              className="absolute left-4 lg:-left-16 bottom-32 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 flex items-center gap-4 z-20"
             >
               <div className="flex -space-x-3">
                 <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
