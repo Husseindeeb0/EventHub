@@ -25,9 +25,24 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Learn Next.js](https://nextjs.org/learn)  - Fallback to initials if no photo is uploaded.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Real-Time Event Chat System
+A deeply integrated, feature-rich chat experience designed for seamless event coordination.
+
+- **Message Interactions**:
+  - **Replies (TikTok Style)**: Users can reply to specific messages with a quoted preview. Clicking the quote smoothly scrolls to and highlights the original message.
+  - **Likes**: Engage with messages using the heart reaction.
+  - **Delete**: Users can delete their own messages.
+- **Host Privileges (Crown Badge 👑)**:
+  - **Visual Distinction**: Event organizers are clearly marked with a "HOST" badge and crown icon.
+  - **Moderation**: Hosts have the power to **delete any message** in the chat to maintain order.
+  - **Pinned Messages (Sticky Header)**: Hosts can **pin important updates** to the top of the chat, ensuring they are always visible to attendees.
+- **Tech Stack**:
+  - **Optimistic UI**: Instant feedback on likes, deletes, and pins for a snappy experience.
+  - **Polling**: Lightweight real-time updates (every 5s) to keep everyone in sync.
+
+---You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 

@@ -10,6 +10,7 @@ import {
   AnimatedSuccessMessage,
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
+import EventChat from "@/components/EventChat";
 
 async function getEvent(id: string) {
   await connectDb();
@@ -261,6 +262,17 @@ export default async function EventDetailsPage({
                   )}
                 </div>
               </AnimatedCard>
+
+              {/* Event Chat */}
+              <AnimatedCard delay={0.5}>
+                <div className="mt-8">
+                  <EventChat
+                    eventId={event._id}
+                    organizerId={event.organizerId}
+                    currentUserId={currentUser?.userId}
+                  />
+                </div>
+              </AnimatedCard>
             </div>
 
             {/* Booking Sidebar */}
@@ -329,7 +341,7 @@ export default async function EventDetailsPage({
             </div>
           </div>
         </div>
-      </AnimatedContent>
-    </main>
+      </AnimatedContent >
+    </main >
   );
 }
