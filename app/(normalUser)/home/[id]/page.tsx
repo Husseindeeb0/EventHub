@@ -10,7 +10,7 @@ import {
   AnimatedSuccessMessage,
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
-import EventChat from "@/components/EventChat";
+import EventChat from "@/components/chat/EventChat";
 
 async function getEvent(id: string) {
   await connectDb();
