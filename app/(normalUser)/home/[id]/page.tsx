@@ -1,7 +1,9 @@
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import Booking from "@/models/Booking";
+import User from "@/models/User";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import BookingForm from "./BookingForm";
 import {
   AnimatedHero,
@@ -10,11 +12,8 @@ import {
   AnimatedSuccessMessage,
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
-<<<<<<< HEAD
-import EventChat from "@/components/EventChat";
-=======
 import EventChat from "@/components/chat/EventChat";
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
+import FollowButton from "@/components/FollowButton";
 
 async function getEvent(id: string) {
   await connectDb();
@@ -36,6 +35,23 @@ async function getBookedCount(eventId: string) {
     });
   } catch (error) {
     return 0;
+  }
+}
+
+async function getOrganizerDetails(organizerId: string) {
+  await connectDb();
+  try {
+    const organizer = await User.findById(organizerId)
+      .select("name email imageUrl followers")
+      .lean();
+    if (!organizer) return null;
+    return {
+      ...organizer,
+      _id: organizer._id.toString(),
+      followers: organizer.followers.map((id) => id.toString()),
+    };
+  } catch (error) {
+    return null;
   }
 }
 
@@ -67,34 +83,35 @@ export default async function EventDetailsPage({
 }: {
   params: Promise<{ id: string }> | { id: string };
   searchParams:
-<<<<<<< HEAD
   | Promise<{ booked?: string; cancelled?: string }>
   | { booked?: string; cancelled?: string };
-=======
-    | Promise<{ booked?: string; cancelled?: string }>
-    | { booked?: string; cancelled?: string };
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
 }) {
   const resolvedParams = await Promise.resolve(params);
   const resolvedSearchParams = await Promise.resolve(searchParams);
   const event = await getEvent(resolvedParams.id);
   const currentUser = await getCurrentUser();
 
+  if (event) {
+    console.log("DEBUG: Event found:", event.title, "OrganizerID:", event.organizerId);
+  } else {
+    console.log("DEBUG: Event NOT found for ID:", resolvedParams.id);
+  }
+
   if (!event) {
     notFound();
   }
 
+  const organizer = await getOrganizerDetails(event.organizerId);
+  console.log("DEBUG: Organizer fetch result:", organizer ? "Found: " + organizer.name : "NULL");
+
   const bookedCount = await getBookedCount(resolvedParams.id);
   const remainingSeats = event.capacity ? event.capacity - bookedCount : null;
   const isFull = event.capacity ? bookedCount >= event.capacity : false;
-<<<<<<< HEAD
-=======
   const isFinished = event.endsAt
     ? new Date(event.endsAt) < new Date()
     : event.startsAt
-    ? new Date(event.startsAt) < new Date()
-    : false;
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
+      ? new Date(event.startsAt) < new Date()
+      : false;
 
   let userBooking = null;
   if (currentUser) {
@@ -106,29 +123,22 @@ export default async function EventDetailsPage({
     }).lean();
   }
 
+  const isFollowing =
+    currentUser && organizer
+      ? organizer.followers.includes(currentUser.userId)
+      : false;
+
   return (
-<<<<<<< HEAD
-    <main className="min-h-screen bg-gradient-to-br from-indigo-100/70 via-purple-100/80 via-blue-100/90 to-cyan-100/60 relative overflow-hidden">
-=======
     <main
-      className={`min-h-screen relative overflow-hidden ${
-        isFinished
-          ? "grayscale-sm bg-slate-100"
-          : "bg-linear-to-br from-indigo-100/70 via-purple-100/80 to-blue-100/90"
-      }`}
+      className={`min-h-screen relative overflow-hidden ${isFinished
+        ? "grayscale-sm bg-slate-100"
+        : "bg-linear-to-br from-indigo-100/70 via-purple-100/80 to-blue-100/90"
+        }`}
     >
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none"></div>
       {/* Hero Section */}
       <AnimatedHero>
-<<<<<<< HEAD
-        <div className="relative h-[500px] w-full overflow-hidden bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200">
-          {event.coverImageUrl ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <EventImage src={event.coverImageUrl} alt={event.title} />
-=======
         <div className="relative h-[500px] w-full overflow-hidden bg-linear-to-br from-purple-200 via-blue-200 to-indigo-200">
           {event.coverImageUrl ? (
             <>
@@ -138,7 +148,6 @@ export default async function EventDetailsPage({
                 alt={event.title}
                 className={isFinished ? "opacity-40 grayscale" : ""}
               />
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -163,61 +172,11 @@ export default async function EventDetailsPage({
             </div>
           )}
           {event.coverImageUrl && (
-<<<<<<< HEAD
-            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-800/70 to-transparent pointer-events-none"></div>
-          )}
-          <div className="absolute inset-0 flex items-end p-8 sm:p-12 pointer-events-none">
-            <div className="mx-auto w-full max-w-5xl pointer-events-auto">
-              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg">
-                {event.title}
-              </h1>
-              <div className="mt-6 flex flex-wrap items-center gap-6 text-white/90">
-                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span className="font-medium">
-                    {formatEventDate(event.startsAt)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span className="font-medium">{event.location}</span>
-=======
             <div
-              className={`absolute inset-0 bg-linear-to-t pointer-events-none ${
-                isFinished
-                  ? "from-slate-900/90 via-slate-800/70"
-                  : "from-purple-900/90 via-purple-800/70"
-              } to-transparent`}
+              className={`absolute inset-0 bg-linear-to-t pointer-events-none ${isFinished
+                ? "from-slate-900/90 via-slate-800/70"
+                : "from-purple-900/90 via-purple-800/70"
+                } to-transparent`}
             ></div>
           )}
           <div className="absolute inset-0 flex items-end p-8 sm:p-12 pointer-events-none">
@@ -231,9 +190,8 @@ export default async function EventDetailsPage({
                   </div>
                 )}
                 <h1
-                  className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg ${
-                    isFinished ? "opacity-80" : ""
-                  }`}
+                  className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg ${isFinished ? "opacity-80" : ""
+                    }`}
                 >
                   {event.title}
                 </h1>
@@ -278,7 +236,6 @@ export default async function EventDetailsPage({
                     </svg>
                     <span className="font-medium">{event.location}</span>
                   </div>
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                 </div>
               </div>
             </div>
@@ -288,17 +245,9 @@ export default async function EventDetailsPage({
 
       <AnimatedContent>
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-<<<<<<< HEAD
-          {/* Success Message */}
-          {resolvedSearchParams?.booked === "true" && (
-            <AnimatedSuccessMessage>
-              <div className="mb-8 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg">
-=======
-          {/* Messages */}
           {resolvedSearchParams?.booked === "true" && (
             <AnimatedSuccessMessage>
               <div className="mb-8 rounded-2xl bg-linear-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg ring-4 ring-green-100">
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
                     <svg
@@ -316,15 +265,10 @@ export default async function EventDetailsPage({
                     </svg>
                   </div>
                   <div>
-<<<<<<< HEAD
-                    <h3 className="text-lg font-bold">Booking Confirmed!</h3>
-                    <p className="text-sm text-white/90">
-=======
                     <h3 className="text-lg font-bold uppercase tracking-tight">
                       Booking Confirmed!
                     </h3>
                     <p className="text-sm font-medium text-white/90">
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                       You've successfully booked a spot for this event.
                     </p>
                   </div>
@@ -333,16 +277,9 @@ export default async function EventDetailsPage({
             </AnimatedSuccessMessage>
           )}
 
-<<<<<<< HEAD
-          {/* Cancelled Message */}
-          {resolvedSearchParams?.cancelled === "true" && (
-            <AnimatedSuccessMessage>
-              <div className="mb-8 rounded-2xl bg-gradient-to-r from-red-500 to-pink-500 p-6 text-white shadow-lg">
-=======
           {resolvedSearchParams?.cancelled === "true" && (
             <AnimatedSuccessMessage>
               <div className="mb-8 rounded-2xl bg-linear-to-r from-rose-500 to-pink-500 p-6 text-white shadow-lg ring-4 ring-rose-100">
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
                     <svg
@@ -360,15 +297,10 @@ export default async function EventDetailsPage({
                     </svg>
                   </div>
                   <div>
-<<<<<<< HEAD
-                    <h3 className="text-lg font-bold">Booking Cancelled</h3>
-                    <p className="text-sm text-white/90">
-=======
                     <h3 className="text-lg font-bold uppercase tracking-tight">
                       Booking Cancelled
                     </h3>
                     <p className="text-sm font-medium text-white/90">
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                       Your booking has been successfully cancelled.
                     </p>
                   </div>
@@ -380,32 +312,49 @@ export default async function EventDetailsPage({
           <div className="grid gap-12 lg:grid-cols-3">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-<<<<<<< HEAD
-              {/* Description */}
-              <AnimatedCard delay={0.4}>
-                <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-lg">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
-                    About this event
-                  </h2>
-                  {event.description ? (
-                    <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line">
-                      {event.description}
-                    </p>
-                  ) : (
-                    <p className="text-lg leading-relaxed text-slate-500 italic">
-=======
               <AnimatedCard delay={0.4}>
                 <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
-                  <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight">
-                    About this event
-                  </h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+                      About this event
+                    </h2>
+                    {organizer && (
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-500">
+                            Organized by
+                          </p>
+                          <p className="font-semibold text-gray-900">
+                            {organizer.name}
+                          </p>
+                        </div>
+                        {currentUser &&
+                          currentUser.userId !== organizer._id && (
+                            <>
+                              <FollowButton
+                                organizerId={organizer._id}
+                                initialIsFollowing={isFollowing}
+                                initialFollowerCount={
+                                  organizer.followers.length
+                                }
+                              />
+                              <Link
+                                href={`/organizers/${organizer._id}`}
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors"
+                              >
+                                Show Profile
+                              </Link>
+                            </>
+                          )}
+                      </div>
+                    )}
+                  </div>
                   {event.description ? (
                     <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line font-medium">
                       {event.description}
                     </p>
                   ) : (
                     <p className="text-lg leading-relaxed text-slate-400 italic font-medium">
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                       No description provided for this event.
                     </p>
                   )}
@@ -427,50 +376,21 @@ export default async function EventDetailsPage({
             {/* Booking Sidebar */}
             <div className="lg:col-span-1">
               <AnimatedCard delay={0.6}>
-<<<<<<< HEAD
-                <div className="sticky top-24 rounded-3xl border border-purple-100 bg-white p-6 shadow-xl">
-                  <h3 className="text-xl font-bold text-slate-900 mb-6">
-                    {userBooking ? "Your Booking" : "Book Your Spot"}
-                  </h3>
-
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between items-center pb-3 border-b border-purple-100">
-                      <span className="text-sm font-medium text-slate-600">
-                        Price
-                      </span>
-                      <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                        Free
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-slate-600">
-                        Bookings
-                      </span>
-                      <span
-                        className={`text-lg font-bold ${isFull ? "text-red-600" : "text-slate-900"
-                          }`}
-                      >
-                        {event.capacity != null
-                          ? `${bookedCount} / ${event.capacity}`
-                          : `${bookedCount}`}
-=======
                 <div
-                  className={`sticky top-24 rounded-3xl border p-8 shadow-2xl transition-all ${
-                    isFinished
-                      ? "border-slate-200 bg-slate-50/50 shadow-slate-200/50"
-                      : "border-purple-100 bg-white shadow-purple-500/10 ring-1 ring-purple-50"
-                  }`}
+                  className={`sticky top-24 rounded-3xl border p-8 shadow-2xl transition-all ${isFinished
+                    ? "border-slate-200 bg-slate-50/50 shadow-slate-200/50"
+                    : "border-purple-100 bg-white shadow-purple-500/10 ring-1 ring-purple-50"
+                    }`}
                 >
                   <h3
-                    className={`text-xl font-black mb-8 uppercase tracking-widest ${
-                      isFinished ? "text-slate-400" : "text-slate-900"
-                    }`}
+                    className={`text-xl font-black mb-8 uppercase tracking-widest ${isFinished ? "text-slate-400" : "text-slate-900"
+                      }`}
                   >
                     {isFinished
                       ? "Event Status"
                       : userBooking
-                      ? "Your Booking"
-                      : "Reserve Spot"}
+                        ? "Your Booking"
+                        : "Reserve Spot"}
                   </h3>
 
                   <div className="space-y-6 mb-8">
@@ -479,9 +399,8 @@ export default async function EventDetailsPage({
                         Attendance
                       </span>
                       <span
-                        className={`text-[13px] font-black ${
-                          isFinished ? "text-slate-400" : "text-indigo-600"
-                        }`}
+                        className={`text-[13px] font-black ${isFinished ? "text-slate-400" : "text-indigo-600"
+                          }`}
                       >
                         {isFinished ? "Closed" : "Free Entry"}
                       </span>
@@ -491,13 +410,12 @@ export default async function EventDetailsPage({
                         Total Booked
                       </span>
                       <span
-                        className={`text-[13px] font-black ${
-                          isFull
-                            ? "text-rose-600"
-                            : isFinished
+                        className={`text-[13px] font-black ${isFull
+                          ? "text-rose-600"
+                          : isFinished
                             ? "text-slate-500"
                             : "text-slate-900"
-                        }`}
+                          }`}
                       >
                         {event.capacity != null ? (
                           <>
@@ -508,30 +426,10 @@ export default async function EventDetailsPage({
                         ) : (
                           bookedCount
                         )}
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                       </span>
                     </div>
                   </div>
 
-<<<<<<< HEAD
-                  {isFull && !userBooking ? (
-                    <div className="rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 p-4 text-center">
-                      <div className="flex items-center justify-center gap-2 text-red-700 font-semibold">
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                        <span>Event is Full</span>
-=======
                   {isFinished ? (
                     <div className="rounded-2xl bg-slate-100 border-2 border-slate-200 p-6 text-center">
                       <div className="flex flex-col items-center gap-3">
@@ -586,7 +484,6 @@ export default async function EventDetailsPage({
                             Join the waitlist or check later.
                           </p>
                         </div>
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
                       </div>
                     </div>
                   ) : (
@@ -604,12 +501,7 @@ export default async function EventDetailsPage({
             </div>
           </div>
         </div>
-<<<<<<< HEAD
-      </AnimatedContent >
-    </main >
-=======
       </AnimatedContent>
     </main>
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
   );
 }

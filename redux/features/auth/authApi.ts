@@ -65,6 +65,14 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    getFollowing: builder.query<{ success: boolean; following: any[] }, void>({
+      query: () => "/user/following",
+      providesTags: ["User"],
+    }),
+    getFollowers: builder.query<{ success: boolean; followers: any[] }, void>({
+      query: () => "/user/followers",
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -76,4 +84,6 @@ export const {
   useRefreshTokenMutation,
   useUpdateProfileMutation,
   useMigrateEventsMutation,
+  useGetFollowingQuery,
+  useGetFollowersQuery,
 } = authApi;
