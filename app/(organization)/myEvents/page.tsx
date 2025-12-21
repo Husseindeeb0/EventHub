@@ -11,6 +11,8 @@ import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import Loading from "@/components/ui/Loading";
+
 export default function MyEventsPage() {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
@@ -35,11 +37,7 @@ export default function MyEventsPage() {
   const events = data?.events || [];
 
   if (isLoading) {
-    return (
-      <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-blue-100 via-indigo-100/60 via-purple-100/70 to-pink-100/50 relative overflow-hidden flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </main>
-    );
+    return <Loading fullScreen message="Loading your events..." />;
   }
 
   return (

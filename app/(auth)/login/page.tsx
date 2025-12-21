@@ -67,6 +67,7 @@ export default function LoginPage() {
       const result = await login(formData).unwrap();
 
       if (result.success) {
+        localStorage.setItem("isLoggedIn", "true");
         router.push("/home");
       }
     } catch (err: any) {
@@ -93,9 +94,7 @@ export default function LoginPage() {
 
   // Need to parse the error object to see if it is a 403 verification error
   const isVerificationError =
-    loginError &&
-    "status" in loginError &&
-    (loginError as any).status === 403;
+    loginError && "status" in loginError && (loginError as any).status === 403;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -161,10 +160,11 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${validationErrors.email
-                    ? "border-red-500"
-                    : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+                    validationErrors.email
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
                   placeholder="john@example.com"
                 />
               </div>
@@ -187,10 +187,11 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${validationErrors.password
-                    ? "border-red-500"
-                    : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+                    validationErrors.password
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
                   placeholder="••••••••"
                 />
               </div>

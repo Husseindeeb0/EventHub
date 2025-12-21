@@ -44,16 +44,36 @@ export const Navbar = () => {
   const router = useRouter();
 
   // --- Redux State ---
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, loading } = useAppSelector(
+    (state) => state.auth
+  );
   const userRole: UserRole = user?.role || null;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Check if we expect the user to be logged in (from localStorage)
+  // This helps prevent "flash of unauthenticated content"
+  const isLoggedInLocally =
+    typeof window !== "undefined"
+      ? localStorage.getItem("isLoggedIn") === "true"
+      : false;
+
+  const showLoadingState = loading || (isLoggedInLocally && !isAuthenticated);
 
   const filteredLinks = navLinks.filter((link) => {
-    if (!isAuthenticated) return false; // Hide all links if not authenticated
-
-    if (link.minRole && userRole !== link.minRole) {
-      return false; // Hide if specific role required and user doesn't have it
+    // If not authenticated (or still loading), only show public links
+    if (!isAuthenticated) {
+      return !link.isProtected && !link.minRole;
     }
-    return true; // Show all links for authenticated users
+
+    // If authenticated, filter by role
+    if (link.minRole && userRole !== link.minRole) {
+      return false;
+    }
+    return true;
   });
 
   // Close profile menu when clicking outside
@@ -73,6 +93,7 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     await logout().unwrap();
+    localStorage.removeItem("isLoggedIn");
     setShowProfileMenu(false);
     router.push("/login");
   };
@@ -106,7 +127,12 @@ export const Navbar = () => {
 
           {/* Auth & Profile Icons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
+            {showLoadingState ? (
+              // Loading State (Spinner or empty w/ same height)
+              <div className="h-11 w-11 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
+            ) : isAuthenticated ? (
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -202,7 +228,11 @@ export const Navbar = () => {
             ))}
 
             {/* Mobile Auth Links */}
-            {!isAuthenticated ? (
+            {showLoadingState ? (
+              <div className="pt-2 border-t border-white/20 flex justify-center py-4">
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
+            ) : !isAuthenticated ? (
               <div className="pt-2 border-t border-white/20">
                 {authLinks.map((link) => (
                   <Link

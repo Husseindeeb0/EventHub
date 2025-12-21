@@ -3,12 +3,9 @@ import Image from "next/image";
 import { useAppSelector } from "@/redux/store";
 import { selectUser } from "@/redux/features/auth/authSlice";
 import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
-<<<<<<< HEAD
-import { Loader2 } from "lucide-react";
-=======
-import { Loader2, Clock, MapPin } from "lucide-react";
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
+import { Clock, MapPin } from "lucide-react";
 import Link from "next/link";
+import Loading from "@/components/ui/Loading";
 
 export default function ProfileAttendedEvents() {
   const user = useAppSelector(selectUser);
@@ -28,42 +25,8 @@ export default function ProfileAttendedEvents() {
       </h2>
 
       {isLoading ? (
-        <div className="flex justify-center p-8">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
+        <Loading className="py-8" />
       ) : events.length > 0 ? (
-<<<<<<< HEAD
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {events.map((event) => (
-            <Link
-              href={`/events/${event.id}`}
-              key={event.id}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 hover:shadow-md transition-shadow block"
-            >
-              <div className="relative h-32 w-full">
-                <Image
-                  src={event.coverImageUrl || "/event-cover.png"}
-                  alt={event.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="font-medium text-gray-900 truncate">
-                  {event.title}
-                </h3>
-                <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
-                  <span>
-                    {new Date(event.startsAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                  <span className="truncate max-w-[50%]">{event.location}</span>
-                </div>
-              </div>
-            </Link>
-=======
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {events.map((event, index) => (
             <div
@@ -114,7 +77,6 @@ export default function ProfileAttendedEvents() {
                 </div>
               </Link>
             </div>
->>>>>>> 505da9e28ff36a316e38d838b18b6f10897bb7fc
           ))}
         </div>
       ) : (

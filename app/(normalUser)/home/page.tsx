@@ -5,6 +5,7 @@ import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
 import EventCard from "@/components/events/EventCard";
 import EventSearchBar from "@/components/events/EventSearchBar";
 import { AnimatedCard } from "@/components/animations/PageAnimations";
+import Loading from "@/components/ui/Loading";
 
 export default function EventsPage() {
   const [filters, setFilters] = useState<{
@@ -32,20 +33,7 @@ export default function EventsPage() {
   };
 
   if (loading) {
-    return (
-      <main className="min-h-[calc(100vh-56px)] bg-slate-50 relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-[13px] font-medium text-slate-500">
-                Loading your experiences...
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
-    );
+    return <Loading fullScreen message="Loading your experiences..." />;
   }
 
   if (error) {

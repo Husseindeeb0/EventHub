@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
+import Loading from "@/components/ui/Loading";
 
 interface OrganizerRouteProps {
   children: React.ReactNode;
@@ -32,8 +33,8 @@ export default function OrganizerRoute({ children }: OrganizerRouteProps) {
   // Show loading state while checking authentication
   if (loading || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loading message="Verifying organizer access..." />
       </div>
     );
   }

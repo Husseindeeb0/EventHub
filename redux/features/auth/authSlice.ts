@@ -18,6 +18,9 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.loading = false;
     },
+    stopLoading: (state) => {
+      state.loading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -106,13 +109,15 @@ const authSlice = createSlice({
         (state, { payload, error }) => {
           state.loading = false;
           state.error =
-            (payload as any)?.message || error.message || "Update profile failed";
+            (payload as any)?.message ||
+            error.message ||
+            "Update profile failed";
         }
       );
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, stopLoading } = authSlice.actions;
 
 export const selectUser = (state: { auth: AuthState }) => state.auth.user;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
