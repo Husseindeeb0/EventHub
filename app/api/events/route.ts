@@ -16,10 +16,36 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const organizerId = searchParams.get("organizerId");
+    const search = searchParams.get("search");
+    const category = searchParams.get("category");
+    const status = searchParams.get("status"); // 'active', 'finished', or null (both)
 
     const query: any = {};
     if (organizerId) {
       query.organizerId = organizerId;
+    }
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    if (category && category !== "All") {
+      query.category = category;
+    }
+
+    const now = new Date();
+    if (status === "active") {
+      // Active means it hasn't ended yet
+      query.$or = [
+        { endsAt: { $gt: now } },
+        { endsAt: { $exists: false }, startsAt: { $gt: now } },
+      ];
+    } else if (status === "finished") {
+      // Finished means it has already ended
+      query.$or = [
+        { endsAt: { $lte: now } },
+        { endsAt: { $exists: false }, startsAt: { $lte: now } },
+      ];
     }
 
     const idsParam = searchParams.get("ids");
@@ -56,6 +82,7 @@ export async function GET(req: Request) {
       const title = e.title ?? e.name ?? "Untitled event";
       const location = e.location ?? e.venue ?? "TBA";
       const startsAt = toISO(e.startsAt ?? e.date ?? e.startDate);
+      const endsAt = e.endsAt ? toISO(e.endsAt) : undefined;
       const coverImageUrl = e.coverImageUrl ?? e.imageUrl ?? e.image;
       const capacity = e.capacity ?? e.maxSeats ?? undefined;
       const organizerId = e.organizerId;
@@ -68,6 +95,7 @@ export async function GET(req: Request) {
         title,
         location,
         startsAt,
+        endsAt,
         coverImageUrl,
         capacity,
         bookedCount,
@@ -92,7 +120,9 @@ export async function POST(req: Request) {
       title,
       location,
       startsAt,
+      endsAt,
       capacity,
+      category,
       description,
       coverImageUrl,
       organizerId,
@@ -118,9 +148,11 @@ export async function POST(req: Request) {
       title,
       location,
       startsAt: new Date(startsAt),
+      endsAt: endsAt ? new Date(endsAt) : undefined,
       organizerId,
       capacity,
       availableSeats: capacity, // Initialize availableSeats with capacity
+      category: category || "Other",
       description: description || undefined,
       coverImageUrl: coverImageUrl || undefined,
     });

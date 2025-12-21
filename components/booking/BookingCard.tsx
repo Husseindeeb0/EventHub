@@ -1,227 +1,255 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useAppSelector } from "@/redux/store";
-import { Calendar, MapPin, Users, Ticket, Clock, X } from "lucide-react";
+import { MapPin, Ticket, Clock } from "lucide-react";
+import Link from "next/link";
 
-// Define the shape of an event (minimal details for the booking page)
-interface BookedEvent {
-  id: string;
+// Define the shape of a booking
+export interface Booking {
+  _id: string;
+  eventId: string;
   title: string;
-  date: string; // e.g., '2025-12-10'
-  time: string; // e.g., '19:00'
   location: string;
-  seatsBooked: number;
-  capacity: number;
-  posterUrl: string; // Placeholder for the event image
+  startsAt: string; // ISO date string
+  endsAt?: string; // ISO date string
+  coverImageUrl?: string;
+  capacity?: number;
+  description?: string;
+  numberOfSeats: number;
+  bookedAt: string;
 }
 
-// Placeholder data - this will be replaced with Redux/Axios fetching
-const mockBookings: BookedEvent[] = [
-  {
-    id: "e1",
-    title: "Modern Art Exhibition: The Digital Age",
-    date: "2025-12-15",
-    time: "14:00",
-    location: "City Gallery, Hall 3",
-    seatsBooked: 2,
-    capacity: 100,
-    posterUrl: "/images/art-poster.jpg",
-  },
-  {
-    id: "e2",
-    title: "Future of Web Development Conference",
-    date: "2025-12-22",
-    time: "09:00",
-    location: "Tech Hub Convention Center",
-    seatsBooked: 1,
-    capacity: 500,
-    posterUrl: "/images/tech-poster.jpg",
-  },
-  {
-    id: "e3",
-    title: "Outdoor Music Festival: Rock Night",
-    date: "2025-11-28", // Past event
-    time: "20:00",
-    location: "Central Park Arena",
-    seatsBooked: 3,
-    capacity: 5000,
-    posterUrl: "/images/music-poster.jpg",
-  },
-];
-
-// Helper function to check if an event is in the past (based on the date string)
-const isPastEvent = (dateString: string) => {
-  const eventDate = new Date(dateString);
-  const today = new Date();
-  // Set time to start of day for accurate date comparison
-  today.setHours(0, 0, 0, 0);
-  return eventDate < today;
-};
-
 // Component for a single booked event card
-const BookingCard: React.FC<{ event: BookedEvent }> = ({ event }) => {
-  const { title, date, time, location, seatsBooked, capacity, posterUrl } =
-    event;
-  const isPast = isPastEvent(date);
+const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
+  const {
+    title,
+    location,
+    startsAt,
+    endsAt,
+    coverImageUrl,
+    numberOfSeats,
+    eventId,
+  } = booking;
 
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    weekday: "short",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const now = new Date();
+  const isFinished = endsAt
+    ? new Date(endsAt) < now
+    : startsAt
+    ? new Date(startsAt) < now
+    : false;
+
+  const dateObj = startsAt ? new Date(startsAt) : null;
+  const isValidDate = dateObj && !isNaN(dateObj.getTime());
+
+  const day = isValidDate ? dateObj.getDate() : "TBA";
+  const month = isValidDate
+    ? dateObj.toLocaleDateString("en-US", { month: "short" })
+    : "";
+  const time = isValidDate
+    ? dateObj.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Time TBA";
 
   return (
     <div
-      className={`flex flex-col md:flex-row bg-white rounded-xl shadow-lg transition duration-300 overflow-hidden 
-        ${
-          isPast
-            ? "opacity-60 grayscale"
-            : "hover:shadow-2xl hover:scale-[1.01]"
-        } border border-gray-100`}
+      className={`group relative flex flex-col md:flex-row overflow-hidden rounded-3xl border transition-all duration-500 ${
+        isFinished
+          ? "border-slate-100 bg-white"
+          : "border-indigo-100 bg-white hover:border-purple-200 hover:shadow-2xl hover:shadow-purple-500/10"
+      }`}
     >
-      {/* Event Poster Image Placeholder */}
-      <div className="w-full md:w-1/4 h-48 md:h-auto bg-gray-200 flex-shrink-0 relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${posterUrl})` }}
-        >
-          {isPast && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white text-xl font-bold p-2 bg-red-600/80 rounded-lg shadow-xl flex items-center">
-                <X className="w-6 h-6 mr-2" /> Attended
-              </span>
+      {/* Left: Image Section */}
+      <div className="relative w-full md:w-64 lg:w-80 h-48 md:h-auto overflow-hidden bg-indigo-50 shrink-0">
+        {coverImageUrl ? (
+          <div className="h-full w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={coverImageUrl}
+              alt={title}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-indigo-100 to-purple-100 uppercase">
+            <div className="text-center p-4">
+              <Ticket className="h-8 w-8 mx-auto text-indigo-400 mb-2 opacity-50" />
+              <p className="text-[10px] font-black tracking-widest text-indigo-400">
+                Event Hub
+              </p>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Status Badge */}
+        <div className="absolute top-4 left-4">
+          <span
+            className={`inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black tracking-wider uppercase shadow-sm border ${
+              isFinished
+                ? "bg-slate-500 border-slate-600 text-white"
+                : "bg-linear-to-r from-indigo-600 to-purple-600 border-indigo-400 text-white shadow-indigo-200"
+            }`}
+          >
+            {isFinished ? "Attended" : "Confirmed"}
+          </span>
         </div>
       </div>
 
-      {/* Event Details */}
-      <div className="p-6 flex-grow flex flex-col justify-between">
-        <div>
-          <h3
-            className={`text-2xl font-bold mb-2 ${
-              isPast ? "text-gray-600" : "text-indigo-800"
+      {/* Right: Content Section */}
+      <div className="flex flex-1 flex-col p-6 lg:p-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div className="flex gap-4 items-center">
+            {/* Date Box */}
+            <div
+              className={`flex flex-col items-center justify-center w-12 h-14 rounded-2xl border ${
+                isFinished
+                  ? "border-slate-100 bg-slate-50"
+                  : "border-indigo-100 bg-indigo-50/50"
+              }`}
+            >
+              <span
+                className={`text-xs font-black uppercase ${
+                  isFinished ? "text-slate-400" : "text-indigo-600"
+                }`}
+              >
+                {month}
+              </span>
+              <span
+                className={`text-xl font-black ${
+                  isFinished ? "text-slate-500" : "text-slate-900"
+                }`}
+              >
+                {day}
+              </span>
+            </div>
+
+            <div>
+              <h3
+                className={`text-xl font-black transition-colors duration-300 line-clamp-1 ${
+                  isFinished
+                    ? "text-slate-500"
+                    : "text-slate-900 group-hover:text-indigo-600"
+                }`}
+              >
+                {title}
+              </h3>
+              <div
+                className={`flex items-center gap-1.5 text-xs font-bold mt-1 ${
+                  isFinished ? "text-slate-400" : "text-slate-500"
+                }`}
+              >
+                <Clock
+                  className={`w-3.5 h-3.5 ${
+                    isFinished ? "text-slate-300" : "text-indigo-500"
+                  }`}
+                />
+                {time}
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl border ${
+              isFinished
+                ? "border-slate-100 bg-slate-50 text-slate-400"
+                : "border-emerald-100 bg-emerald-50 text-emerald-700 shadow-sm shadow-emerald-500/10"
             }`}
           >
-            {title}
-          </h3>
-
-          <div className="space-y-2 text-sm text-gray-600 mb-4">
-            <p className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2 text-indigo-500" />
-              <span className="font-medium text-gray-800">{formattedDate}</span>
-            </p>
-            <p className="flex items-center">
-              <Clock className="w-4 h-4 mr-2 text-indigo-500" />
-              <span className="font-medium text-gray-800">{time}</span>
-            </p>
-            <p className="flex items-start">
-              <MapPin className="w-4 h-4 mt-0.5 mr-2 text-indigo-500 flex-shrink-0" />
-              <span>{location}</span>
-            </p>
+            <Ticket
+              className={`w-4 h-4 ${
+                isFinished ? "text-slate-300" : "text-emerald-500"
+              }`}
+            />
+            <span className="text-sm font-black uppercase tracking-tight">
+              {numberOfSeats} {numberOfSeats > 1 ? "Tickets" : "Ticket"}
+            </span>
           </div>
         </div>
 
-        {/* Booking Status/Action */}
-        <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
-          <div className="flex items-center space-x-4">
-            <p className="flex items-center text-lg font-semibold text-green-700 bg-green-50 px-3 py-1 rounded-full">
-              <Ticket className="w-5 h-5 mr-2" />
-              {seatsBooked} {seatsBooked > 1 ? "Tickets" : "Ticket"}
-            </p>
-            <p className="text-sm text-gray-500 flex items-center">
-              <Users className="w-4 h-4 mr-1.5" />
-              {capacity - (seatsBooked || 0)} seats remaining
-            </p>
+        <div
+          className={`flex items-center gap-2 text-sm font-bold mb-6 ${
+            isFinished ? "text-slate-400" : "text-slate-600"
+          }`}
+        >
+          <MapPin
+            className={`w-4 h-4 ${
+              isFinished ? "text-slate-300" : "text-indigo-500"
+            }`}
+          />
+          <span className="line-clamp-1">{location || "TBA"}</span>
+        </div>
+
+        <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
+          <div className="flex items-center gap-2">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient
+                  id="iconGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="100%" stopColor="#a855f7" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C14.2142E-01 16.9217 0 17.9391 0 19V21"
+                stroke={isFinished ? "#cbd5e1" : "url(#iconGradient)"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z"
+                stroke={isFinished ? "#cbd5e1" : "url(#iconGradient)"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M23 21V19C22.9993 18.1137 22.7044 17.2524 22.1614 16.5523C21.6184 15.8522 20.8581 15.3516 20 15.13"
+                stroke={isFinished ? "#cbd5e1" : "url(#iconGradient)"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25393 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75607 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88"
+                stroke={isFinished ? "#cbd5e1" : "url(#iconGradient)"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span
+              className={`text-[11px] font-black uppercase tracking-widest ${
+                isFinished ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              Confirmed Spot
+            </span>
           </div>
 
-          {!isPast && (
-            <button className="px-4 py-2 bg-red-500 text-white font-medium rounded-lg shadow hover:bg-red-600 transition duration-150 text-sm">
-              Cancel Booking
-            </button>
-          )}
+          <Link href={`/home/${eventId}`}
+            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
+              isFinished
+                ? "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                : "bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-100"
+            }`}
+          >
+            {isFinished ? "Details" : "View Ticket"}
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-// Main Booking Page Component
-const BookingPage = () => {
-  // In a real implementation, this would be fetched via Redux/Axios
-  const [bookings, setBookings] = useState<BookedEvent[]>(mockBookings);
-
-  // Filter the events into 'Upcoming' and 'Past/Attended'
-  const upcomingBookings = bookings.filter((event) => !isPastEvent(event.date));
-  const pastBookings = bookings.filter((event) => isPastEvent(event.date));
-
-  return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-          Your Booked Events
-        </h1>
-        <p className="text-xl text-gray-600 mb-10">
-          Manage your upcoming reservations and view your attended events.
-        </p>
-
-        {/* Upcoming Bookings Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            Upcoming Bookings ({upcomingBookings.length})
-          </h2>
-          {upcomingBookings.length > 0 ? (
-            <div className="space-y-8">
-              {upcomingBookings.map((event) => (
-                <BookingCard key={event.id} event={event} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white p-6 rounded-xl text-center text-gray-500 border border-dashed border-gray-300">
-              <Ticket className="w-8 h-8 mx-auto mb-3" />
-              <p className="text-lg font-medium">
-                You have no upcoming events booked.
-              </p>
-              <p className="mt-1">
-                Head over to the{" "}
-                <a
-                  href="/home"
-                  className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                >
-                  Home Page
-                </a>{" "}
-                to find something exciting!
-              </p>
-            </div>
-          )}
-        </section>
-
-        <hr className="my-10 border-t border-gray-200" />
-
-        {/* Past Bookings Section */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            Attended Events ({pastBookings.length})
-          </h2>
-          {pastBookings.length > 0 ? (
-            <div className="space-y-8">
-              {pastBookings.map((event) => (
-                <BookingCard key={event.id} event={event} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white p-6 rounded-xl text-center text-gray-500 border border-dashed border-gray-300">
-              <p className="text-lg font-medium">
-                Once you attend an event, it will appear here.
-              </p>
-            </div>
-          )}
-        </section>
-      </div>
-    </main>
-  );
-};
-
-export default BookingPage;
+export default BookingCard;

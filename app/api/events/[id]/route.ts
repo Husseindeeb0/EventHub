@@ -42,6 +42,8 @@ export async function PUT(request: Request, { params }: Params) {
     if (typeof body.time === "string") update.time = body.time;
     if (typeof body.location === "string")
       update.location = body.location.trim();
+    if (typeof body.category === "string")
+      update.category = body.category.trim();
     if (typeof body.posterUrl === "string") update.posterUrl = body.posterUrl;
 
     // capacity handling (number)

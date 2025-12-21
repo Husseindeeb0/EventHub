@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import AnimatedPageHeader from "@/components/animations/AnimatedPageHeader";
-import AnimatedGrid from "@/components/animations/AnimatedGrid";
-import AnimatedMyEventCard from "@/components/events/AnimatedMyEventCard";
+import {
+  AnimatedPageHeader,
+  AnimatedCard,
+} from "@/components/animations/PageAnimations";
+import EventCard from "@/components/events/EventCard";
 import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
@@ -26,7 +28,7 @@ export default function MyEventsPage() {
     user?._id ? { organizerId: user._id } : { organizerId: "skip" },
     {
       skip: !user?._id || user.role !== "organizer",
-      refetchOnMountOrArgChange: true
+      refetchOnMountOrArgChange: true,
     }
   );
 
@@ -98,13 +100,13 @@ export default function MyEventsPage() {
               </Link>
             </div>
           ) : (
-            <AnimatedGrid>
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {events.map((e, index) => (
-                  <AnimatedMyEventCard key={e.id} e={e} index={index} />
-                ))}
-              </div>
-            </AnimatedGrid>
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {events.map((e, index) => (
+                <AnimatedCard key={e.id} delay={index * 0.1}>
+                  <EventCard e={e} showManage={true} />
+                </AnimatedCard>
+              ))}
+            </div>
           )}
         </div>
       </div>

@@ -16,8 +16,10 @@ export async function createEventAction(formData: FormData) {
   const title = formData.get("title") as string;
   const location = formData.get("location") as string;
   const startsAt = formData.get("startsAt") as string;
+  const endsAt = formData.get("endsAt") as string;
   const capacityStr = formData.get("capacity") as string;
   const description = formData.get("description") as string;
+  const category = (formData.get("category") as string) || "Other";
   const coverImageUrl = formData.get("coverImageUrl") as string;
   const coverImageFileId = formData.get("coverImageFileId") as string;
 
@@ -53,8 +55,10 @@ export async function createEventAction(formData: FormData) {
     title,
     location,
     startsAt: new Date(startsAt),
+    endsAt: endsAt ? new Date(endsAt) : undefined,
     organizerId: currentUser.userId,
     capacity: capacity, // undefined means unlimited
+    category,
     description: description || undefined,
     coverImageUrl: imageUrl, // undefined means no image
     coverImageFileId: imageFileId,
@@ -80,8 +84,10 @@ export async function updateEventAction(formData: FormData) {
     const title = formData.get("title") as string;
     const location = formData.get("location") as string;
     const startsAt = formData.get("startsAt") as string;
+    const endsAt = formData.get("endsAt") as string;
     const capacityStr = formData.get("capacity") as string;
     const description = formData.get("description") as string;
+    const category = formData.get("category") as string;
     const coverImageUrl = formData.get("coverImageUrl") as string;
     const coverImageFileId = formData.get("coverImageFileId") as string;
 
@@ -126,7 +132,10 @@ export async function updateEventAction(formData: FormData) {
         ? coverImageFileId.trim()
         : undefined;
 
-    console.log("Addressing image changes...", { oldUrl: event.coverImageUrl, newUrl: imageUrl });
+    console.log("Addressing image changes...", {
+      oldUrl: event.coverImageUrl,
+      newUrl: imageUrl,
+    });
 
     // Handle Cover Image Deletion/Replacement
     if (imageUrl !== event.coverImageUrl) {
@@ -146,13 +155,14 @@ export async function updateEventAction(formData: FormData) {
       title,
       location,
       startsAt: new Date(startsAt),
+      endsAt: endsAt ? new Date(endsAt) : undefined,
       capacity: capacity, // undefined means unlimited
+      category: category || undefined,
       description: description || undefined,
       coverImageUrl: imageUrl, // undefined means no image
       coverImageFileId: imageFileId,
     });
     console.log("Event updated in DB");
-
   } catch (error) {
     console.error("Error in updateEventAction:", error);
     throw error;
@@ -181,8 +191,6 @@ export async function deleteEventAction(formData: FormData) {
   if (event.organizerId !== currentUser.userId) {
     throw new Error("You don't have permission to delete this event");
   }
-
-
 
   // Delete cover image if exists
   if (event.coverImageFileId) {
@@ -228,6 +236,18 @@ export async function bookEventAction(formData: FormData) {
   const event = await Event.findById(eventId);
   if (!event) {
     throw new Error("Event not found");
+  }
+
+  // Check if event has ended
+  const now = new Date();
+  if (event.endsAt && new Date(event.endsAt) < now) {
+    throw new Error("This event has already finished");
+  } else if (
+    !event.endsAt &&
+    event.startsAt &&
+    new Date(event.startsAt) < now
+  ) {
+    throw new Error("This event has already started and cannot be booked");
   }
 
   // Check if user already booked this event

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAccessToken, verifyToken } from "@/lib/auth";
 import connectDb from "@/lib/connectDb";
 import User from "@/models/User";
+import Event from "@/models/Event";
 import imagekit from "@/lib/imagekit";
 
 /**
@@ -38,9 +39,9 @@ export async function GET() {
 
     // Fetch user from database
     await connectDb();
-    const user = await User.findById(decoded.userId)
-      .select("-password -refreshToken")
-      .lean();
+    const user = await User.findById(decoded.userId).select(
+      "-password -refreshToken"
+    );
 
     if (!user) {
       return NextResponse.json(
@@ -62,6 +63,8 @@ export async function GET() {
         imageFileId: user.imageFileId,
         coverImageUrl: user.coverImageUrl,
         coverImageFileId: user.coverImageFileId,
+        bookedEvents: user.bookedEvents,
+        attendedEvents: user.attendedEvents,
         createdAt: user.createdAt,
       },
     });
@@ -73,7 +76,6 @@ export async function GET() {
     );
   }
 }
-
 
 // Updates the currently authenticated user's information
 export async function PUT(request: Request) {
@@ -100,7 +102,15 @@ export async function PUT(request: Request) {
     // Parse body
     const body = await request.json();
     console.log("PUT /api/auth/me received body:", body);
-    const { name, email, description, imageUrl, imageFileId, coverImageUrl, coverImageFileId } = body;
+    const {
+      name,
+      email,
+      description,
+      imageUrl,
+      imageFileId,
+      coverImageUrl,
+      coverImageFileId,
+    } = body;
 
     await connectDb();
 
@@ -121,7 +131,10 @@ export async function PUT(request: Request) {
     // Get current user to check for image changes and delete old files
     const currentUser = await User.findById(decoded.userId);
     if (!currentUser) {
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
     }
 
     // Handle Profile Picture Deletion/Replacement
@@ -137,7 +150,10 @@ export async function PUT(request: Request) {
     }
 
     // Handle Cover Photo Deletion/Replacement
-    if (coverImageUrl !== undefined && coverImageUrl !== currentUser.coverImageUrl) {
+    if (
+      coverImageUrl !== undefined &&
+      coverImageUrl !== currentUser.coverImageUrl
+    ) {
       if (currentUser.coverImageFileId) {
         try {
           await imagekit.deleteFile(currentUser.coverImageFileId);

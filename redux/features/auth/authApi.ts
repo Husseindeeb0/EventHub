@@ -38,12 +38,30 @@ export const authApi = api.injectEndpoints({
     }),
     updateProfile: builder.mutation<
       AuthResponse,
-      { name?: string; email?: string; description?: string; imageUrl?: string; imageFileId?: string; coverImageUrl?: string; coverImageFileId?: string; }
+      {
+        name?: string;
+        email?: string;
+        description?: string;
+        imageUrl?: string;
+        imageFileId?: string;
+        coverImageUrl?: string;
+        coverImageFileId?: string;
+      }
     >({
       query: (data) => ({
         url: "/auth/me",
         method: "PUT",
         body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    migrateEvents: builder.mutation<
+      { success: boolean; message: string; migratedCount?: number },
+      void
+    >({
+      query: () => ({
+        url: "/user/migrate",
+        method: "POST",
       }),
       invalidatesTags: ["User"],
     }),
@@ -57,4 +75,5 @@ export const {
   useCheckSessionQuery,
   useRefreshTokenMutation,
   useUpdateProfileMutation,
+  useMigrateEventsMutation,
 } = authApi;

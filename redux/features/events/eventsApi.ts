@@ -4,7 +4,9 @@ export interface Event {
   id: string;
   title: string;
   location: string;
+  category: string;
   startsAt: string;
+  endsAt?: string;
   coverImageUrl?: string;
   capacity?: number;
   description?: string;
@@ -15,7 +17,9 @@ export interface Event {
 export interface CreateEventData {
   title: string;
   location: string;
+  category?: string;
   startsAt: string;
+  endsAt?: string;
   capacity?: number;
   description?: string;
   coverImageUrl?: string;
@@ -30,13 +34,31 @@ export const eventsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getEvents: builder.query<
       { success: boolean; events: Event[] },
-      { organizerId?: string; ids?: string[] } | void
+      {
+        organizerId?: string;
+        ids?: string[];
+        search?: string;
+        category?: string;
+        status?: "active" | "finished";
+      } | void
     >({
       query: (params) => {
         const queryParams = new URLSearchParams();
 
         if (params?.organizerId) {
           queryParams.append("organizerId", params.organizerId);
+        }
+
+        if (params?.search) {
+          queryParams.append("search", params.search);
+        }
+
+        if (params?.category) {
+          queryParams.append("category", params.category);
+        }
+
+        if (params?.status) {
+          queryParams.append("status", params.status);
         }
 
         if (params?.ids && params.ids.length > 0) {

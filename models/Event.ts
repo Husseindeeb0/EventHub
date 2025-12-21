@@ -5,10 +5,12 @@ export interface IEvent extends Document {
   title: string;
   location?: string;
   startsAt?: Date;
+  endsAt?: Date;
   coverImageUrl?: string;
   coverImageFileId?: string;
   capacity?: number;
   availableSeats?: number;
+  category?: string;
   description?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -30,6 +32,9 @@ const EventSchema = new Schema<IEvent>(
     startsAt: {
       type: Date,
     },
+    endsAt: {
+      type: Date,
+    },
     coverImageUrl: {
       type: String,
     },
@@ -41,6 +46,10 @@ const EventSchema = new Schema<IEvent>(
     },
     availableSeats: {
       type: Number,
+    },
+    category: {
+      type: String,
+      default: "Other",
     },
     description: {
       type: String,
