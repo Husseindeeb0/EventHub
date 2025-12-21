@@ -5,6 +5,12 @@ import { createEventAction } from "@/app/actions";
 import { useFormStatus } from "react-dom";
 import { motion } from "framer-motion";
 import ImageKitUpload from "@/components/ImageKitUpload";
+import SpeakerManagement, {
+  Speaker,
+} from "@/components/events/SpeakerManagement";
+import ScheduleManagement, {
+  ScheduleItem,
+} from "@/components/events/ScheduleManagement";
 import { useState } from "react";
 
 function SubmitButton() {
@@ -51,6 +57,8 @@ function SubmitButton() {
 export default function CreateEventPage() {
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [coverImageFileId, setCoverImageFileId] = useState("");
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
 
   return (
     <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-linear-to-br from-indigo-100 via-purple-100 to-cyan-100 p-4 sm:p-8 relative overflow-hidden">
@@ -296,6 +304,34 @@ export default function CreateEventPage() {
                 Provide details about your event to help attendees understand
                 what to expect.
               </p>
+            </motion.div>
+
+            {/* Speakers Management */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.15 }}
+            >
+              <SpeakerManagement speakers={speakers} onChange={setSpeakers} />
+              <input
+                type="hidden"
+                name="speakers"
+                value={JSON.stringify(speakers)}
+              />
+            </motion.div>
+
+            {/* Schedule Management */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.2 }}
+            >
+              <ScheduleManagement schedule={schedule} onChange={setSchedule} />
+              <input
+                type="hidden"
+                name="schedule"
+                value={JSON.stringify(schedule)}
+              />
             </motion.div>
 
             <motion.div

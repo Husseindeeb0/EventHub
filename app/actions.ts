@@ -22,6 +22,8 @@ export async function createEventAction(formData: FormData) {
   const category = (formData.get("category") as string) || "Other";
   const coverImageUrl = formData.get("coverImageUrl") as string;
   const coverImageFileId = formData.get("coverImageFileId") as string;
+  const speakersStr = formData.get("speakers") as string;
+  const scheduleStr = formData.get("schedule") as string;
 
   if (!title || !location || !startsAt) {
     throw new Error("Missing required fields");
@@ -51,6 +53,10 @@ export async function createEventAction(formData: FormData) {
       ? coverImageFileId.trim()
       : undefined;
 
+  // Parse speakers and schedule
+  const speakers = speakersStr ? JSON.parse(speakersStr) : [];
+  const schedule = scheduleStr ? JSON.parse(scheduleStr) : [];
+
   const newEvent = await Event.create({
     title,
     location,
@@ -62,6 +68,8 @@ export async function createEventAction(formData: FormData) {
     description: description || undefined,
     coverImageUrl: imageUrl, // undefined means no image
     coverImageFileId: imageFileId,
+    speakers: speakers.length > 0 ? speakers : undefined,
+    schedule: schedule.length > 0 ? schedule : undefined,
   });
 
   // Add event to user's createdEvents array
@@ -90,6 +98,8 @@ export async function updateEventAction(formData: FormData) {
     const category = formData.get("category") as string;
     const coverImageUrl = formData.get("coverImageUrl") as string;
     const coverImageFileId = formData.get("coverImageFileId") as string;
+    const speakersStr = formData.get("speakers") as string;
+    const scheduleStr = formData.get("schedule") as string;
 
     console.log("Form data parsed:", { id, title, location });
 
@@ -151,6 +161,10 @@ export async function updateEventAction(formData: FormData) {
       }
     }
 
+    // Parse speakers and schedule
+    const speakers = speakersStr ? JSON.parse(speakersStr) : [];
+    const schedule = scheduleStr ? JSON.parse(scheduleStr) : [];
+
     await Event.findByIdAndUpdate(id, {
       title,
       location,
@@ -161,6 +175,8 @@ export async function updateEventAction(formData: FormData) {
       description: description || undefined,
       coverImageUrl: imageUrl, // undefined means no image
       coverImageFileId: imageFileId,
+      speakers: speakers.length > 0 ? speakers : undefined,
+      schedule: schedule.length > 0 ? schedule : undefined,
     });
     console.log("Event updated in DB");
   } catch (error) {
