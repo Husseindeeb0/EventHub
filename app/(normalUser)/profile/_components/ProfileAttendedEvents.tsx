@@ -3,12 +3,10 @@ import Image from "next/image";
 import { useAppSelector } from "@/redux/store";
 import { selectUser } from "@/redux/features/auth/authSlice";
 import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
-import { Clock, MapPin } from "lucide-react";
+import { Loader2, Clock, MapPin, Star } from "lucide-react";
 import Link from "next/link";
-import Loading from "@/components/ui/Loading";
 import RatingModal from "@/components/ui/RatingModal";
 import { useState } from "react";
-import { Star } from "lucide-react";
 
 export default function ProfileAttendedEvents() {
   const user = useAppSelector(selectUser);
@@ -32,10 +30,12 @@ export default function ProfileAttendedEvents() {
       </h2>
 
       {isLoading ? (
-        <Loading className="py-8" />
+        <div className="flex justify-center p-8">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
       ) : events.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {events.map((event, index) => (
+          {events.map((event) => (
             <div key={event.id} className="relative">
               <Link
                 href={`/home/${event.id}`}

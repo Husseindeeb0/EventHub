@@ -38,7 +38,7 @@ export default function LoginPage() {
     if (!formData.email.trim()) {
       errors.email = "Email is required";
     } else if (
-      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)
     ) {
       errors.email = "Please enter a valid email address";
     }
@@ -62,19 +62,22 @@ export default function LoginPage() {
     }
 
     try {
-      // Dispatch login thunk
-      // const result = await dispatch(loginThunk(formData)).unwrap();
-      const result = await login(formData).unwrap();
+      // Use clean data for API call
+      const { email, password } = formData;
+      const result = await login({ email, password }).unwrap();
 
       if (result.success) {
         localStorage.setItem("isLoggedIn", "true");
         router.push("/home");
       }
     } catch (err: any) {
-      // Error is handled by Redux state, but also checking for specific verification error
-      // The Redux mutation hook handles 'error' state, but we might need to inspect the payload here if possible
-      // Or rely on the 'error' object returned by useLoginMutation
-      console.error("Login component caught error:", err);
+      // Improved error logging
+      console.error("Login failed:", err);
+      if (err instanceof Error) {
+        console.error("Error message:", err.message);
+      } else {
+        console.error("Error details:", JSON.stringify(err, null, 2));
+      }
     }
   };
 
@@ -132,7 +135,9 @@ export default function LoginPage() {
               <p>
                 {typeof loginError === "string"
                   ? loginError
-                  : (loginError as any).data?.message || "Login failed"}
+                  : (loginError as any)?.data?.message ||
+                  (loginError as any)?.message ||
+                  "Login failed"}
               </p>
               {isVerificationError && (
                 <button

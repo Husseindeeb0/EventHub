@@ -1,19 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Calendar, MapPin, Users, Ticket, Clock, X } from "lucide-react";
+import { Ticket } from "lucide-react";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import BookingCard, { Booking } from "../../../components/booking/BookingCard";
-
 import {
   AnimatedCard,
   AnimatedPageHeader,
 } from "@/components/animations/PageAnimations";
-
 import Loading from "@/components/ui/Loading";
 import RatingModal from "@/components/ui/RatingModal";
+import BookingCard, { Booking } from "@/components/booking/BookingCard";
 
 // Main Booking Page Component
 const BookingPage = () => {
@@ -39,8 +37,12 @@ const BookingPage = () => {
 
         if (!response.ok)
           throw new Error(data.message || "Failed to fetch bookings");
-        if (data.success) setBookings(data.bookings);
-        else throw new Error(data.message || "Failed to fetch bookings");
+
+        if (data.success) {
+          setBookings(data.bookings);
+        } else {
+          throw new Error(data.message || "Failed to fetch bookings");
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -87,7 +89,8 @@ const BookingPage = () => {
           </div>
         </AnimatedPageHeader>
 
-        <section>
+        {/* Active Bookings Section */}
+        <section className="mb-16">
           <div className="flex items-center gap-3 mb-8">
             <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">
               Active Tickets
@@ -160,7 +163,7 @@ const BookingPage = () => {
           isOpen={!!selectedBookingForRating}
           onClose={() => {
             setSelectedBookingForRating(null);
-            // Refresh bookings to show the new rating (simple reload or fetch)
+            // Refresh logic: fetchBookings() or just reload if simpler
             window.location.reload();
           }}
           eventId={selectedBookingForRating?.eventId || ""}

@@ -52,7 +52,7 @@ export default function SignupPage() {
     if (!formData.email.trim()) {
       errors.email = "Email is required";
     } else if (
-      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)
     ) {
       errors.email = "Please enter a valid email address";
     }
@@ -83,17 +83,16 @@ export default function SignupPage() {
     }
 
     try {
-      // Dispatch signup thunk
-      // const result = await dispatch(signupThunk(formData)).unwrap();
-      const result = await signup(formData).unwrap();
+      // Destructure formData to exclude confirmPassword before sending to API
+      const { confirmPassword, ...signupData } = formData;
+      const result = await signup(signupData);
 
-      if (result.success) {
+      if (result.data?.success) {
         // Redirect to verification page
         router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       }
-    } catch (err) {
-      // Error is handled by Redux state
-      console.error("Signup failed:", err);
+    } catch {
+      // Error is handled by the mutation state (signupError)
     }
   };
 
@@ -132,7 +131,9 @@ export default function SignupPage() {
             >
               {typeof signupError === "string"
                 ? signupError
-                : (signupError as any).data?.message || "Signup failed"}
+                : (signupError as any)?.data?.message ||
+                (signupError as any)?.message ||
+                "Signup failed"}
             </motion.div>
           )}
 
@@ -175,8 +176,8 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.email
-                      ? "border-red-500"
-                      : "border-gray-300"
+                    ? "border-red-500"
+                    : "border-gray-300"
                     }`}
                   placeholder="john@example.com"
                 />
@@ -200,9 +201,7 @@ export default function SignupPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.password
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.password ? "border-red-500" : "border-gray-300"
                     }`}
                   placeholder="••••••••"
                 />
@@ -226,9 +225,7 @@ export default function SignupPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.confirmPassword
-                      ? "border-red-500"
-                      : "border-gray-300"
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.confirmPassword ? "border-red-500" : "border-gray-300"
                     }`}
                   placeholder="••••••••"
                 />
