@@ -14,6 +14,7 @@ import {
 import EventImage from "./EventImage";
 import EventChat from "@/components/chat/EventChat";
 import FollowButton from "@/components/FollowButton";
+import AutoDownloadTicket from "@/components/ticket/AutoDownloadTicket";
 
 async function getEvent(id: string) {
   await connectDb();
@@ -275,6 +276,31 @@ export default async function EventDetailsPage({
                 </div>
               </div>
             </AnimatedSuccessMessage>
+          )}
+
+          {resolvedSearchParams?.booked === "true" && userBooking && (
+            <AutoDownloadTicket
+              event={{
+                title: event.title,
+                location: event.location,
+                startsAt: event.startsAt && new Date(event.startsAt).toISOString(),
+                description: event.description,
+                coverImageUrl: event.coverImageUrl,
+                organizer: organizer ? {
+                  _id: organizer._id,
+                  name: organizer.name,
+                  email: organizer.email,
+                  imageUrl: organizer.imageUrl
+                } : null
+              }}
+              booking={{
+                _id: userBooking._id.toString(),
+                name: userBooking.name,
+                phone: userBooking.phone,
+                seats: userBooking.seats,
+                numberOfSeats: userBooking.seats
+              }}
+            />
           )}
 
           {resolvedSearchParams?.cancelled === "true" && (

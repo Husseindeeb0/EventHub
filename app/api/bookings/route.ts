@@ -163,10 +163,27 @@ export async function GET(req: NextRequest) {
       .sort({ bookingDate: -1 })
       .lean();
 
+    // Collect all organizer IDs
+    const organizerIds = bookings
+      .map((b: any) => b.event?.organizerId)
+      .filter((id) => id); // Filter out undefined/null
+
+    // Fetch organizers
+    const organizers = await User.find({ _id: { $in: organizerIds } })
+      .select("name email imageUrl")
+      .lean();
+
+    const organizerMap = organizers.reduce((acc: any, org: any) => {
+      acc[org._id.toString()] = org;
+      return acc;
+    }, {});
+
     // Map to expected format
     const formattedBookings = bookings
       .map((booking: any) => {
         if (!booking.event) return null; // Skip if event was deleted
+
+        const organizer = organizerMap[booking.event.organizerId];
 
         return {
           _id: booking._id,
@@ -186,6 +203,17 @@ export async function GET(req: NextRequest) {
           bookedAt: booking.bookingDate
             ? new Date(booking.bookingDate).toISOString()
             : new Date().toISOString(),
+          name: booking.name,
+          email: booking.email,
+          phone: booking.phone,
+          organizer: organizer
+            ? {
+              _id: organizer._id.toString(),
+              name: organizer.name,
+              email: organizer.email,
+              imageUrl: organizer.imageUrl,
+            }
+            : null,
         };
       })
       .filter(Boolean);
