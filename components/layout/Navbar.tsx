@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, LogIn, User, LogOut, UserCircle } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  User,
+  LogOut,
+  UserCircle,
+  MessageSquare,
+} from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAppSelector } from "@/redux/store";
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
@@ -22,7 +30,6 @@ const navLinks: NavLink[] = [
   { href: "/home", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/bookings", label: "My Bookings", isProtected: true },
-  { href: "/feedback", label: "Feedback", isProtected: true },
   // Organizer-specific links
   {
     href: "/myEvents",
@@ -100,7 +107,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 shadow-lg">
+    <nav className="sticky top-0 z-50 bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
@@ -169,6 +176,14 @@ export const Navbar = () => {
                       <UserCircle className="h-4 w-4 mr-2" />
                       Profile
                     </Link>
+                    <Link
+                      href="/feedback"
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Feedback
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
@@ -213,7 +228,7 @@ export const Navbar = () => {
       {/* Mobile Menu Panel */}
       {isOpen && (
         <div
-          className="md:hidden bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600"
+          className="md:hidden bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600"
           id="mobile-menu"
         >
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -256,6 +271,14 @@ export const Navbar = () => {
                 >
                   <UserCircle className="h-5 w-5" />
                   <span>Profile</span>
+                </Link>
+                <Link
+                  href="/feedback"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 text-white/90 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+                >
+                  <MessageSquare className="h-5 w-5" />
+                  <span>Feedback</span>
                 </Link>
                 <button
                   onClick={() => {

@@ -5,20 +5,13 @@ import { Calendar, MapPin, Users, Ticket, Clock, X } from "lucide-react";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-<<<<<<< Updated upstream
-import BookingCard, { Booking } from "../../../components/booking/BookingCard";
-=======
 import GiveFeedbackButton from "@/components/GiveFeedbackButton";
->>>>>>> Stashed changes
-
 import {
   AnimatedCard,
   AnimatedPageHeader,
 } from "@/components/animations/PageAnimations";
-
-<<<<<<< Updated upstream
 import Loading from "@/components/ui/Loading";
-=======
+
 // Helper function to check if an event is in the past
 const isPastEvent = (dateString: string) => {
   const eventDate = new Date(dateString);
@@ -27,11 +20,29 @@ const isPastEvent = (dateString: string) => {
   return eventDate < today;
 };
 
+interface Booking {
+  _id: string;
+  user: string;
+  event: string;
+  status: string;
+  ticketCount: number;
+  totalPrice: number;
+  bookingDate: string;
+  paymentStatus: string;
+  title: string;
+  location: string;
+  startsAt: string;
+  coverImageUrl: string;
+  capacity?: number;
+  numberOfSeats: number;
+  eventId: string;
+}
+
 // Component for a single booked event card
-const BookingCard: React.FC<{ booking: Booking; showFeedbackButton: boolean }> = ({
-  booking,
-  showFeedbackButton,
-}) => {
+const BookingCard: React.FC<{
+  booking: Booking;
+  showFeedbackButton: boolean;
+}> = ({ booking, showFeedbackButton }) => {
   const {
     title,
     location,
@@ -59,10 +70,11 @@ const BookingCard: React.FC<{ booking: Booking; showFeedbackButton: boolean }> =
     <Link href={`/home/${eventId}`}>
       <div
         className={`flex flex-col md:flex-row bg-white rounded-xl shadow-lg transition duration-300 overflow-hidden cursor-pointer
-            ${isPast
-            ? "opacity-60 grayscale"
-            : "hover:shadow-2xl hover:scale-[1.01]"
-          } border border-gray-100`}
+            ${
+              isPast
+                ? "opacity-60 grayscale"
+                : "hover:shadow-2xl hover:scale-[1.01]"
+            } border border-gray-100`}
       >
         {/* Event Poster Image */}
         <div className="w-full md:w-1/4 h-48 md:h-auto bg-gradient-to-br from-purple-100 via-blue-100 to-indigo-100 flex-shrink-0 relative">
@@ -93,8 +105,9 @@ const BookingCard: React.FC<{ booking: Booking; showFeedbackButton: boolean }> =
         <div className="p-6 flex-grow flex flex-col justify-between">
           <div>
             <h3
-              className={`text-2xl font-bold mb-2 ${isPast ? "text-gray-600" : "text-indigo-800"
-                }`}
+              className={`text-2xl font-bold mb-2 ${
+                isPast ? "text-gray-600" : "text-indigo-800"
+              }`}
             >
               {title}
             </h3>
@@ -142,7 +155,6 @@ const BookingCard: React.FC<{ booking: Booking; showFeedbackButton: boolean }> =
     </Link>
   );
 };
->>>>>>> Stashed changes
 
 // Main Booking Page Component
 const BookingPage = () => {
@@ -167,11 +179,6 @@ const BookingPage = () => {
 
         if (!response.ok)
           throw new Error(data.message || "Failed to fetch bookings");
-<<<<<<< Updated upstream
-        if (data.success) setBookings(data.bookings);
-        else throw new Error(data.message || "Failed to fetch bookings");
-=======
-        }
 
         if (data.success) {
           setBookings(data.bookings);
@@ -179,7 +186,6 @@ const BookingPage = () => {
         } else {
           throw new Error(data.message || "Failed to fetch bookings");
         }
->>>>>>> Stashed changes
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -190,7 +196,8 @@ const BookingPage = () => {
     fetchBookings();
   }, [isAuthenticated, router, user?.bookedEvents?.length]);
 
-  const upcomingBookings = bookings;
+  const upcomingBookings = bookings.filter((b) => !isPastEvent(b.startsAt));
+  const pastBookings = bookings.filter((b) => isPastEvent(b.startsAt));
 
   if (loading) {
     return <Loading fullScreen message="Loading your tickets..." />;
@@ -201,7 +208,6 @@ const BookingPage = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(99,102,241,0.1),transparent_50%)] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(168,85,247,0.1),transparent_50%)] pointer-events-none"></div>
 
-<<<<<<< Updated upstream
       <div className="max-w-7xl mx-auto relative z-10">
         <AnimatedPageHeader>
           <div className="mb-12">
@@ -216,7 +222,7 @@ const BookingPage = () => {
             </p>
           </div>
         </AnimatedPageHeader>
-=======
+
         {/* Upcoming Bookings Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
@@ -251,27 +257,8 @@ const BookingPage = () => {
             </div>
           )}
         </section>
->>>>>>> Stashed changes
 
         <section>
-<<<<<<< Updated upstream
-          <div className="flex items-center gap-3 mb-8">
-            <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">
-              Active Tickets
-            </h2>
-            <div className="h-[2px] flex-1 bg-linear-to-r from-indigo-100 to-transparent"></div>
-            <span className="px-3 py-1 rounded-full bg-white border border-indigo-100 text-indigo-600 text-[10px] font-black">
-              {upcomingBookings.length}
-            </span>
-          </div>
-
-          {upcomingBookings.length > 0 ? (
-            <div className="flex flex-col gap-8">
-              {upcomingBookings.map((booking, index) => (
-                <AnimatedCard key={booking._id} delay={index * 0.1}>
-                  <BookingCard booking={booking} />
-                </AnimatedCard>
-=======
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             Attended Events ({pastBookings.length})
           </h2>
@@ -283,7 +270,6 @@ const BookingPage = () => {
                   booking={booking}
                   showFeedbackButton={!hasGivenFeedback}
                 />
->>>>>>> Stashed changes
               ))}
             </div>
           ) : (
