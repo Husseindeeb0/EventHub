@@ -30,6 +30,7 @@ async function getEvent(id: string) {
       description:
         "This tech conference has already ended. It was a massive success with over 500 attendees and 20+ keynote speakers from top tech companies.",
       organizerId: "org-user-id-456",
+      endsAt: new Date("2024-06-15T18:00:00Z"),
     };
   }
   // ---------------------------
