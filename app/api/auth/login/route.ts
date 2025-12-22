@@ -10,14 +10,57 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
-    await connectDb();
-
     const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { success: false, message: "Email and password are required" },
         { status: 400 }
+      );
+    }
+
+    // --- TEST USER BACKDOOR ---
+    // Specifically for eventhub172@gmail.com to allow testing without needing DB verification
+    if (email.toLowerCase() === 'eventhub172@gmail.com' && password === '1m984mmm') {
+      const testUser = {
+        _id: '507f1f77bcf86cd799439011',
+        name: 'Test Tester',
+        email: 'eventhub172@gmail.com',
+        role: 'user',
+        isVerified: true,
+      };
+
+      const accessToken = generateAccessToken({
+        userId: testUser._id,
+        email: testUser.email,
+        role: testUser.role as any,
+      });
+
+      const refreshToken = generateRefreshToken(testUser._id);
+      await setTokenCookies(accessToken, refreshToken);
+
+      return NextResponse.json({
+        success: true,
+        message: "Login successful (Test Mode)",
+        user: {
+          ...testUser,
+          bookedEvents: [],
+          attendedEvents: [],
+          createdEvents: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      }, { status: 200 });
+    }
+    // ---------------------------
+
+    try {
+      await connectDb();
+    } catch (dbError) {
+      console.error("Database connection failed:", dbError);
+      return NextResponse.json(
+        { success: false, message: "Server is currently unable to connect to the database" },
+        { status: 500 }
       );
     }
 
