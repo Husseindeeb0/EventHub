@@ -8,6 +8,8 @@ import User from "@/models/User";
 import Booking from "@/models/Booking";
 import { requireOrganizer, requireAuth } from "@/lib/serverAuth";
 import imagekit from "@/lib/imagekit";
+import Review from "@/models/Review";
+import mongoose from "mongoose";
 
 export async function createEventAction(formData: FormData) {
   // Require organizer authentication
@@ -179,6 +181,40 @@ export async function updateEventAction(formData: FormData) {
       schedule: schedule.length > 0 ? schedule : undefined,
     });
     console.log("Event updated in DB");
+
+    // Update attendedEvents for users based on new date
+    const updatedEvent = await Event.findById(id);
+    if (updatedEvent) {
+      const now = new Date();
+      const isFinished = updatedEvent.endsAt
+        ? new Date(updatedEvent.endsAt) < now
+        : updatedEvent.startsAt
+        ? new Date(updatedEvent.startsAt) < now
+        : false;
+
+      const bookings = await Booking.find({
+        event: id,
+        status: "confirmed",
+      }).select("user");
+
+      const userIds = bookings.map((b) => b.user);
+
+      if (userIds.length > 0) {
+        if (isFinished) {
+          await User.updateMany(
+            { _id: { $in: userIds } },
+            { $addToSet: { attendedEvents: id } }
+          );
+          console.log("Marked users as attended for event:", id);
+        } else {
+          await User.updateMany(
+            { _id: { $in: userIds } },
+            { $pull: { attendedEvents: id } }
+          );
+          console.log("Un-marked users as attended for event:", id);
+        }
+      }
+    }
   } catch (error) {
     console.error("Error in updateEventAction:", error);
     throw error;
@@ -337,4 +373,78 @@ export async function cancelBookingAction(formData: FormData) {
   });
 
   redirect(`/home/${eventId}?cancelled=true`);
+}
+
+export async function rateEventAction(formData: FormData) {
+  const currentUser = await requireAuth();
+  const eventId = formData.get("eventId") as string;
+  const ratingStr = formData.get("rating") as string;
+
+  if (!eventId || !ratingStr) {
+    throw new Error("Missing required fields");
+  }
+
+  const rating = parseInt(ratingStr, 10);
+  if (isNaN(rating) || rating < 1 || rating > 5) {
+    throw new Error("Invalid rating");
+  }
+
+  await connectDb();
+
+  const event = await Event.findById(eventId);
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  const now = new Date();
+  const isFinished = event.endsAt
+    ? new Date(event.endsAt) < now
+    : event.startsAt
+    ? new Date(event.startsAt) < now
+    : false;
+
+  if (!isFinished) {
+    throw new Error("You can only rate finished events");
+  }
+
+  // Check if user has already rated
+  const existingReview = await Review.findOne({
+    user: currentUser.userId,
+    event: eventId,
+  });
+
+  if (existingReview) {
+    throw new Error("You have already rated this event");
+  }
+
+  // Create Review
+  await Review.create({
+    user: currentUser.userId,
+    event: eventId,
+    rating,
+  });
+
+  // Calculate new average
+  const result = await Review.aggregate([
+    { $match: { event: new mongoose.Types.ObjectId(eventId) } },
+    {
+      $group: {
+        _id: null,
+        avgRating: { $avg: "$rating" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const avgRating = result[0]?.avgRating || 0;
+  const count = result[0]?.count || 0;
+
+  // Update Event
+  await Event.findByIdAndUpdate(eventId, {
+    averageRating: avgRating,
+    ratingCount: count,
+  });
+
+  revalidatePath("/bookings");
+  revalidatePath(`/home/${eventId}`);
 }

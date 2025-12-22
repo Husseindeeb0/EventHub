@@ -4,6 +4,7 @@ import connectDb from "@/lib/connectDb";
 import Booking from "@/models/Booking";
 import Event from "@/models/Event";
 import User from "@/models/User";
+import Review from "@/models/Review";
 import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
@@ -163,6 +164,17 @@ export async function GET(req: NextRequest) {
       .sort({ bookingDate: -1 })
       .lean();
 
+    // Fetch user reviews for these events
+    const reviews = await Review.find({
+      user: userId,
+      event: { $in: bookedEventIds },
+    }).lean();
+
+    const reviewMap: Record<string, number> = {};
+    reviews.forEach((review: any) => {
+      reviewMap[review.event.toString()] = review.rating;
+    });
+
     // Map to expected format
     const formattedBookings = bookings
       .map((booking: any) => {
@@ -186,6 +198,9 @@ export async function GET(req: NextRequest) {
           bookedAt: booking.bookingDate
             ? new Date(booking.bookingDate).toISOString()
             : new Date().toISOString(),
+          averageRating: booking.event.averageRating || 0,
+          ratingCount: booking.event.ratingCount || 0,
+          userRating: reviewMap[booking.event._id.toString()] || null,
         };
       })
       .filter(Boolean);

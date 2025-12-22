@@ -1,6 +1,7 @@
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import Booking from "@/models/Booking";
+import User from "@/models/User";
 import { notFound } from "next/navigation";
 import BookingForm from "./BookingForm";
 import {
@@ -11,6 +12,8 @@ import {
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
 import EventChat from "@/components/chat/EventChat";
+import EventTabs from "@/components/events/EventTabs";
+import { getCurrentUser } from "@/lib/serverAuth";
 
 async function getEvent(id: string) {
   await connectDb();
@@ -55,8 +58,6 @@ function formatEventDate(date: any): string {
   }
 }
 
-import { getCurrentUser } from "@/lib/serverAuth";
-
 export default async function EventDetailsPage({
   params,
   searchParams,
@@ -75,6 +76,10 @@ export default async function EventDetailsPage({
     notFound();
   }
 
+  // Fetch Organizer Details
+  await connectDb();
+  const organizer = await User.findById(event.organizerId).lean();
+
   const bookedCount = await getBookedCount(resolvedParams.id);
   const remainingSeats = event.capacity ? event.capacity - bookedCount : null;
   const isFull = event.capacity ? bookedCount >= event.capacity : false;
@@ -86,13 +91,247 @@ export default async function EventDetailsPage({
 
   let userBooking = null;
   if (currentUser) {
-    await connectDb();
     userBooking = await Booking.findOne({
       user: currentUser.userId,
       event: resolvedParams.id,
       status: { $ne: "cancelled" },
     }).lean();
   }
+
+  // --- Content Sections for Tabs ---
+
+  const OverviewContent = (
+    <div className="space-y-8">
+      {/* Description */}
+      <AnimatedCard delay={0.4}>
+        <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
+          <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight">
+            About this event
+          </h2>
+          {event.description ? (
+            <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line font-medium">
+              {event.description}
+            </p>
+          ) : (
+            <p className="text-lg leading-relaxed text-slate-400 italic font-medium">
+              No description provided for this event.
+            </p>
+          )}
+        </div>
+      </AnimatedCard>
+
+      {/* Speakers Section */}
+      {event.speakers && event.speakers.length > 0 && (
+        <AnimatedCard delay={0.45}>
+          <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
+            <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
+              <svg
+                className="h-6 w-6 text-purple-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Speakers & Presenters
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {event.speakers.map((speaker: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex gap-4 items-start p-4 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-md"
+                >
+                  {speaker.profileImageUrl ? (
+                    <img
+                      src={speaker.profileImageUrl}
+                      alt={speaker.name}
+                      className="w-16 h-16 rounded-full object-cover ring-2 ring-purple-200 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-xl shrink-0">
+                      {speaker.name.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-bold text-slate-900">{speaker.name}</h3>
+                    {speaker.title && (
+                      <p className="text-sm font-medium text-purple-600 mb-1">
+                        {speaker.title}
+                      </p>
+                    )}
+                    {speaker.bio && (
+                      <p className="text-sm text-slate-600 line-clamp-2 mb-2">
+                        {speaker.bio}
+                      </p>
+                    )}
+                    <div className="flex gap-2">
+                      {speaker.linkedinLink && (
+                        <a
+                          href={speaker.linkedinLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-blue-600"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                          </svg>
+                        </a>
+                      )}
+                      {speaker.instagramLink && (
+                        <a
+                          href={speaker.instagramLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-pink-600"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.226-.149-4.771-1.664-4.919-4.919-.058-1.265-.069-1.644-.069-4.849 0-3.204.012-3.584.069-4.849.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                          </svg>
+                        </a>
+                      )}
+                      {speaker.twitterLink && (
+                        <a
+                          href={speaker.twitterLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-sky-500"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </AnimatedCard>
+      )}
+    </div>
+  );
+
+  const ScheduleContent = (
+    <div className="space-y-6">
+      <AnimatedCard delay={0.2}>
+        <div className="rounded-3xl border border-indigo-100 bg-white p-8 shadow-xl shadow-indigo-500/5">
+          <h2 className="text-2xl font-black bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
+            <svg
+              className="h-6 w-6 text-indigo-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            Event Schedule
+          </h2>
+          <div className="space-y-4">
+            {event.schedule
+              ?.sort((a: any, b: any) => a.startTime.localeCompare(b.startTime))
+              .map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all"
+                >
+                  <div className="w-24 shrink-0 flex flex-col items-center">
+                    <span className="font-bold text-lg text-indigo-600">
+                      {item.startTime}
+                    </span>
+                    {item.endTime && (
+                      <span className="text-xs text-slate-400">
+                        {item.endTime}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {item.type !== "session" && (
+                        <span
+                          className={`px-2 py-0.5 text-xs font-bold rounded-full uppercase tracking-wider ${
+                            item.type === "break"
+                              ? "bg-amber-100 text-amber-600"
+                              : item.type === "opening"
+                              ? "bg-green-100 text-green-600"
+                              : item.type === "closing"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {item.type}
+                        </span>
+                      )}
+                      <h3 className="font-bold text-slate-900 text-lg leading-tight">
+                        {item.title}
+                      </h3>
+                    </div>
+                    {item.presenter && (
+                      <p className="text-sm font-medium text-slate-500 mb-2 flex items-center gap-1">
+                        <svg
+                          className="h-3 w-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        {item.presenter}
+                      </p>
+                    )}
+                    {item.description && (
+                      <p className="text-slate-600 text-sm">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </AnimatedCard>
+    </div>
+  );
+
+  const ChatContent = (
+    <AnimatedCard delay={0.2}>
+      <div className="mt-2 h-[600px] flex flex-col">
+        {/* We wrap EventChat in a container to give it height if needed, though EventChat likely handles its own scrolling */}
+        <EventChat
+          eventId={event._id}
+          organizerId={event.organizerId}
+          currentUserId={currentUser?.userId}
+        />
+      </div>
+    </AnimatedCard>
+  );
 
   return (
     <main
@@ -104,9 +343,10 @@ export default async function EventDetailsPage({
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none"></div>
+
       {/* Hero Section */}
       <AnimatedHero>
-        <div className="relative h-[500px] w-full overflow-hidden bg-linear-to-br from-purple-200 via-blue-200 to-indigo-200">
+        <div className="relative h-[450px] w-full overflow-hidden bg-linear-to-br from-purple-200 via-blue-200 to-indigo-200">
           {event.coverImageUrl ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -148,15 +388,20 @@ export default async function EventDetailsPage({
             ></div>
           )}
           <div className="absolute inset-0 flex items-end p-8 sm:p-12 pointer-events-none">
-            <div className="mx-auto w-full max-w-5xl pointer-events-auto">
+            <div className="mx-auto w-full max-w-7xl pointer-events-auto">
               <div className="flex flex-col gap-4">
-                {isFinished && (
-                  <div className="flex">
-                    <span className="inline-flex items-center rounded-full bg-slate-500/80 backdrop-blur-md px-4 py-1.5 text-xs font-black uppercase tracking-widest text-white ring-1 ring-white/20">
+                <div className="flex flex-wrap gap-2">
+                  {event.category && (
+                    <span className="inline-flex items-center rounded-full bg-indigo-500/80 backdrop-blur-md px-3 py-1 text-xs font-bold uppercase tracking-widest text-white ring-1 ring-white/20 shadow-lg">
+                      {event.category}
+                    </span>
+                  )}
+                  {isFinished && (
+                    <span className="inline-flex items-center rounded-full bg-slate-500/80 backdrop-blur-md px-4 py-1 text-xs font-black uppercase tracking-widest text-white ring-1 ring-white/20">
                       This Event has Ended
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
                 <h1
                   className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg ${
                     isFinished ? "opacity-80" : ""
@@ -164,48 +409,6 @@ export default async function EventDetailsPage({
                 >
                   {event.title}
                 </h1>
-                <div className="mt-2 flex flex-wrap items-center gap-6 text-white/90">
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                    <svg
-                      className="h-5 w-5 text-purple-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <span className="font-medium">
-                      {formatEventDate(event.startsAt)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                    <svg
-                      className="h-5 w-5 text-blue-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    <span className="font-medium">{event.location}</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -213,7 +416,7 @@ export default async function EventDetailsPage({
       </AnimatedHero>
 
       <AnimatedContent>
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 relative z-10">
           {/* Messages */}
           {resolvedSearchParams?.booked === "true" && (
             <AnimatedSuccessMessage>
@@ -279,142 +482,17 @@ export default async function EventDetailsPage({
             </AnimatedSuccessMessage>
           )}
 
-          <div className="grid gap-12 lg:grid-cols-3">
+          <div className="grid gap-8 lg:grid-cols-3">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              <AnimatedCard delay={0.4}>
-                <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
-                  <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight">
-                    About this event
-                  </h2>
-                  {event.description ? (
-                    <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line font-medium">
-                      {event.description}
-                    </p>
-                  ) : (
-                    <p className="text-lg leading-relaxed text-slate-400 italic font-medium">
-                      No description provided for this event.
-                    </p>
-                  )}
-                </div>
-              </AnimatedCard>
-
-              {/* Speakers Section */}
-              {event.speakers && event.speakers.length > 0 && (
-                <AnimatedCard delay={0.45}>
-                  <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
-                    <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
+              {/* Event Info Bar */}
+              <AnimatedCard delay={0.3}>
+                <div className="grid gap-4 md:grid-cols-2 rounded-2xl bg-white/60 backdrop-blur-md p-4 shadow-sm border border-white/50">
+                  {/* Date & Time */}
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50/50">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
                       <svg
-                        className="h-6 w-6 text-purple-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      Speakers & Presenters
-                    </h2>
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {event.speakers.map((speaker: any, index: number) => (
-                        <div
-                          key={index}
-                          className="flex gap-4 items-start p-4 rounded-2xl bg-slate-50 border border-slate-100"
-                        >
-                          {speaker.profileImageUrl ? (
-                            <img
-                              src={speaker.profileImageUrl}
-                              alt={speaker.name}
-                              className="w-16 h-16 rounded-full object-cover ring-2 ring-purple-200 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-16 h-16 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-xl shrink-0">
-                              {speaker.name.charAt(0)}
-                            </div>
-                          )}
-                          <div>
-                            <h3 className="font-bold text-slate-900">
-                              {speaker.name}
-                            </h3>
-                            {speaker.title && (
-                              <p className="text-sm font-medium text-purple-600 mb-1">
-                                {speaker.title}
-                              </p>
-                            )}
-                            {speaker.bio && (
-                              <p className="text-sm text-slate-600 line-clamp-2 mb-2">
-                                {speaker.bio}
-                              </p>
-                            )}
-                            <div className="flex gap-2">
-                              {speaker.linkedinLink && (
-                                <a
-                                  href={speaker.linkedinLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-slate-400 hover:text-blue-600"
-                                >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                                  </svg>
-                                </a>
-                              )}
-                              {speaker.instagramLink && (
-                                <a
-                                  href={speaker.instagramLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-slate-400 hover:text-pink-600"
-                                >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.226-.149-4.771-1.664-4.919-4.919-.058-1.265-.069-1.644-.069-4.849 0-3.204.012-3.584.069-4.849.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                                  </svg>
-                                </a>
-                              )}
-                              {speaker.twitterLink && (
-                                <a
-                                  href={speaker.twitterLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-slate-400 hover:text-sky-500"
-                                >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                                  </svg>
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </AnimatedCard>
-              )}
-
-              {/* Schedule Section */}
-              {event.schedule && event.schedule.length > 0 && (
-                <AnimatedCard delay={0.48}>
-                  <div className="rounded-3xl border border-indigo-100 bg-white p-8 shadow-xl shadow-indigo-500/5">
-                    <h2 className="text-2xl font-black bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
-                      <svg
-                        className="h-6 w-6 text-indigo-600"
+                        className="h-5 w-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -426,90 +504,117 @@ export default async function EventDetailsPage({
                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       </svg>
-                      Event Schedule
-                    </h2>
-                    <div className="space-y-4">
-                      {event.schedule
-                        .sort((a: any, b: any) =>
-                          a.startTime.localeCompare(b.startTime)
-                        )
-                        .map((item: any, index: number) => (
-                          <div
-                            key={index}
-                            className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all"
-                          >
-                            <div className="w-24 shrink-0 flex flex-col items-center">
-                              <span className="font-bold text-lg text-indigo-600">
-                                {item.startTime}
-                              </span>
-                              {item.endTime && (
-                                <span className="text-xs text-slate-400">
-                                  {item.endTime}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex-1 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {item.type !== "session" && (
-                                  <span
-                                    className={`px-2 py-0.5 text-xs font-bold rounded-full uppercase tracking-wider ${
-                                      item.type === "break"
-                                        ? "bg-amber-100 text-amber-600"
-                                        : item.type === "opening"
-                                        ? "bg-green-100 text-green-600"
-                                        : item.type === "closing"
-                                        ? "bg-red-100 text-red-600"
-                                        : "bg-slate-100 text-slate-600"
-                                    }`}
-                                  >
-                                    {item.type}
-                                  </span>
-                                )}
-                                <h3 className="font-bold text-slate-900 text-lg leading-tight">
-                                  {item.title}
-                                </h3>
-                              </div>
-                              {item.presenter && (
-                                <p className="text-sm font-medium text-slate-500 mb-2 flex items-center gap-1">
-                                  <svg
-                                    className="h-3 w-3"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                    />
-                                  </svg>
-                                  {item.presenter}
-                                </p>
-                              )}
-                              {item.description && (
-                                <p className="text-slate-600 text-sm">
-                                  {item.description}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase text-purple-400">
+                        Date & Time
+                      </p>
+                      <p className="font-semibold text-slate-800">
+                        {formatEventDate(event.startsAt)}
+                      </p>
                     </div>
                   </div>
-                </AnimatedCard>
-              )}
 
-              {/* Event Chat */}
-              <AnimatedCard delay={0.5}>
-                <div className="mt-8">
-                  <EventChat
-                    eventId={event._id}
-                    organizerId={event.organizerId}
-                    currentUserId={currentUser?.userId}
-                  />
+                  {/* Location */}
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase text-blue-400">
+                        Location
+                      </p>
+                      <p className="font-semibold text-slate-800 line-clamp-1">
+                        {event.location}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Organizer */}
+                  {organizer && (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50/50 border border-indigo-100/50">
+                      {organizer.imageUrl ? (
+                        <img
+                          src={organizer.imageUrl}
+                          alt={organizer.name}
+                          className="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-200"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold">
+                          {organizer.name.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-xs font-bold uppercase text-indigo-400">
+                          Organized by
+                        </p>
+                        <p className="font-bold text-slate-800">
+                          {organizer.name}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rating - Only displayed if finished and has ratings */}
+                  {isFinished && (event.ratingCount || 0) > 0 && (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100/50">
+                      <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                        <svg
+                          className="h-5 w-5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase text-amber-400">
+                          Rating
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <span className="font-bold text-slate-800">
+                            {event.averageRating
+                              ? event.averageRating.toFixed(1)
+                              : "New"}
+                          </span>
+                          {event.ratingCount ? (
+                            <span className="text-xs text-slate-400 font-medium">
+                              ({event.ratingCount})
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </AnimatedCard>
+
+              {/* Tabs Content */}
+              <EventTabs
+                overviewContent={OverviewContent}
+                scheduleContent={ScheduleContent}
+                chatContent={ChatContent}
+                hasSchedule={!!(event.schedule && event.schedule.length > 0)}
+                hasSpeakers={!!(event.speakers && event.speakers.length > 0)}
+              />
             </div>
 
             {/* Booking Sidebar */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Ticket, Clock } from "lucide-react";
+import { MapPin, Ticket, Clock, Star } from "lucide-react";
 import Link from "next/link";
 
 // Define the shape of a booking
@@ -16,10 +16,16 @@ export interface Booking {
   description?: string;
   numberOfSeats: number;
   bookedAt: string;
+  userRating?: number | null;
+}
+
+interface BookingCardProps {
+  booking: Booking;
+  onRate?: (booking: Booking) => void;
 }
 
 // Component for a single booked event card
-const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
+const BookingCard: React.FC<BookingCardProps> = ({ booking, onRate }) => {
   const {
     title,
     location,
@@ -28,6 +34,7 @@ const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
     coverImageUrl,
     numberOfSeats,
     eventId,
+    userRating,
   } = booking;
 
   const now = new Date();
@@ -237,15 +244,42 @@ const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
             </span>
           </div>
 
-          <Link href={`/home/${eventId}`}
-            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
-              isFinished
-                ? "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                : "bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-100"
-            }`}
-          >
-            {isFinished ? "Details" : "View Ticket"}
-          </Link>
+          <div className="flex items-center gap-2">
+            {isFinished ? (
+              <>
+                {userRating ? (
+                  <div className="flex items-center gap-1 bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-lg">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                    <span className="text-xs font-bold text-amber-700">
+                      {userRating}/5
+                    </span>
+                  </div>
+                ) : onRate ? (
+                  <button
+                    onClick={() => onRate(booking)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 text-white text-[11px] font-black uppercase tracking-widest hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all"
+                  >
+                    <Star className="w-3.5 h-3.5 fill-white" />
+                    Rate
+                  </button>
+                ) : null}
+
+                <Link
+                  href={`/home/${eventId}`}
+                  className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-200"
+                >
+                  Details
+                </Link>
+              </>
+            ) : (
+              <Link
+                href={`/home/${eventId}`}
+                className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-95 shadow-lg shadow-indigo-100 ring-4 ring-indigo-50"
+              >
+                View Ticket
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>

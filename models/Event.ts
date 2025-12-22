@@ -35,6 +35,8 @@ export interface IEvent extends Document {
   description?: string;
   speakers?: ISpeaker[];
   schedule?: IScheduleItem[];
+  averageRating?: number;
+  ratingCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +50,14 @@ const EventSchema = new Schema<IEvent>(
     title: {
       type: String,
       required: true,
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
     },
     location: {
       type: String,

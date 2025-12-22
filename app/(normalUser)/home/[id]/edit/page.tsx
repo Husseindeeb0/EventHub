@@ -9,7 +9,9 @@ async function getEvent(id: string) {
   try {
     const event = await Event.findById(id).lean();
     if (!event) return null;
-    return { ...event, _id: event._id.toString() };
+
+    // Deep serialize the object to ensure all _id's and special types are converted
+    return JSON.parse(JSON.stringify(event));
   } catch (error) {
     return null;
   }

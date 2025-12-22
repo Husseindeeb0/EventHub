@@ -7,7 +7,7 @@ const ACCESS_TOKEN_SECRET =
 const REFRESH_TOKEN_SECRET =
   process.env.REFRESH_TOKEN_SECRET || "your-refresh-token-secret";
 
-const ACCESS_TOKEN_EXPIRY = "15m";
+const ACCESS_TOKEN_EXPIRY = "1d";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
 export interface TokenPayload {
@@ -64,7 +64,7 @@ export async function setTokenCookies(
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 15 * 60,
+    maxAge: 24 * 60 * 60,
     path: "/",
   });
 

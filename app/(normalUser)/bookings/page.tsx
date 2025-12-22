@@ -13,12 +13,15 @@ import {
 } from "@/components/animations/PageAnimations";
 
 import Loading from "@/components/ui/Loading";
+import RatingModal from "@/components/ui/RatingModal";
 
 // Main Booking Page Component
 const BookingPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedBookingForRating, setSelectedBookingForRating] =
+    useState<Booking | null>(null);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
@@ -48,7 +51,17 @@ const BookingPage = () => {
     fetchBookings();
   }, [isAuthenticated, router, user?.bookedEvents?.length]);
 
-  const upcomingBookings = bookings;
+  const now = new Date();
+
+  const activeBookings = bookings.filter((b) => {
+    const endDate = b.endsAt ? new Date(b.endsAt) : new Date(b.startsAt);
+    return endDate >= now;
+  });
+
+  const attendedBookings = bookings.filter((b) => {
+    const endDate = b.endsAt ? new Date(b.endsAt) : new Date(b.startsAt);
+    return endDate < now;
+  });
 
   if (loading) {
     return <Loading fullScreen message="Loading your tickets..." />;
@@ -81,15 +94,18 @@ const BookingPage = () => {
             </h2>
             <div className="h-[2px] flex-1 bg-linear-to-r from-indigo-100 to-transparent"></div>
             <span className="px-3 py-1 rounded-full bg-white border border-indigo-100 text-indigo-600 text-[10px] font-black">
-              {upcomingBookings.length}
+              {activeBookings.length}
             </span>
           </div>
 
-          {upcomingBookings.length > 0 ? (
+          {activeBookings.length > 0 ? (
             <div className="flex flex-col gap-8">
-              {upcomingBookings.map((booking, index) => (
+              {activeBookings.map((booking, index) => (
                 <AnimatedCard key={booking._id} delay={index * 0.1}>
-                  <BookingCard booking={booking} />
+                  <BookingCard
+                    booking={booking}
+                    onRate={(b) => setSelectedBookingForRating(b)}
+                  />
                 </AnimatedCard>
               ))}
             </div>
@@ -113,6 +129,43 @@ const BookingPage = () => {
             </div>
           )}
         </section>
+
+        {/* Attended Events Section */}
+        {attendedBookings.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center gap-3 mb-8">
+              <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">
+                Past Events
+              </h2>
+              <div className="h-[2px] flex-1 bg-linear-to-r from-slate-200 to-transparent"></div>
+              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-500 text-[10px] font-black">
+                {attendedBookings.length}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-8">
+              {attendedBookings.map((booking, index) => (
+                <AnimatedCard key={booking._id} delay={0.2 + index * 0.1}>
+                  <BookingCard
+                    booking={booking}
+                    onRate={(b) => setSelectedBookingForRating(b)}
+                  />
+                </AnimatedCard>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <RatingModal
+          isOpen={!!selectedBookingForRating}
+          onClose={() => {
+            setSelectedBookingForRating(null);
+            // Refresh bookings to show the new rating (simple reload or fetch)
+            window.location.reload();
+          }}
+          eventId={selectedBookingForRating?.eventId || ""}
+          eventTitle={selectedBookingForRating?.title || ""}
+        />
       </div>
     </main>
   );

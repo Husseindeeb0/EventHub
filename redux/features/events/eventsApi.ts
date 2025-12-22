@@ -12,6 +12,8 @@ export interface Event {
   description?: string;
   bookedCount: number;
   organizerId?: string;
+  averageRating?: number;
+  ratingCount?: number;
 }
 
 export interface CreateEventData {
