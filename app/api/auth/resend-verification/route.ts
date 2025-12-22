@@ -42,6 +42,11 @@ export async function POST(req: Request) {
       <p>This code will expire in 24 hours.</p>
     `;
 
+        // DEVELOPMENT LOG: Log verification code to console for easy testing
+        console.log(`\n--- DEVELOPMENT LOG (RESEND) ---`);
+        console.log(`Verification code for ${email}: ${verificationCode}`);
+        console.log(`--------------------------------\n`);
+
         try {
             const result = await sendEmail({
                 to: user.email,

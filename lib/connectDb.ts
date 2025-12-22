@@ -52,7 +52,8 @@ async function connectDb(): Promise<typeof mongoose> {
         return mongoose;
       })
       .catch((error) => {
-        console.error("❌ MongoDB connection error:", error);
+        console.error("❌ MongoDB connection error:", error.message);
+        console.error("URI used:", process.env.MONGODB_URI ? "HIDDEN" : "MISSING");
         throw error;
       });
   }

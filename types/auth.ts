@@ -40,7 +40,7 @@ export interface SignupData {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   role: "user" | "organizer";
   description?: string;
 }

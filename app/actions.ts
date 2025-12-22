@@ -217,6 +217,10 @@ export async function deleteEventAction(formData: FormData) {
   redirect("/myEvents");
 }
 
+import Feedback from "@/models/Feedback";
+
+// ... (existing imports)
+
 export async function bookEventAction(formData: FormData) {
   // Require authentication
   const currentUser = await requireAuth();
@@ -288,7 +292,23 @@ export async function bookEventAction(formData: FormData) {
     $push: { bookedEvents: eventId },
   });
 
-  redirect(`/home/${eventId}?booked=true`);
+  // Check if this is the user's first successful booking
+  // We count bookings. If it's 1, it's the first one (since we just created one).
+  // AND check if they haven't given feedback yet.
+  const successfulBookingsCount = await Booking.countDocuments({
+    user: currentUser.userId,
+    status: "confirmed",
+  });
+
+  let showFeedback = false;
+  if (successfulBookingsCount === 1) {
+    const existingFeedback = await Feedback.findOne({ user: currentUser.userId });
+    if (!existingFeedback) {
+      showFeedback = true;
+    }
+  }
+
+  redirect(`/home/${eventId}?booked=true${showFeedback ? "&showFeedback=true" : ""}`);
 }
 
 export async function cancelBookingAction(formData: FormData) {

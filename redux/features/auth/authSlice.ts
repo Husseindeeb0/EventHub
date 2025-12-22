@@ -43,7 +43,7 @@ const authSlice = createSlice({
           state.loading = false;
           state.isAuthenticated = false;
           state.error =
-            (payload as any)?.message || error.message || "Login failed";
+            (payload as any)?.data?.message || (payload as any)?.message || error.message || "Login failed";
         }
       )
       // Signup
@@ -65,7 +65,7 @@ const authSlice = createSlice({
           state.loading = false;
           state.isAuthenticated = false;
           state.error =
-            (payload as any)?.message || error.message || "Signup failed";
+            (payload as any)?.data?.message || (payload as any)?.message || error.message || "Signup failed";
         }
       )
       // Logout
@@ -109,9 +109,13 @@ const authSlice = createSlice({
         (state, { payload, error }) => {
           state.loading = false;
           state.error =
+<<<<<<< Updated upstream
             (payload as any)?.message ||
             error.message ||
             "Update profile failed";
+=======
+            (payload as any)?.data?.message || (payload as any)?.message || error.message || "Update profile failed";
+>>>>>>> Stashed changes
         }
       );
   },

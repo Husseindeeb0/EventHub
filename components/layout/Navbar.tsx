@@ -22,6 +22,7 @@ const navLinks: NavLink[] = [
   { href: "/home", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/bookings", label: "My Bookings", isProtected: true },
+  { href: "/feedback", label: "Feedback", isProtected: true },
   // Organizer-specific links
   {
     href: "/myEvents",
