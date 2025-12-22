@@ -2,6 +2,7 @@
 
 import { MapPin, Ticket, Clock } from "lucide-react";
 import Link from "next/link";
+import DownloadTicketButton from "../ticket/DownloadTicketButton";
 
 // Define the shape of a booking
 export interface Booking {
@@ -16,6 +17,16 @@ export interface Booking {
   description?: string;
   numberOfSeats: number;
   bookedAt: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  userId?: string;
+  organizer?: {
+    _id: string;
+    name: string;
+    email: string;
+    imageUrl?: string;
+  };
 }
 
 // Component for a single booked event card
@@ -237,15 +248,39 @@ const BookingCard: React.FC<{ booking: Booking }> = ({ booking }) => {
             </span>
           </div>
 
-          <Link href={`/home/${eventId}`}
+          <Link
+            href={`/home/${eventId}`}
             className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
               isFinished
                 ? "bg-slate-100 text-slate-500 hover:bg-slate-200"
                 : "bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-100"
             }`}
           >
-            {isFinished ? "Details" : "View Ticket"}
+            {isFinished ? "Details" : "Event Page"}
           </Link>
+
+          {!isFinished && (
+            <DownloadTicketButton
+              event={{
+                title: booking.title,
+                location: booking.location,
+                startsAt: booking.startsAt,
+                description: booking.description,
+                coverImageUrl: booking.coverImageUrl,
+                organizer: booking.organizer,
+              }}
+              booking={{
+                _id: booking._id,
+                name: booking.name,
+                phone: booking.phone,
+                userId: booking.userId,
+                seats: booking.numberOfSeats, // Ensure mapping handles existing bookings
+                numberOfSeats: booking.numberOfSeats,
+              }}
+              label="Ticket"
+              className="px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-white border-2 border-indigo-100 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 flex items-center gap-2 cursor-pointer"
+            />
+          )}
         </div>
       </div>
     </div>

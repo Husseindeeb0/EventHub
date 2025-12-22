@@ -1,7 +1,9 @@
 import connectDb from "@/lib/connectDb";
 import Event from "@/models/Event";
 import Booking from "@/models/Booking";
+import User from "@/models/User";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import BookingForm from "./BookingForm";
 import {
   AnimatedHero,
@@ -11,54 +13,46 @@ import {
 } from "./AnimatedEventContent";
 import EventImage from "./EventImage";
 import EventChat from "@/components/chat/EventChat";
-import FeedbackIntegration from "@/components/FeedbackIntegration";
-import Feedback from "@/models/Feedback";
-import GiveFeedbackButton from "@/components/GiveFeedbackButton";
+import FollowButton from "@/components/FollowButton";
+import AutoDownloadTicket from "@/components/ticket/AutoDownloadTicket";
 
 async function getEvent(id: string) {
-  // --- TEST EVENT BACKDOOR ---
-  if (id === "mock-event-id-456" || id === "mock-booking-id-789") {
-    return {
-      _id: "mock-event-id-456",
-      title: "Teach Conference",
-      location: "Lebanon",
-      startsAt: new Date("2024-06-15T10:00:00Z"),
-      coverImageUrl:
-        "https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop",
-      capacity: 100,
-      availableSeats: 0,
-      description:
-        "This tech conference has already ended. It was a massive success with over 500 attendees and 20+ keynote speakers from top tech companies.",
-      organizerId: "org-user-id-456",
-      endsAt: new Date("2024-06-15T18:00:00Z"),
-    };
-  }
-  // ---------------------------
-
+  await connectDb();
   try {
-    await connectDb();
     const event = await Event.findById(id).lean();
     if (!event) return null;
     return { ...event, _id: event._id.toString() };
   } catch (error) {
-    console.error("Database error in getEvent:", error);
     return null;
   }
 }
 
 async function getBookedCount(eventId: string) {
-  if (eventId === "mock-event-id-456" || eventId === "mock-booking-id-789") {
-    return 1;
-  }
-
+  await connectDb();
   try {
-    await connectDb();
     return await Booking.countDocuments({
       event: eventId,
       status: { $ne: "cancelled" },
     });
   } catch (error) {
     return 0;
+  }
+}
+
+async function getOrganizerDetails(organizerId: string) {
+  await connectDb();
+  try {
+    const organizer = await User.findById(organizerId)
+      .select("name email imageUrl followers")
+      .lean();
+    if (!organizer) return null;
+    return {
+      ...organizer,
+      _id: organizer._id.toString(),
+      followers: organizer.followers.map((id) => id.toString()),
+    };
+  } catch (error) {
+    return null;
   }
 }
 
@@ -90,17 +84,26 @@ export default async function EventDetailsPage({
 }: {
   params: Promise<{ id: string }> | { id: string };
   searchParams:
-    | Promise<{ booked?: string; cancelled?: string }>
-    | { booked?: string; cancelled?: string };
+  | Promise<{ booked?: string; cancelled?: string }>
+  | { booked?: string; cancelled?: string };
 }) {
   const resolvedParams = await Promise.resolve(params);
   const resolvedSearchParams = await Promise.resolve(searchParams);
   const event = await getEvent(resolvedParams.id);
   const currentUser = await getCurrentUser();
 
+  if (event) {
+    console.log("DEBUG: Event found:", event.title, "OrganizerID:", event.organizerId);
+  } else {
+    console.log("DEBUG: Event NOT found for ID:", resolvedParams.id);
+  }
+
   if (!event) {
     notFound();
   }
+
+  const organizer = await getOrganizerDetails(event.organizerId);
+  console.log("DEBUG: Organizer fetch result:", organizer ? "Found: " + organizer.name : "NULL");
 
   const bookedCount = await getBookedCount(resolvedParams.id);
   const remainingSeats = event.capacity ? event.capacity - bookedCount : null;
@@ -108,55 +111,30 @@ export default async function EventDetailsPage({
   const isFinished = event.endsAt
     ? new Date(event.endsAt) < new Date()
     : event.startsAt
-    ? new Date(event.startsAt) < new Date()
-    : false;
-
-  // Use isFinished for past events
-  const isPast = isFinished;
+      ? new Date(event.startsAt) < new Date()
+      : false;
 
   let userBooking = null;
-  let hasFeedback = false;
   if (currentUser) {
-    // --- TEST USER CHECK ---
-    if (
-      currentUser.userId === "507f1f77bcf86cd799439011" ||
-      currentUser.userId === "test-user-id-123"
-    ) {
-      userBooking = {
-        _id: "mock-booking-id-789",
-        user: currentUser.userId,
-        event: resolvedParams.id,
-        status: "confirmed",
-      };
-      hasFeedback = false;
-    } else {
-      try {
-        await connectDb();
-        userBooking = await Booking.findOne({
-          user: currentUser.userId,
-          event: resolvedParams.id,
-          status: { $ne: "cancelled" },
-        }).lean();
-
-        if (userBooking) {
-          const feedbackCount = await Feedback.countDocuments({
-            user: currentUser.userId,
-          });
-          hasFeedback = feedbackCount > 0;
-        }
-      } catch (error) {
-        console.error("Database error in user interaction check:", error);
-      }
-    }
+    await connectDb();
+    userBooking = await Booking.findOne({
+      user: currentUser.userId,
+      event: resolvedParams.id,
+      status: { $ne: "cancelled" },
+    }).lean();
   }
+
+  const isFollowing =
+    currentUser && organizer
+      ? organizer.followers.includes(currentUser.userId)
+      : false;
 
   return (
     <main
-      className={`min-h-screen relative overflow-hidden ${
-        isFinished
-          ? "grayscale-sm bg-slate-100"
-          : "bg-linear-to-br from-indigo-100/70 via-purple-100/80 to-blue-100/90"
-      }`}
+      className={`min-h-screen relative overflow-hidden ${isFinished
+        ? "grayscale-sm bg-slate-100"
+        : "bg-linear-to-br from-indigo-100/70 via-purple-100/80 to-blue-100/90"
+        }`}
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none"></div>
@@ -196,11 +174,10 @@ export default async function EventDetailsPage({
           )}
           {event.coverImageUrl && (
             <div
-              className={`absolute inset-0 bg-linear-to-t pointer-events-none ${
-                isFinished
-                  ? "from-slate-900/90 via-slate-800/70"
-                  : "from-purple-900/90 via-purple-800/70"
-              } to-transparent`}
+              className={`absolute inset-0 bg-linear-to-t pointer-events-none ${isFinished
+                ? "from-slate-900/90 via-slate-800/70"
+                : "from-purple-900/90 via-purple-800/70"
+                } to-transparent`}
             ></div>
           )}
           <div className="absolute inset-0 flex items-end p-8 sm:p-12 pointer-events-none">
@@ -214,9 +191,8 @@ export default async function EventDetailsPage({
                   </div>
                 )}
                 <h1
-                  className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg ${
-                    isFinished ? "opacity-80" : ""
-                  }`}
+                  className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg ${isFinished ? "opacity-80" : ""
+                    }`}
                 >
                   {event.title}
                 </h1>
@@ -270,7 +246,6 @@ export default async function EventDetailsPage({
 
       <AnimatedContent>
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-          {/* Messages */}
           {resolvedSearchParams?.booked === "true" && (
             <AnimatedSuccessMessage>
               <div className="mb-8 rounded-2xl bg-linear-to-r from-green-500 to-emerald-500 p-6 text-white shadow-lg ring-4 ring-green-100">
@@ -301,6 +276,32 @@ export default async function EventDetailsPage({
                 </div>
               </div>
             </AnimatedSuccessMessage>
+          )}
+
+          {resolvedSearchParams?.booked === "true" && userBooking && (
+            <AutoDownloadTicket
+              event={{
+                title: event.title,
+                location: event.location,
+                startsAt: event.startsAt && new Date(event.startsAt).toISOString(),
+                description: event.description,
+                coverImageUrl: event.coverImageUrl,
+                organizer: organizer ? {
+                  _id: organizer._id,
+                  name: organizer.name,
+                  email: organizer.email,
+                  imageUrl: organizer.imageUrl
+                } : null
+              }}
+              booking={{
+                _id: userBooking._id.toString(),
+                name: userBooking.name,
+                phone: userBooking.phone,
+                userId: userBooking.user,
+                seats: userBooking.seats,
+                numberOfSeats: userBooking.seats
+              }}
+            />
           )}
 
           {resolvedSearchParams?.cancelled === "true" && (
@@ -340,9 +341,41 @@ export default async function EventDetailsPage({
             <div className="lg:col-span-2 space-y-8">
               <AnimatedCard delay={0.4}>
                 <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
-                  <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight">
-                    About this event
-                  </h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+                      About this event
+                    </h2>
+                    {organizer && (
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-500">
+                            Organized by
+                          </p>
+                          <p className="font-semibold text-gray-900">
+                            {organizer.name}
+                          </p>
+                        </div>
+                        {currentUser &&
+                          currentUser.userId !== organizer._id && (
+                            <>
+                              <FollowButton
+                                organizerId={organizer._id}
+                                initialIsFollowing={isFollowing}
+                                initialFollowerCount={
+                                  organizer.followers.length
+                                }
+                              />
+                              <Link
+                                href={`/organizers/${organizer._id}`}
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors"
+                              >
+                                Show Profile
+                              </Link>
+                            </>
+                          )}
+                      </div>
+                    )}
+                  </div>
                   {event.description ? (
                     <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line font-medium">
                       {event.description}
@@ -371,22 +404,20 @@ export default async function EventDetailsPage({
             <div className="lg:col-span-1">
               <AnimatedCard delay={0.6}>
                 <div
-                  className={`sticky top-24 rounded-3xl border p-8 shadow-2xl transition-all ${
-                    isFinished
-                      ? "border-slate-200 bg-slate-50/50 shadow-slate-200/50"
-                      : "border-purple-100 bg-white shadow-purple-500/10 ring-1 ring-purple-50"
-                  }`}
+                  className={`sticky top-24 rounded-3xl border p-8 shadow-2xl transition-all ${isFinished
+                    ? "border-slate-200 bg-slate-50/50 shadow-slate-200/50"
+                    : "border-purple-100 bg-white shadow-purple-500/10 ring-1 ring-purple-50"
+                    }`}
                 >
                   <h3
-                    className={`text-xl font-black mb-8 uppercase tracking-widest ${
-                      isFinished ? "text-slate-400" : "text-slate-900"
-                    }`}
+                    className={`text-xl font-black mb-8 uppercase tracking-widest ${isFinished ? "text-slate-400" : "text-slate-900"
+                      }`}
                   >
                     {isFinished
                       ? "Event Status"
                       : userBooking
-                      ? "Your Booking"
-                      : "Reserve Spot"}
+                        ? "Your Booking"
+                        : "Reserve Spot"}
                   </h3>
 
                   <div className="space-y-6 mb-8">
@@ -395,9 +426,8 @@ export default async function EventDetailsPage({
                         Attendance
                       </span>
                       <span
-                        className={`text-[13px] font-black ${
-                          isFinished ? "text-slate-400" : "text-indigo-600"
-                        }`}
+                        className={`text-[13px] font-black ${isFinished ? "text-slate-400" : "text-indigo-600"
+                          }`}
                       >
                         {isFinished ? "Closed" : "Free Entry"}
                       </span>
@@ -407,13 +437,12 @@ export default async function EventDetailsPage({
                         Total Booked
                       </span>
                       <span
-                        className={`text-[13px] font-black ${
-                          isFull
-                            ? "text-rose-600"
-                            : isFinished
+                        className={`text-[13px] font-black ${isFull
+                          ? "text-rose-600"
+                          : isFinished
                             ? "text-slate-500"
                             : "text-slate-900"
-                        }`}
+                          }`}
                       >
                         {event.capacity != null ? (
                           <>
@@ -429,48 +458,32 @@ export default async function EventDetailsPage({
                   </div>
 
                   {isFinished ? (
-                    <div className="space-y-4">
-                      <div className="rounded-2xl bg-slate-100 border-2 border-slate-200 p-6 text-center">
-                        <div className="flex flex-col items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
-                            <svg
-                              className="h-6 w-6"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2.5}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-sm font-black text-slate-600 uppercase tracking-widest">
-                              Event Finished
-                            </p>
-                            <p className="text-xs text-slate-400 font-bold">
-                              Booking is no longer available.
-                            </p>
-                          </div>
+                    <div className="rounded-2xl bg-slate-100 border-2 border-slate-200 p-6 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
+                          <svg
+                            className="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-slate-600 uppercase tracking-widest">
+                            Event Finished
+                          </p>
+                          <p className="text-xs text-slate-400 font-bold">
+                            Booking is no longer available.
+                          </p>
                         </div>
                       </div>
-
-                      {/* Show feedback button for test user or for mock event testing */}
-                      {(userBooking ||
-                        resolvedParams.id === "mock-event-id-456") && (
-                        <div className="pt-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                          <div className="rounded-xl bg-indigo-50/50 border border-indigo-100 p-4 mb-3">
-                            <p className="text-xs text-center text-indigo-700 font-medium">
-                              This event is finished. Our test system shows you
-                              as an attendee!
-                            </p>
-                          </div>
-                          <GiveFeedbackButton eventId={event._id} />
-                        </div>
-                      )}
                     </div>
                   ) : isFull && !userBooking ? (
                     <div className="rounded-2xl bg-rose-50 border-2 border-rose-100 p-6 text-center">
@@ -516,13 +529,6 @@ export default async function EventDetailsPage({
           </div>
         </div>
       </AnimatedContent>
-
-      {/* Feedback Section Overlay */}
-      {(userBooking || resolvedParams.id === "mock-event-id-456") && (
-        <FeedbackIntegration
-          bookingId={userBooking?._id?.toString() || "mock-booking-id-789"}
-        />
-      )}
     </main>
   );
 }
