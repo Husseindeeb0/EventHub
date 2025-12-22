@@ -5,6 +5,12 @@ import Link from "next/link";
 import { updateEventAction, deleteEventAction } from "@/app/actions";
 import { useState } from "react";
 import ImageKitUpload from "@/components/ImageKitUpload";
+import SpeakerManagement, {
+  Speaker,
+} from "@/components/events/SpeakerManagement";
+import ScheduleManagement, {
+  ScheduleItem,
+} from "@/components/events/ScheduleManagement";
 
 interface EventData {
   _id: string;
@@ -16,6 +22,8 @@ interface EventData {
   description?: string;
   coverImageUrl?: string;
   coverImageFileId?: string;
+  speakers?: Speaker[];
+  schedule?: ScheduleItem[];
 }
 
 function SubmitButton() {
@@ -40,6 +48,10 @@ export default function EditEventForm({ event }: { event: EventData }) {
   const [coverImageFileId, setCoverImageFileId] = useState(
     event.coverImageFileId || ""
   );
+  const [speakers, setSpeakers] = useState<Speaker[]>(event.speakers || []);
+  const [schedule, setSchedule] = useState<ScheduleItem[]>(
+    event.schedule || []
+  );
 
   const handleImageUploadSuccess = (res: { url: string; fileId: string }) => {
     setCoverImageUrl(res.url);
@@ -51,6 +63,8 @@ export default function EditEventForm({ event }: { event: EventData }) {
       <div className="h-2 bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600"></div>
       <form action={updateEventAction} className="flex flex-col gap-6 p-8">
         <input type="hidden" name="eventId" value={event._id} />
+        <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
+        <input type="hidden" name="coverImageFileId" value={coverImageFileId} />
         <div>
           <label
             htmlFor="title"
@@ -62,8 +76,8 @@ export default function EditEventForm({ event }: { event: EventData }) {
             type="text"
             id="title"
             name="title"
-            defaultValue={event.title}
             required
+            defaultValue={event.title}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           />
         </div>
@@ -79,9 +93,19 @@ export default function EditEventForm({ event }: { event: EventData }) {
             type="text"
             id="location"
             name="location"
-            defaultValue={event.location || ""}
             required
+            defaultValue={event.location}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Poster Image
+          </label>
+          <ImageKitUpload
+            onSuccess={handleImageUploadSuccess}
+            defaultImage={coverImageUrl}
           />
         </div>
 
@@ -95,8 +119,8 @@ export default function EditEventForm({ event }: { event: EventData }) {
           <select
             id="category"
             name="category"
-            defaultValue={event.category || "Other"}
             required
+            defaultValue={event.category}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           >
             <option value="Music">Music</option>
@@ -120,8 +144,8 @@ export default function EditEventForm({ event }: { event: EventData }) {
             type="datetime-local"
             id="startsAt"
             name="startsAt"
-            defaultValue={defaultDate}
             required
+            defaultValue={defaultDate}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           />
         </div>
@@ -131,50 +155,16 @@ export default function EditEventForm({ event }: { event: EventData }) {
             htmlFor="capacity"
             className="block text-sm font-semibold text-slate-700 mb-2"
           >
-            Number of Seats{" "}
-            <span className="text-slate-400 font-normal">(Optional)</span>
+            Capacity (Optional)
           </label>
           <input
             type="number"
             id="capacity"
             name="capacity"
             min="1"
-            step="1"
-            defaultValue={
-              event.capacity !== undefined && event.capacity !== null
-                ? event.capacity
-                : ""
-            }
+            defaultValue={event.capacity}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-            placeholder="e.g. 100 (leave empty for unlimited)"
-          />
-          <p className="mt-2 text-xs text-slate-500">
-            Leave empty if you want unlimited seats for this event.
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            Cover Image{" "}
-            <span className="text-slate-400 font-normal">(Optional)</span>
-          </label>
-
-          <ImageKitUpload
-            onSuccess={handleImageUploadSuccess}
-            defaultImage={event.coverImageUrl}
-          />
-
-          <input
-            type="hidden"
-            name="coverImageUrl"
-            id="coverImageUrl"
-            value={coverImageUrl}
-          />
-          <input
-            type="hidden"
-            name="coverImageFileId"
-            id="coverImageFileId"
-            value={coverImageFileId}
+            placeholder="Leave empty for unlimited"
           />
         </div>
 
@@ -196,10 +186,30 @@ export default function EditEventForm({ event }: { event: EventData }) {
           />
         </div>
 
+        {/* Speakers Management */}
+        <div>
+          <SpeakerManagement speakers={speakers} onChange={setSpeakers} />
+          <input
+            type="hidden"
+            name="speakers"
+            value={JSON.stringify(speakers)}
+          />
+        </div>
+
+        {/* Schedule Management */}
+        <div>
+          <ScheduleManagement schedule={schedule} onChange={setSchedule} />
+          <input
+            type="hidden"
+            name="schedule"
+            value={JSON.stringify(schedule)}
+          />
+        </div>
+
         <div className="mt-4 flex flex-col gap-3 sm:flex-row-reverse">
           <SubmitButton />
           <Link
-            href="/myEvents"
+            href={`/home/${event._id}`}
             className="inline-flex w-full items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2 sm:w-auto"
           >
             Cancel
@@ -207,18 +217,23 @@ export default function EditEventForm({ event }: { event: EventData }) {
         </div>
       </form>
 
-      <div className="border-t border-purple-200 bg-linear-to-br from-slate-100 via-purple-100/50 to-blue-100/50 p-6">
-        <div className="flex items-center justify-end">
-          <form action={deleteEventAction}>
-            <input type="hidden" name="eventId" value={event._id} />
-            <button
-              type="submit"
-              className="rounded-xl bg-linear-to-r from-red-500 to-rose-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/30 transition-all hover:from-red-600 hover:to-rose-600 hover:shadow-xl hover:shadow-red-500/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Delete Event
-            </button>
-          </form>
-        </div>
+      <div className="border-t border-slate-100 bg-slate-50 p-8">
+        <h3 className="mb-4 text-sm font-semibold text-red-600">Danger Zone</h3>
+        <form
+          action={deleteEventAction}
+          className="flex items-center justify-between"
+        >
+          <p className="text-sm text-slate-500">
+            Irreversibly delete this event and all its data.
+          </p>
+          <input type="hidden" name="eventId" value={event._id} />
+          <button
+            type="submit"
+            className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 transition-all hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            Delete Event
+          </button>
+        </form>
       </div>
     </div>
   );

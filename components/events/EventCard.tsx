@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Star } from "lucide-react";
 import EventImage from "./EventImage";
 import { Event } from "@/redux/features/events/eventsApi";
 
@@ -113,6 +114,17 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             <span className="px-2 py-0.5 rounded-md bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest border border-slate-100">
               {e.category || "Other"}
             </span>
+            {isFinished && (
+              <div className="flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-100">
+                <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                <span className="text-[10px] font-bold text-slate-700">
+                  {e.averageRating ? e.averageRating.toFixed(1) : "New"}
+                  <span className="text-slate-400 ml-0.5">
+                    ({e.ratingCount || 0})
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
 
           <h3

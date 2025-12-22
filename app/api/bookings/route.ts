@@ -4,6 +4,7 @@ import connectDb from "@/lib/connectDb";
 import Booking from "@/models/Booking";
 import Event from "@/models/Event";
 import User from "@/models/User";
+import Review from "@/models/Review";
 import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
@@ -150,22 +151,26 @@ export async function GET(req: NextRequest) {
 
     // --- TEST USER BOOKINGS BACKDOOR ---
     // Handle both legacy and current test user IDs
-    if (userId === '507f1f77bcf86cd799439011' || userId === 'test-user-id-123') {
+    if (
+      userId === "507f1f77bcf86cd799439011" ||
+      userId === "test-user-id-123"
+    ) {
       return NextResponse.json({
         success: true,
         bookings: [
           {
-            _id: 'mock-booking-id-789',
-            eventId: 'mock-event-id-456',
-            title: 'Teach Conference',
-            location: 'Lebanon',
-            startsAt: new Date('2024-06-15T10:00:00Z').toISOString(),
-            coverImageUrl: 'https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop',
+            _id: "mock-booking-id-789",
+            eventId: "mock-event-id-456",
+            title: "Teach Conference",
+            location: "Lebanon",
+            startsAt: new Date("2024-06-15T10:00:00Z").toISOString(),
+            coverImageUrl:
+              "https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop",
             capacity: 100,
-            description: 'A massive tech event to test our feedback system.',
+            description: "A massive tech event to test our feedback system.",
             numberOfSeats: 1,
             bookedAt: new Date().toISOString(),
-          }
+          },
         ],
         hasGivenFeedback: false,
       });
@@ -177,7 +182,10 @@ export async function GET(req: NextRequest) {
     } catch (dbError) {
       console.error("Database connection failed in /api/bookings:", dbError);
       return NextResponse.json(
-        { success: false, message: "Server is currently unable to connect to the database" },
+        {
+          success: false,
+          message: "Server is currently unable to connect to the database",
+        },
         { status: 500 }
       );
     }
@@ -194,6 +202,17 @@ export async function GET(req: NextRequest) {
       .populate("event")
       .sort({ bookingDate: -1 })
       .lean();
+
+    // Fetch user reviews for these events
+    const reviews = await Review.find({
+      user: userId,
+      event: { $in: bookedEventIds },
+    }).lean();
+
+    const reviewMap: Record<string, number> = {};
+    reviews.forEach((review: any) => {
+      reviewMap[review.event.toString()] = review.rating;
+    });
 
     // Collect all organizer IDs
     const organizerIds = bookings
@@ -235,17 +254,20 @@ export async function GET(req: NextRequest) {
           bookedAt: booking.bookingDate
             ? new Date(booking.bookingDate).toISOString()
             : new Date().toISOString(),
+          averageRating: booking.event.averageRating || 0,
+          ratingCount: booking.event.ratingCount || 0,
+          userRating: reviewMap[booking.event._id.toString()] || null,
           name: booking.name,
           email: booking.email,
           phone: booking.phone,
           userId: booking.user,
           organizer: organizer
             ? {
-              _id: organizer._id.toString(),
-              name: organizer.name,
-              email: organizer.email,
-              imageUrl: organizer.imageUrl,
-            }
+                _id: organizer._id.toString(),
+                name: organizer.name,
+                email: organizer.email,
+                imageUrl: organizer.imageUrl,
+              }
             : null,
         };
       })

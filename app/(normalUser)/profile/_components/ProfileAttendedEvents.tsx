@@ -3,8 +3,10 @@ import Image from "next/image";
 import { useAppSelector } from "@/redux/store";
 import { selectUser } from "@/redux/features/auth/authSlice";
 import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
-import { Loader2, Clock, MapPin } from "lucide-react";
+import { Loader2, Clock, MapPin, Star } from "lucide-react";
 import Link from "next/link";
+import RatingModal from "@/components/ui/RatingModal";
+import { useState } from "react";
 
 export default function ProfileAttendedEvents() {
   const user = useAppSelector(selectUser);
@@ -12,6 +14,10 @@ export default function ProfileAttendedEvents() {
     { ids: user?.attendedEvents || [] },
     { skip: !user?.attendedEvents?.length }
   );
+
+  const [selectedEventForRating, setSelectedEventForRating] = useState<
+    any | null
+  >(null);
 
   const events = data?.events || [];
 
@@ -29,12 +35,8 @@ export default function ProfileAttendedEvents() {
         </div>
       ) : events.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {events.map((event, index) => (
-            <div
-              key={event.id}
-              className="opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-forwards"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
+          {events.map((event) => (
+            <div key={event.id} className="relative">
               <Link
                 href={`/home/${event.id}`}
                 className="group relative flex gap-4 p-3 rounded-2xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
@@ -61,13 +63,13 @@ export default function ProfileAttendedEvents() {
                       <Clock className="w-3 h-3 text-indigo-400" />
                       {event.startsAt
                         ? new Date(event.startsAt).toLocaleDateString(
-                          undefined,
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )
+                            undefined,
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )
                         : "TBA"}
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
@@ -77,6 +79,17 @@ export default function ProfileAttendedEvents() {
                   </div>
                 </div>
               </Link>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedEventForRating(event);
+                }}
+                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 shadow-sm hover:bg-amber-50 text-slate-400 hover:text-amber-500 transition-all border border-slate-100"
+                title="Rate Event"
+              >
+                <Star className="w-4 h-4" />
+              </button>
             </div>
           ))}
         </div>
@@ -85,6 +98,13 @@ export default function ProfileAttendedEvents() {
           <p>You haven't attended any events yet.</p>
         </div>
       )}
+
+      <RatingModal
+        isOpen={!!selectedEventForRating}
+        onClose={() => setSelectedEventForRating(null)}
+        eventId={selectedEventForRating?.id || ""}
+        eventTitle={selectedEventForRating?.title || ""}
+      />
     </div>
   );
 }

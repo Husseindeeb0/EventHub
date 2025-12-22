@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { verifyToken } from "./auth";
 import User from "@/models/User";
 import connectDb from "./connectDb";
@@ -80,7 +81,7 @@ export async function requireAuth(): Promise<AuthenticatedUser> {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("Authentication required. Please log in.");
+    redirect("/login");
   }
 
   return user;

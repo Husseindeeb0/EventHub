@@ -195,7 +195,7 @@ export default function EventChat({
   return (
     <div className="flex flex-col h-[600px] w-full bg-white rounded-3xl border border-purple-100 shadow-xl overflow-hidden relative">
       {/* Header */}
-      <div className="p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white flex items-center gap-3 shadow-md z-10">
+      <div className="p-4 bg-linear-to-r from-purple-600 to-blue-600 text-white flex items-center gap-3 shadow-md z-10">
         <div className="p-2 bg-white/20 rounded-full">
           <MessageCircle className="w-6 h-6" />
         </div>
@@ -217,7 +217,7 @@ export default function EventChat({
                 key={pin._id}
                 className="p-3 flex items-start gap-2 text-sm border-b border-amber-100 last:border-0 hover:bg-amber-100/50 transition-colors"
               >
-                <Pin className="w-3 h-3 text-amber-600 mt-1 flex-shrink-0 fill-current" />
+                <Pin className="w-3 h-3 text-amber-600 mt-1 shrink-0 fill-current" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-amber-800 text-xs">
@@ -255,7 +255,7 @@ export default function EventChat({
             <p>No messages yet. Be the first to say hi!</p>
           </div>
         ) : (
-          comments.map((comment) => {
+          comments.map((comment, index) => {
             const user = comment.user || {
               _id: "deleted",
               name: "Deleted User",
@@ -272,151 +272,192 @@ export default function EventChat({
             const canPin = currentUserId === organizerId;
             const isHighlighted = highlightedId === comment._id;
 
-            return (
-              <div
-                key={comment._id}
-                id={`msg-${comment._id}`}
-                className={`flex gap-3 p-2 rounded-xl transition-colors duration-1000 ${
-                  isHighlighted ? "bg-purple-100/50" : ""
-                } ${isMe ? "flex-row-reverse" : "flex-row"}`}
-              >
-                {/* Avatar */}
-                <div className="flex-shrink-0">
-                  {user.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={user.imageUrl}
-                      alt={user.name}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center border-2 border-white shadow-sm text-purple-600">
-                      <UserIcon className="w-5 h-5" />
-                    </div>
-                  )}
-                </div>
+            // Date separator logic
+            const commentDate = new Date(comment.createdAt);
+            const prevComment = index > 0 ? comments[index - 1] : null;
+            const prevCommentDate = prevComment
+              ? new Date(prevComment.createdAt)
+              : null;
 
-                {/* Message Bubble & Actions */}
-                <div
-                  className={`flex flex-col max-w-[80%] ${
-                    isMe ? "items-end" : "items-start"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-slate-600">
-                      {isMe ? "You" : user.name}
-                    </span>
-                    {isOrganizer && (
-                      <span className="flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-200">
-                        <Crown className="w-3 h-3" />
-                        HOST
-                      </span>
-                    )}
-                    <span className="text-[10px] text-slate-400">
-                      {new Date(comment.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+            const isNewDay =
+              !prevCommentDate ||
+              commentDate.toDateString() !== prevCommentDate.toDateString();
+
+            const formatDateSeparator = (date: Date) => {
+              const today = new Date();
+              const yesterday = new Date();
+              yesterday.setDate(today.getDate() - 1);
+
+              if (date.toDateString() === today.toDateString()) return "Today";
+              if (date.toDateString() === yesterday.toDateString())
+                return "Yesterday";
+
+              return date.toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year:
+                  date.getFullYear() !== today.getFullYear()
+                    ? "numeric"
+                    : undefined,
+              });
+            };
+
+            return (
+              <div key={comment._id} className="space-y-6">
+                {isNewDay && (
+                  <div className="flex justify-center my-8">
+                    <span className="px-4 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 shadow-xs">
+                      {formatDateSeparator(commentDate)}
                     </span>
                   </div>
-
-                  {/* Reply Quote */}
-                  {comment.replyTo && (
-                    <div
-                      onClick={() => handleScrollToReply(comment.replyTo?._id)}
-                      className={`mb-1 px-3 py-1.5 rounded-lg text-xs border-l-2 bg-white/50 border-purple-300 text-slate-500 w-full cursor-pointer hover:bg-white/80 transition-colors`}
-                    >
-                      <span className="font-bold mr-1">
-                        {comment.replyTo.user
-                          ? comment.replyTo.user.name
-                          : "Deleted User"}
-                        :
-                      </span>
-                      <span className="truncate block opacity-80">
-                        {comment.replyTo.content}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="relative group">
-                    <div
-                      className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
-                        isMe
-                          ? "bg-blue-600 text-white rounded-tr-none"
-                          : isOrganizer
-                          ? "bg-amber-50 border border-amber-100 text-slate-800 rounded-tl-none"
-                          : "bg-white border border-slate-100 text-slate-700 rounded-tl-none"
-                      }`}
-                    >
-                      {comment.content}
-                    </div>
-
-                    {/* Like Button */}
-                    <button
-                      onClick={() => handleLike(comment._id)}
-                      className={`absolute -bottom-3 ${
-                        isMe ? "-left-2" : "-right-2"
-                      } bg-white rounded-full p-1 shadow-sm border border-slate-100 flex items-center gap-1 hover:scale-110 transition-transform ${
-                        isLiked ? "text-red-500" : "text-slate-400"
-                      }`}
-                      disabled={!currentUserId}
-                    >
-                      <Heart
-                        className={`w-3 h-3 ${isLiked ? "fill-current" : ""}`}
+                )}
+                <div
+                  id={`msg-${comment._id}`}
+                  className={`flex gap-3 p-2 rounded-xl transition-colors duration-1000 ${
+                    isHighlighted ? "bg-purple-100/50" : ""
+                  } ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                >
+                  {/* Avatar */}
+                  <div className="shrink-0">
+                    {user.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.imageUrl}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                       />
-                      {(comment.likes?.length || 0) > 0 && (
-                        <span className="text-[10px] font-bold px-1">
-                          {comment.likes.length}
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center border-2 border-white shadow-sm text-purple-600">
+                        <UserIcon className="w-5 h-5" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Message Bubble & Actions */}
+                  <div
+                    className={`flex flex-col max-w-[80%] ${
+                      isMe ? "items-end" : "items-start"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-slate-600">
+                        {isMe ? "You" : user.name}
+                      </span>
+                      {isOrganizer && (
+                        <span className="flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-200">
+                          <Crown className="w-3 h-3" />
+                          HOST
                         </span>
                       )}
-                    </button>
+                      <span className="text-[10px] text-slate-400">
+                        {commentDate.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
 
-                    {/* Hover Actions Container */}
-                    <div
-                      className={`absolute top-1/2 -translate-y-1/2 ${
-                        isMe ? "-left-20" : "-right-20"
-                      } opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all bg-white/80 p-1 rounded-full shadow-sm backdrop-blur-sm`}
-                    >
-                      {/* Reply Action */}
-                      <button
-                        onClick={() => setReplyingTo(comment)}
-                        className="p-1.5 text-slate-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
-                        title="Reply"
+                    {/* Reply Quote */}
+                    {comment.replyTo && (
+                      <div
+                        onClick={() =>
+                          handleScrollToReply(comment.replyTo?._id)
+                        }
+                        className={`mb-1 px-3 py-1.5 rounded-lg text-xs border-l-2 bg-white/50 border-purple-300 text-slate-500 w-full cursor-pointer hover:bg-white/80 transition-colors`}
                       >
-                        <Reply className="w-3.5 h-3.5" />
+                        <span className="font-bold mr-1">
+                          {comment.replyTo.user
+                            ? comment.replyTo.user.name
+                            : "Deleted User"}
+                          :
+                        </span>
+                        <span className="truncate block opacity-80">
+                          {comment.replyTo.content}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="relative group">
+                      <div
+                        className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                          isMe
+                            ? "bg-blue-600 text-white rounded-tr-none"
+                            : isOrganizer
+                            ? "bg-amber-50 border border-amber-100 text-slate-800 rounded-tl-none"
+                            : "bg-white border border-slate-100 text-slate-700 rounded-tl-none"
+                        }`}
+                      >
+                        {comment.content}
+                      </div>
+
+                      {/* Like Button */}
+                      <button
+                        onClick={() => handleLike(comment._id)}
+                        className={`absolute -bottom-3 ${
+                          isMe ? "-left-2" : "-right-2"
+                        } bg-white rounded-full p-1 shadow-sm border border-slate-100 flex items-center gap-1 hover:scale-110 transition-transform ${
+                          isLiked ? "text-red-500" : "text-slate-400"
+                        }`}
+                        disabled={!currentUserId}
+                      >
+                        <Heart
+                          className={`w-3 h-3 ${isLiked ? "fill-current" : ""}`}
+                        />
+                        {(comment.likes?.length || 0) > 0 && (
+                          <span className="text-[10px] font-bold px-1">
+                            {comment.likes.length}
+                          </span>
+                        )}
                       </button>
 
-                      {/* Pin Action */}
-                      {canPin && (
+                      {/* Hover Actions Container */}
+                      <div
+                        className={`absolute top-1/2 -translate-y-1/2 ${
+                          isMe ? "-left-20" : "-right-20"
+                        } opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all bg-white/80 p-1 rounded-full shadow-sm backdrop-blur-sm`}
+                      >
+                        {/* Reply Action */}
                         <button
-                          onClick={() => handlePin(comment._id)}
-                          className={`p-1.5 transition-colors rounded-full hover:bg-amber-50 ${
-                            comment.isPinned
-                              ? "text-amber-500 hover:text-amber-700"
-                              : "text-slate-400 hover:text-amber-500"
-                          }`}
-                          title={
-                            comment.isPinned ? "Unpin message" : "Pin message"
-                          }
+                          onClick={() => setReplyingTo(comment)}
+                          className="p-1.5 text-slate-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
+                          title="Reply"
                         >
-                          <Pin
-                            className={`w-3.5 h-3.5 ${
-                              comment.isPinned ? "fill-current" : ""
-                            }`}
-                          />
+                          <Reply className="w-3.5 h-3.5" />
                         </button>
-                      )}
 
-                      {/* Delete Action */}
-                      {canDelete && (
-                        <button
-                          onClick={() => handleDelete(comment._id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
-                          title="Delete message"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
+                        {/* Pin Action */}
+                        {canPin && (
+                          <button
+                            onClick={() => handlePin(comment._id)}
+                            className={`p-1.5 transition-colors rounded-full hover:bg-amber-50 ${
+                              comment.isPinned
+                                ? "text-amber-500 hover:text-amber-700"
+                                : "text-slate-400 hover:text-amber-500"
+                            }`}
+                            title={
+                              comment.isPinned ? "Unpin message" : "Pin message"
+                            }
+                          >
+                            <Pin
+                              className={`w-3.5 h-3.5 ${
+                                comment.isPinned ? "fill-current" : ""
+                              }`}
+                            />
+                          </button>
+                        )}
+
+                        {/* Delete Action */}
+                        {canDelete && (
+                          <button
+                            onClick={() => handleDelete(comment._id)}
+                            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                            title="Delete message"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

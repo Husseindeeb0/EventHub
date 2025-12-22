@@ -120,6 +120,9 @@ export async function GET(req: Request) {
         capacity,
         bookedCount,
         organizerId,
+        averageRating: e.averageRating || 0,
+        ratingCount: e.ratingCount || 0,
+        category: e.category,
       };
     });
 
