@@ -27,6 +27,20 @@ A complete profile management system allowing users to upload and manage their p
   - Modern drag-and-drop or click-to-upload interface.
   - Fallback to initials if no photo is uploaded.
 
+### 3. Real-time Notification System
+A comprehensive notification system designed to keep users engaged and informed about their activities and interactions.
+
+- **Triggers**:
+  - **Login Alert**: Users are notified upon successful login for security awareness.
+  - **Booking & Cancellation**: Instant confirmation notifications for event reservations and cancellations.
+  - **Social Interactions**: Users get notified when they receive a new follower.
+  - **New Event Alerts**: Followers are automatically notified when an organizer they follow posts a new event.
+- **Features**:
+  - **Interactive Dropdown**: A responsive notification center (bell icon) in the navbar with unread count badges.
+  - **State Management**: Support for "Mark as Read" (individual or all) and "Clear Notifications" (individual or all).
+  - **Mobile Optimized**: Fully responsive design ensuring the notification center is accessible and usable on mobile devices.
+  - **Real-time Updates**: The system polls for new notifications to ensure users see updates without manual refreshes.
+
 ---
 
 ## 👨‍💻 Credits

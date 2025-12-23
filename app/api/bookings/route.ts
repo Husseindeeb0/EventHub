@@ -116,6 +116,16 @@ export async function POST(req: NextRequest) {
       // Commit transaction
       await session.commitTransaction();
 
+      // Trigger Reservation Notification
+      const { createNotification } = await import("@/lib/notifications");
+      await createNotification({
+        recipient: userId,
+        type: "RESERVATION",
+        message: `You successfully reserved a spot for "${event.title}"`,
+        relatedEntityId: eventId,
+        relatedEntityType: "Event",
+      });
+
       return NextResponse.json(
         {
           success: true,
@@ -263,11 +273,11 @@ export async function GET(req: NextRequest) {
           userId: booking.user,
           organizer: organizer
             ? {
-                _id: organizer._id.toString(),
-                name: organizer.name,
-                email: organizer.email,
-                imageUrl: organizer.imageUrl,
-              }
+              _id: organizer._id.toString(),
+              name: organizer.name,
+              email: organizer.email,
+              imageUrl: organizer.imageUrl,
+            }
             : null,
         };
       })

@@ -71,6 +71,24 @@ export async function DELETE(
       // Commit transaction
       await session.commitTransaction();
 
+      // Trigger Cancellation Notification
+      const { createNotification } = await import("@/lib/notifications");
+      // Need to fetch event title for message, but booking is already fetched.
+      // We need to re-fetch event or populate it earlier. Booking was fetched at line 32.
+      // Let's rely on generic message or try to populate if possible. 
+      // The snippet at line 32 was: const booking = await Booking.findById(bookingId).session(session);
+      // We can check if booking.event is populated? No, it's just ID usually.
+      // Let's just say "You cancelled your reservation". 
+      // Or better, fetch event briefly or just use generic.
+
+      await createNotification({
+        recipient: userId,
+        type: "CANCELLATION",
+        message: `You cancelled your reservation.`,
+        relatedEntityId: booking.event.toString(),
+        relatedEntityType: "Event",
+      });
+
       return NextResponse.json(
         {
           success: true,

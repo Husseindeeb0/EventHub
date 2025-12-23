@@ -73,6 +73,19 @@ export async function POST(req: NextRequest) {
     await currentUser.save();
     await targetUser.save();
 
+    if (!isFollowing) {
+      // Trigger Follow Notification
+      const { createNotification } = await import("@/lib/notifications");
+      await createNotification({
+        recipient: targetUserId,
+        sender: currentUserId,
+        type: "NEW_FOLLOWER",
+        message: `${currentUser.name} started following you`,
+        relatedEntityId: currentUserId,
+        relatedEntityType: "User",
+      });
+    }
+
     return NextResponse.json(
       {
         success: true,

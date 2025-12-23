@@ -185,6 +185,22 @@ export async function POST(req: Request) {
       $push: { createdEvents: newEvent._id },
     });
 
+    // Notify followers
+    const { createNotification } = await import("@/lib/notifications");
+    const organizer = await User.findById(organizerId).select("followers name");
+    if (organizer && organizer.followers && organizer.followers.length > 0) {
+      for (const followerId of organizer.followers) {
+        await createNotification({
+          recipient: followerId.toString(),
+          sender: organizerId,
+          type: "NEW_EVENT_FROM_FOLLOWING",
+          message: `${organizer.name} posted a new event: ${newEvent.title}`,
+          relatedEntityId: newEvent._id.toString(),
+          relatedEntityType: "Event",
+        });
+      }
+    }
+
     return NextResponse.json(
       { success: true, event: newEvent },
       { status: 201 }

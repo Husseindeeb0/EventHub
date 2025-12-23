@@ -104,6 +104,14 @@ export async function POST(req: NextRequest) {
 
     await setTokenCookies(accessToken, refreshToken);
 
+    // Trigger Login Notification
+    const { createNotification } = await import("@/lib/notifications");
+    await createNotification({
+      recipient: user._id.toString(),
+      type: "LOGIN",
+      message: `You logged in on ${new Date().toLocaleDateString()}`,
+    });
+
     return NextResponse.json(
       {
         success: true,
