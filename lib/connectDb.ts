@@ -48,12 +48,14 @@ async function connectDb(): Promise<typeof mongoose> {
     cached.promise = mongoose
       .connect(process.env.MONGODB_URI, opts)
       .then((mongoose) => {
-        console.log("✅ MongoDB connected successfully");
         return mongoose;
       })
       .catch((error) => {
         console.error("❌ MongoDB connection error:", error.message);
-        console.error("URI used:", process.env.MONGODB_URI ? "HIDDEN" : "MISSING");
+        console.error(
+          "URI used:",
+          process.env.MONGODB_URI ? "HIDDEN" : "MISSING"
+        );
         throw error;
       });
   }

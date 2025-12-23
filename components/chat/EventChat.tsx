@@ -13,23 +13,14 @@ import {
   X,
 } from "lucide-react";
 
-interface Comment {
-  _id: string;
-  content: string;
-  user: {
-    _id: string;
-    name: string;
-    imageUrl?: string;
-  };
-  likes: string[]; // Array of user IDs
-  isPinned: boolean;
-  replyTo?: {
-    _id: string;
-    user: { name: string };
-    content: string;
-  };
-  createdAt: string;
-}
+import {
+  useGetCommentsQuery,
+  useAddCommentMutation,
+  useLikeCommentMutation,
+  useDeleteCommentMutation,
+  usePinCommentMutation,
+  Comment,
+} from "@/redux/features/events/eventsApi";
 
 interface EventChatProps {
   eventId: string;
@@ -42,12 +33,18 @@ export default function EventChat({
   organizerId,
   currentUserId,
 }: EventChatProps) {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const { data: comments = [], isLoading } = useGetCommentsQuery(eventId, {
+    pollingInterval: 5000,
+  });
+
+  const [addComment, { isLoading: isSending }] = useAddCommentMutation();
+  const [likeComment] = useLikeCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
+  const [pinComment] = usePinCommentMutation();
+
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -64,87 +61,29 @@ export default function EventChat({
     }
   };
 
-  const fetchComments = async () => {
-    try {
-      const res = await fetch(`/api/events/${eventId}/comments`);
-      if (res.ok) {
-        const data = await res.json();
-        setComments(data);
-      }
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchComments();
-    // Poll every 5 seconds
-    const interval = setInterval(fetchComments, 5000);
-    return () => clearInterval(interval);
-  }, [eventId]);
-
-  useEffect(() => {
-    // Only scroll to bottom on initial load or if user sends a message
-    // to avoid annoying jumps when reading history
-    if (isLoading) return;
-    // Simple heuristic: if we're near bottom, scroll to bottom
-    // For now, just scroll on fresh load is ok
-  }, [comments.length]);
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !currentUserId) return;
 
-    setIsSending(true);
     try {
-      const res = await fetch(`/api/events/${eventId}/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: newMessage,
-          replyTo: replyingTo?._id,
-        }),
-      });
+      await addComment({
+        eventId,
+        content: newMessage,
+        replyTo: replyingTo?._id,
+      }).unwrap();
 
-      if (res.ok) {
-        setNewMessage("");
-        setReplyingTo(null);
-        fetchComments();
-        setTimeout(scrollToBottom, 100);
-      }
+      setNewMessage("");
+      setReplyingTo(null);
+      setTimeout(scrollToBottom, 100);
     } catch (error) {
       console.error("Error sending message:", error);
-    } finally {
-      setIsSending(false);
     }
   };
 
   const handleLike = async (commentId: string) => {
     if (!currentUserId) return;
-
-    // Optimistic update
-    setComments((prev) =>
-      prev.map((c) => {
-        if (c._id === commentId) {
-          const currentLikes = c.likes || [];
-          const isLiked = currentLikes.includes(currentUserId);
-          return {
-            ...c,
-            likes: isLiked
-              ? currentLikes.filter((id) => id !== currentUserId)
-              : [...currentLikes, currentUserId],
-          };
-        }
-        return c;
-      })
-    );
-
     try {
-      await fetch(`/api/comments/${commentId}/like`, { method: "POST" });
-      // Background refresh is better for consistent state
-      fetchComments();
+      await likeComment({ commentId, eventId }).unwrap();
     } catch (error) {
       console.error("Error liking comment:", error);
     }
@@ -152,38 +91,17 @@ export default function EventChat({
 
   const handleDelete = async (commentId: string) => {
     if (!confirm("Are you sure you want to delete this message?")) return;
-
-    // Optimistic update
-    setComments((prev) => prev.filter((c) => c._id !== commentId));
-
     try {
-      const res = await fetch(`/api/comments/${commentId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        fetchComments();
-        alert("Failed to delete message");
-      }
+      await deleteComment({ commentId, eventId }).unwrap();
     } catch (error) {
       console.error("Error deleting comment:", error);
-      fetchComments();
+      alert("Failed to delete message");
     }
   };
 
   const handlePin = async (commentId: string) => {
-    // Optimistic update
-    setComments((prev) =>
-      prev.map((c) => {
-        if (c._id === commentId) {
-          return { ...c, isPinned: !c.isPinned };
-        }
-        return c;
-      })
-    );
-
     try {
-      await fetch(`/api/comments/${commentId}/pin`, { method: "POST" });
-      fetchComments();
+      await pinComment({ commentId, eventId }).unwrap();
     } catch (error) {
       console.error("Error pinning comment:", error);
     }

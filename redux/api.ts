@@ -47,6 +47,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Event"], // Global tag types
+  tagTypes: ["User", "Event", "Comment", "Notification", "Booking", "Feedback"], // Global tag types
   endpoints: () => ({}), // Empty endpoints, to be injected by features
 });

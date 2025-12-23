@@ -18,12 +18,15 @@ export async function POST(req: NextRequest) {
     const { userId } = authResult.user!;
 
     // Parse request body
-    const { eventId, seats } = await req.json();
+    const { eventId, seats, name, email, phone } = await req.json();
 
     // Validate input
-    if (!eventId || !seats || seats < 1) {
+    if (!eventId || !seats || seats < 1 || !name || !email || !phone) {
       return NextResponse.json(
-        { success: false, message: "Invalid booking data" },
+        {
+          success: false,
+          message: "Invalid booking data. Please fill all fields.",
+        },
         { status: 400 }
       );
     }
@@ -89,6 +92,9 @@ export async function POST(req: NextRequest) {
             event: eventId,
             seats,
             status: "confirmed",
+            name,
+            email,
+            phone,
           },
         ],
         { session }
@@ -105,6 +111,7 @@ export async function POST(req: NextRequest) {
 
       // Update event availableSeats
       // Note: event is already fetched at line 39
+      // Update event availableSeats
       if (event.capacity) {
         await Event.findByIdAndUpdate(
           eventId,
@@ -115,6 +122,20 @@ export async function POST(req: NextRequest) {
 
       // Commit transaction
       await session.commitTransaction();
+
+      // Trigger Notification (outside transaction to avoid blocking)
+      try {
+        const { createNotification } = await import("@/lib/notifications");
+        await createNotification({
+          recipient: userId,
+          type: "RESERVATION",
+          message: `You successfully reserved a spot for "${event.title}"`,
+          relatedEntityId: eventId,
+          relatedEntityType: "Event",
+        });
+      } catch (error) {
+        console.error("Failed to create reservation notification:", error);
+      }
 
       return NextResponse.json(
         {
@@ -148,34 +169,6 @@ export async function GET(req: NextRequest) {
     }
 
     const { userId } = authResult.user!;
-
-    // --- TEST USER BOOKINGS BACKDOOR ---
-    // Handle both legacy and current test user IDs
-    if (
-      userId === "507f1f77bcf86cd799439011" ||
-      userId === "test-user-id-123"
-    ) {
-      return NextResponse.json({
-        success: true,
-        bookings: [
-          {
-            _id: "mock-booking-id-789",
-            eventId: "mock-event-id-456",
-            title: "Teach Conference",
-            location: "Lebanon",
-            startsAt: new Date("2024-06-15T10:00:00Z").toISOString(),
-            coverImageUrl:
-              "https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop",
-            capacity: 100,
-            description: "A massive tech event to test our feedback system.",
-            numberOfSeats: 1,
-            bookedAt: new Date().toISOString(),
-          },
-        ],
-        hasGivenFeedback: false,
-      });
-    }
-    // ------------------------------------
 
     try {
       await connectDb();
@@ -263,11 +256,11 @@ export async function GET(req: NextRequest) {
           userId: booking.user,
           organizer: organizer
             ? {
-              _id: organizer._id.toString(),
-              name: organizer.name,
-              email: organizer.email,
-              imageUrl: organizer.imageUrl,
-            }
+                _id: organizer._id.toString(),
+                name: organizer.name,
+                email: organizer.email,
+                imageUrl: organizer.imageUrl,
+              }
             : null,
         };
       })

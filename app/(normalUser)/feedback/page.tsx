@@ -4,15 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Star, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSubmitFeedbackMutation } from "@/redux/features/feedback/feedbackApi";
 
 export default function GeneralFeedbackPage() {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
   const [category, setCategory] = useState("ui");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [submitFeedback, { isLoading: isSubmitting }] =
+    useSubmitFeedbackMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,22 +25,15 @@ export default function GeneralFeedbackPage() {
       return;
     }
 
-    setIsSubmitting(true);
     setStatus("idle");
 
     try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "general",
-          rating,
-          comment,
-          category,
-        }),
-      });
-
-      const data = await response.json();
+      const data = await submitFeedback({
+        type: "general",
+        rating,
+        comment,
+        category,
+      }).unwrap();
 
       if (data.success) {
         setStatus("success");
@@ -46,11 +42,11 @@ export default function GeneralFeedbackPage() {
         setErrorMessage(data.message || "Failed to submit feedback");
         setStatus("error");
       }
-    } catch (error) {
-      setErrorMessage("Something went wrong. Please try again.");
+    } catch (error: any) {
+      setErrorMessage(
+        error.data?.message || "Something went wrong. Please try again."
+      );
       setStatus("error");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

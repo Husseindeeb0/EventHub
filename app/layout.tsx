@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StoreProvider from "@/redux/StoreProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import AIChat from "@/components/ai/AIChat";
 
 export const metadata: Metadata = {
   title: "EventHub",
@@ -23,6 +24,7 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
           <Footer />
+          <AIChat />
         </StoreProvider>
       </body>
     </html>

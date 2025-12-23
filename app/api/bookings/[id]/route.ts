@@ -28,8 +28,10 @@ export async function DELETE(
     session.startTransaction();
 
     try {
-      // Find booking
-      const booking = await Booking.findById(bookingId).session(session);
+      // Find booking and populate event
+      const booking = await Booking.findById(bookingId)
+        .populate("event")
+        .session(session);
       if (!booking) {
         await session.abortTransaction();
         return NextResponse.json(
@@ -47,12 +49,13 @@ export async function DELETE(
         );
       }
 
-      // Check if booking is already cancelled
-      if (booking.status === "cancelled") {
-        await session.abortTransaction();
-        return NextResponse.json(
-          { success: false, message: "Booking is already cancelled" },
-          { status: 400 }
+      // Restore event capacity if applicable
+      const event = booking.event as any;
+      if (event && event.capacity) {
+        await Event.findByIdAndUpdate(
+          event._id,
+          { $inc: { availableSeats: booking.seats } },
+          { session }
         );
       }
 
@@ -60,16 +63,32 @@ export async function DELETE(
       await User.findByIdAndUpdate(
         userId,
         {
-          $pull: { bookedEvents: booking.event },
+          $pull: { bookedEvents: event._id },
         },
         { session }
       );
 
-      // Delete booking (or mark as cancelled if you prefer soft delete)
+      // Delete booking
       await Booking.findByIdAndDelete(bookingId).session(session);
 
       // Commit transaction
       await session.commitTransaction();
+
+      // Trigger Notification
+      try {
+        const { createNotification } = await import("@/lib/notifications");
+        await createNotification({
+          recipient: userId,
+          type: "CANCELLATION",
+          message: `You successfully cancelled your reservation for "${
+            event.title || "Event"
+          }"`,
+          relatedEntityId: event._id.toString(),
+          relatedEntityType: "Event",
+        });
+      } catch (error) {
+        console.error("Failed to create cancellation notification:", error);
+      }
 
       return NextResponse.json(
         {

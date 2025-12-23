@@ -16,6 +16,24 @@ export interface Event {
   ratingCount?: number;
 }
 
+export interface Comment {
+  _id: string;
+  content: string;
+  user: {
+    _id: string;
+    name: string;
+    imageUrl?: string;
+  };
+  likes: string[];
+  isPinned: boolean;
+  replyTo?: {
+    _id: string;
+    user: { name: string };
+    content: string;
+  };
+  createdAt: string;
+}
+
 export interface CreateEventData {
   title: string;
   location: string;
@@ -114,6 +132,57 @@ export const eventsApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Event", id: "LIST" }],
     }),
+    getComments: builder.query<Comment[], string>({
+      query: (eventId) => `/events/${eventId}/comments`,
+      providesTags: (result, error, eventId) => [
+        { type: "Comment", id: eventId },
+      ],
+    }),
+    addComment: builder.mutation<
+      Comment,
+      { eventId: string; content: string; replyTo?: string }
+    >({
+      query: ({ eventId, ...body }) => ({
+        url: `/events/${eventId}/comments`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Comment", id: eventId },
+      ],
+    }),
+    likeComment: builder.mutation<void, { commentId: string; eventId: string }>(
+      {
+        query: ({ commentId }) => ({
+          url: `/comments/${commentId}/like`,
+          method: "POST",
+        }),
+        invalidatesTags: (result, error, { eventId }) => [
+          { type: "Comment", id: eventId },
+        ],
+      }
+    ),
+    deleteComment: builder.mutation<
+      void,
+      { commentId: string; eventId: string }
+    >({
+      query: ({ commentId }) => ({
+        url: `/comments/${commentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Comment", id: eventId },
+      ],
+    }),
+    pinComment: builder.mutation<void, { commentId: string; eventId: string }>({
+      query: ({ commentId }) => ({
+        url: `/comments/${commentId}/pin`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Comment", id: eventId },
+      ],
+    }),
   }),
 });
 
@@ -123,4 +192,9 @@ export const {
   useCreateEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,
+  useGetCommentsQuery,
+  useAddCommentMutation,
+  useLikeCommentMutation,
+  useDeleteCommentMutation,
+  usePinCommentMutation,
 } = eventsApi;

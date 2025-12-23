@@ -81,7 +81,9 @@ export async function createEventAction(formData: FormData) {
 
   // Notify followers
   try {
-    const followers = await User.find({ following: currentUser.userId }).select("_id");
+    const followers = await User.find({ following: currentUser.userId }).select(
+      "_id"
+    );
 
     if (followers.length > 0) {
       const organizer = await User.findById(currentUser.userId).select("name");
@@ -100,7 +102,6 @@ export async function createEventAction(formData: FormData) {
       );
 
       await Promise.all(notificationPromises);
-      console.log(`Notified ${followers.length} followers about new event`);
     }
   } catch (error) {
     console.error("Failed to notify followers:", error);
@@ -111,11 +112,9 @@ export async function createEventAction(formData: FormData) {
 }
 
 export async function updateEventAction(formData: FormData) {
-  console.log("updateEventAction started");
   try {
     // Require organizer authentication
     const currentUser = await requireOrganizer();
-    console.log("User authorized:", currentUser.userId);
 
     const id = formData.get("eventId") as string;
     const title = formData.get("title") as string;
@@ -130,14 +129,11 @@ export async function updateEventAction(formData: FormData) {
     const speakersStr = formData.get("speakers") as string;
     const scheduleStr = formData.get("schedule") as string;
 
-    console.log("Form data parsed:", { id, title, location });
-
     if (!id || !title || !location || !startsAt) {
       throw new Error("Missing required fields");
     }
 
     await connectDb();
-    console.log("DB connected");
 
     // Verify the user owns this event
     const event = await Event.findById(id);
@@ -147,7 +143,6 @@ export async function updateEventAction(formData: FormData) {
     if (event.organizerId !== currentUser.userId) {
       throw new Error("You don't have permission to edit this event");
     }
-    console.log("Event found and owned");
 
     // Parse capacity - if provided and valid, convert to number, otherwise undefined (unlimited)
     const capacity =
@@ -171,20 +166,12 @@ export async function updateEventAction(formData: FormData) {
         ? coverImageFileId.trim()
         : undefined;
 
-    console.log("Addressing image changes...", {
-      oldUrl: event.coverImageUrl,
-      newUrl: imageUrl,
-    });
-
     // Handle Cover Image Deletion/Replacement
     if (imageUrl !== event.coverImageUrl) {
-      console.log("Image URL changed");
       if (event.coverImageFileId) {
-        console.log("Attempting to delete old image:", event.coverImageFileId);
         try {
           if (imagekit) {
             await imagekit.deleteFile(event.coverImageFileId);
-            console.log("Deleted old event cover:", event.coverImageFileId);
           } else {
             console.warn("ImageKit not initialized - cannot delete file");
           }
@@ -211,7 +198,6 @@ export async function updateEventAction(formData: FormData) {
       speakers: speakers.length > 0 ? speakers : undefined,
       schedule: schedule.length > 0 ? schedule : undefined,
     });
-    console.log("Event updated in DB");
 
     // Update attendedEvents for users based on new date
     const updatedEvent = await Event.findById(id);
@@ -220,8 +206,8 @@ export async function updateEventAction(formData: FormData) {
       const isFinished = updatedEvent.endsAt
         ? new Date(updatedEvent.endsAt) < now
         : updatedEvent.startsAt
-          ? new Date(updatedEvent.startsAt) < now
-          : false;
+        ? new Date(updatedEvent.startsAt) < now
+        : false;
 
       const bookings = await Booking.find({
         event: id,
@@ -236,13 +222,11 @@ export async function updateEventAction(formData: FormData) {
             { _id: { $in: userIds } },
             { $addToSet: { attendedEvents: id } }
           );
-          console.log("Marked users as attended for event:", id);
         } else {
           await User.updateMany(
             { _id: { $in: userIds } },
             { $pull: { attendedEvents: id } }
           );
-          console.log("Un-marked users as attended for event:", id);
         }
       }
     }
@@ -280,7 +264,6 @@ export async function deleteEventAction(formData: FormData) {
     try {
       if (imagekit) {
         await imagekit.deleteFile(event.coverImageFileId);
-        console.log("Deleted event cover:", event.coverImageFileId);
       } else {
         console.warn("ImageKit not initialized - cannot delete file");
       }
@@ -490,8 +473,8 @@ export async function rateEventAction(formData: FormData) {
   const isFinished = event.endsAt
     ? new Date(event.endsAt) < now
     : event.startsAt
-      ? new Date(event.startsAt) < now
-      : false;
+    ? new Date(event.startsAt) < now
+    : false;
 
   if (!isFinished) {
     throw new Error("You can only rate finished events");

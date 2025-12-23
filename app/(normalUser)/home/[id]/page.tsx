@@ -22,34 +22,6 @@ import Feedback from "@/models/Feedback";
 import GiveFeedbackButton from "@/components/GiveFeedbackButton";
 
 async function getEvent(id: string) {
-  // --- TEST EVENT BACKDOOR ---
-  if (id === "mock-event-id-456" || id === "mock-booking-id-789") {
-    return {
-      _id: "mock-event-id-456",
-      title: "Teach Conference",
-      location: "Lebanon",
-      startsAt: new Date("2024-06-15T10:00:00Z"),
-      endsAt: new Date("2024-06-15T18:00:00Z"),
-      coverImageUrl:
-        "https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop",
-      capacity: 100,
-      availableSeats: 0,
-      description:
-        "This tech conference has already ended. It was a massive success with over 500 attendees and 20+ keynote speakers from top tech companies.",
-      organizerId: "org-user-id-456",
-      category: "Technology",
-      speakers: [
-        {
-          name: "John Doe",
-          title: "Principal Engineer",
-          bio: "Expert in distributed systems.",
-        },
-      ],
-      schedule: [{ startTime: "09:00", title: "Keynote", type: "opening" }],
-    };
-  }
-  // ---------------------------
-
   try {
     await connectDb();
     const event = await Event.findById(id).lean();
@@ -62,10 +34,6 @@ async function getEvent(id: string) {
 }
 
 async function getBookedCount(eventId: string) {
-  if (eventId === "mock-event-id-456" || eventId === "mock-booking-id-789") {
-    return 100;
-  }
-
   try {
     await connectDb();
     return await Booking.countDocuments({
@@ -78,14 +46,6 @@ async function getBookedCount(eventId: string) {
 }
 
 async function getOrganizerDetails(organizerId: string) {
-  if (organizerId === "org-user-id-456") {
-    return {
-      _id: "org-user-id-456",
-      name: "Hussein Deeb",
-      email: "hussein@example.com",
-      followers: [],
-    };
-  }
   try {
     await connectDb();
     const organizer = await User.findById(organizerId)
@@ -153,28 +113,12 @@ export default async function EventDetailsPage({
   let userBooking = null;
   let hasFeedback = false;
   if (currentUser) {
-    // Check for mock user
-    if (
-      currentUser.userId === "507f1f77bcf86cd799439011" ||
-      currentUser.userId === "test-user-id-123"
-    ) {
-      userBooking = {
-        _id: "mock-booking-id-789",
-        user: currentUser.userId,
-        event: resolvedParams.id,
-        status: "confirmed",
-        seats: 2,
-        name: "Test User",
-        phone: "12345678",
-      };
-    } else {
-      await connectDb();
-      userBooking = await Booking.findOne({
-        user: currentUser.userId,
-        event: resolvedParams.id,
-        status: { $ne: "cancelled" },
-      }).lean();
-    }
+    await connectDb();
+    userBooking = await Booking.findOne({
+      user: currentUser.userId,
+      event: resolvedParams.id,
+      status: { $ne: "cancelled" },
+    }).lean();
 
     if (userBooking) {
       try {
@@ -672,37 +616,39 @@ export default async function EventDetailsPage({
 
                   {/* Organizer & Follow */}
                   {organizer && (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-indigo-50/50 border border-indigo-100/50 sm:col-span-2 lg:col-span-1">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50/50 border border-indigo-100/50 sm:col-span-2 lg:col-span-1 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         {organizer.imageUrl ? (
                           <img
                             src={organizer.imageUrl}
                             alt={organizer.name}
-                            className="h-10 w-10 rounded-full object-cover ring-2 ring-indigo-200"
+                            className="h-9 w-9 rounded-full object-cover ring-2 ring-indigo-100 shrink-0"
                           />
                         ) : (
-                          <div className="h-10 w-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold">
+                          <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0 text-sm">
                             {organizer.name.charAt(0)}
                           </div>
                         )}
-                        <div>
-                          <p className="text-xs font-bold uppercase text-indigo-400">
-                            Organized by
+                        <div className="min-w-0 pr-2">
+                          <p className="text-[9px] font-black uppercase text-indigo-400 tracking-wider leading-none mb-0.5">
+                            Organizer
                           </p>
                           <Link
                             href={`/organizers/${organizer._id}`}
-                            className="font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+                            className="font-bold text-slate-800 hover:text-indigo-600 transition-colors truncate block text-sm"
                           >
                             {organizer.name}
                           </Link>
                         </div>
                       </div>
                       {currentUser && currentUser.userId !== organizer._id && (
-                        <FollowButton
-                          organizerId={organizer._id}
-                          initialIsFollowing={isFollowing}
-                          initialFollowerCount={organizer.followers.length}
-                        />
+                        <div className="shrink-0 scale-90 origin-right">
+                          <FollowButton
+                            organizerId={organizer._id}
+                            initialIsFollowing={isFollowing}
+                            initialFollowerCount={organizer.followers.length}
+                          />
+                        </div>
                       )}
                     </div>
                   )}

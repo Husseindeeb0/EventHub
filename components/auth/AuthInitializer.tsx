@@ -37,12 +37,10 @@ export default function AuthInitializer() {
       isUninitialized &&
       !isMigrating
     ) {
-      console.log("[AuthInitializer] Initial migration check...");
-
       migrateEvents()
         .unwrap()
         .then((res) => {
-          console.log("[AuthInitializer] Migration process finished:", res);
+          // Success
         })
         .catch((err) => {
           console.error("[AuthInitializer] Migration API error:", err);

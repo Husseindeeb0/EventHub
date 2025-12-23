@@ -166,7 +166,7 @@ export default async function OrganizerProfilePage({
                   organizerId={organizer._id}
                   initialIsFollowing={isFollowing}
                   initialFollowerCount={organizer.followers.length}
-                  className="!text-sm !px-6 !py-2.5 shadow-lg shadow-indigo-500/20"
+                  className="text-sm! px-6! py-2.5! shadow-lg shadow-indigo-500/20"
                 />
               ) : null}
             </div>
