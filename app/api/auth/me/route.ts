@@ -35,26 +35,6 @@ export async function GET() {
       );
     }
 
-    // --- TEST USER CHECK ---
-    // Handle both legacy and current test user IDs
-    if (
-      decoded.userId === "507f1f77bcf86cd799439011" ||
-      decoded.userId === "test-user-id-123"
-    ) {
-      return NextResponse.json({
-        success: true,
-        user: {
-          _id: decoded.userId,
-          name: "Test Tester",
-          email: "eventhub172@gmail.com",
-          role: "user",
-          description: "Test Account",
-          createdAt: new Date(),
-        },
-      });
-    }
-    // ------------------------
-
     try {
       // Fetch user from database
       await connectDb();
@@ -127,7 +107,6 @@ export async function PUT(request: Request) {
 
     // Parse body
     const body = await request.json();
-    console.log("PUT /api/auth/me received body:", body);
     const {
       name,
       email,
@@ -137,26 +116,6 @@ export async function PUT(request: Request) {
       coverImageUrl,
       coverImageFileId,
     } = body;
-
-    // --- TEST USER CHECK ---
-    if (
-      decoded.userId === "507f1f77bcf86cd799439011" ||
-      decoded.userId === "test-user-id-123"
-    ) {
-      return NextResponse.json({
-        success: true,
-        message: "Profile updated successfully (Test Mode - No Persistence)",
-        user: {
-          _id: decoded.userId,
-          name: name || "Test Tester",
-          email: email || "eventhub172@gmail.com",
-          role: "user",
-          description: description || "Test Account",
-          createdAt: new Date(),
-        },
-      });
-    }
-    // ------------------------
 
     await connectDb();
 
@@ -188,7 +147,6 @@ export async function PUT(request: Request) {
       if (currentUser.imageFileId && imagekit) {
         try {
           await imagekit.deleteFile(currentUser.imageFileId);
-          console.log("Deleted old profile picture:", currentUser.imageFileId);
         } catch (error) {
           console.error("Failed to delete old profile picture:", error);
         }
@@ -203,7 +161,6 @@ export async function PUT(request: Request) {
       if (currentUser.coverImageFileId && imagekit) {
         try {
           await imagekit.deleteFile(currentUser.coverImageFileId);
-          console.log("Deleted old cover photo:", currentUser.coverImageFileId);
         } catch (error) {
           console.error("Failed to delete old cover photo:", error);
         }

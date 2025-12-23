@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Star, X } from "lucide-react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,6 +11,8 @@ interface FeedbackModalProps {
   bookingId: string;
 }
 
+import { useSubmitFeedbackMutation } from "@/redux/features/feedback/feedbackApi";
+
 const FeedbackModal: React.FC<FeedbackModalProps> = ({
   isOpen,
   onClose,
@@ -19,21 +20,22 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 }) => {
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
   const router = useRouter();
+
+  const [submitFeedback, { isLoading: isSubmitting }] =
+    useSubmitFeedbackMutation();
 
   const handleSubmit = async () => {
     if (rating === 0) return;
 
-    setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/feedback", {
+      await submitFeedback({
         bookingId,
         rating,
         comment,
-      });
+      }).unwrap();
+
       setSubmitted(true);
       setTimeout(() => {
         onClose();
@@ -41,7 +43,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
       }, 2000);
     } catch (error: any) {
       console.error("Error submitting feedback:", error);
-      setIsSubmitting(false);
     }
   };
 

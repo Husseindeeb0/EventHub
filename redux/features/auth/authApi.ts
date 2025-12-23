@@ -73,6 +73,42 @@ export const authApi = api.injectEndpoints({
       query: () => "/user/followers",
       providesTags: ["User"],
     }),
+    resendVerification: builder.mutation<
+      { success: boolean; message: string },
+      { email: string }
+    >({
+      query: (body) => ({
+        url: "/auth/resend-verification",
+        method: "POST",
+        body,
+      }),
+    }),
+    verifyEmail: builder.mutation<
+      { success: boolean; message: string },
+      { email: string; code: string }
+    >({
+      query: (body) => ({
+        url: "/auth/verify-email",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    resetPassword: builder.mutation<{ success: boolean; message: string }, any>(
+      {
+        query: (body) => ({
+          url: "/auth/reset-password",
+          method: "POST",
+          body,
+        }),
+      }
+    ),
+    getImageKitAuth: builder.query<
+      { signature: string; expire: number; token: string },
+      void
+    >({
+      query: () => "/auth/imagekit",
+    }),
   }),
 });
 
@@ -86,4 +122,8 @@ export const {
   useMigrateEventsMutation,
   useGetFollowingQuery,
   useGetFollowersQuery,
+  useResendVerificationMutation,
+  useVerifyEmailMutation,
+  useResetPasswordMutation,
+  useLazyGetImageKitAuthQuery,
 } = authApi;

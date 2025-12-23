@@ -36,17 +36,6 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       return null;
     }
 
-    // --- TEST USER BACKDOOR ---
-    if (decoded.userId === '507f1f77bcf86cd799439011' || decoded.userId === 'test-user-id-123') {
-      return {
-        userId: decoded.userId,
-        email: decoded.email,
-        role: decoded.role,
-        name: 'Test Tester',
-      };
-    }
-    // ---------------------------
-
     try {
       // Fetch user from database to get name
       await connectDb();

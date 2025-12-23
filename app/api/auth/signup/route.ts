@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await hashPassword(password);
 
     // Generate 6-digit verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     const newUser = await User.create({
       name,
@@ -81,11 +83,6 @@ export async function POST(req: NextRequest) {
       <p>This code will expire in 24 hours.</p>
     `;
 
-    // DEVELOPMENT LOG: Log verification code to console for easy testing
-    console.log(`\n--- DEVELOPMENT LOG ---`);
-    console.log(`Verification code for ${email}: ${verificationCode}`);
-    console.log(`------------------------\n`);
-
     try {
       const result = await sendEmail({
         to: newUser.email,
@@ -98,7 +95,6 @@ export async function POST(req: NextRequest) {
     } catch (emailError) {
       console.error("Unexpected error sending verification email", emailError);
     }
-
 
     // Generate tokens for auto-login
     const accessToken = generateAccessToken({

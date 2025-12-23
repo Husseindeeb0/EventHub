@@ -4,31 +4,7 @@ import { MapPin, Ticket, Clock, Star } from "lucide-react";
 import Link from "next/link";
 import DownloadTicketButton from "../ticket/DownloadTicketButton";
 
-// Define the shape of a booking
-export interface Booking {
-  _id: string;
-  eventId: string;
-  title: string;
-  location: string;
-  startsAt: string; // ISO date string
-  endsAt?: string; // ISO date string
-  coverImageUrl?: string;
-  capacity?: number;
-  description?: string;
-  numberOfSeats: number;
-  bookedAt: string;
-  userRating?: number | null;
-  name?: string;
-  email?: string;
-  phone?: string;
-  userId?: string;
-  organizer?: {
-    _id: string;
-    name: string;
-    email: string;
-    imageUrl?: string;
-  };
-}
+import { Booking } from "@/redux/features/bookings/bookingsApi";
 
 interface BookingCardProps {
   booking: Booking;

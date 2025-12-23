@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Loader2 } from "lucide-react";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import {
+  useLoginMutation,
+  useResendVerificationMutation,
+} from "@/redux/features/auth/authApi";
 export default function LoginPage() {
   const router = useRouter();
   const [login, { isLoading: loading, error: loginError }] = useLoginMutation();
@@ -81,13 +84,11 @@ export default function LoginPage() {
     }
   };
 
+  const [resendVerification] = useResendVerificationMutation();
+
   const handleResendVerification = async () => {
     try {
-      await fetch("/api/auth/resend-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email }),
-      });
+      await resendVerification({ email: formData.email }).unwrap();
       alert("Verification email resent! Please check your inbox.");
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
@@ -136,8 +137,8 @@ export default function LoginPage() {
                 {typeof loginError === "string"
                   ? loginError
                   : (loginError as any)?.data?.message ||
-                  (loginError as any)?.message ||
-                  "Login failed"}
+                    (loginError as any)?.message ||
+                    "Login failed"}
               </p>
               {isVerificationError && (
                 <button

@@ -11,47 +11,35 @@ import {
 } from "@/components/animations/PageAnimations";
 import Loading from "@/components/ui/Loading";
 import RatingModal from "@/components/ui/RatingModal";
-import BookingCard, { Booking } from "@/components/booking/BookingCard";
+import BookingCard from "@/components/booking/BookingCard";
+import {
+  useGetBookingsQuery,
+  Booking,
+} from "@/redux/features/bookings/bookingsApi";
 
 // Main Booking Page Component
 const BookingPage = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedBookingForRating, setSelectedBookingForRating] =
     useState<Booking | null>(null);
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
+
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useGetBookingsQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const bookings = data?.bookings || [];
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/login");
-      return;
     }
-
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/bookings");
-        const data = await response.json();
-
-        if (!response.ok)
-          throw new Error(data.message || "Failed to fetch bookings");
-
-        if (data.success) {
-          setBookings(data.bookings);
-        } else {
-          throw new Error(data.message || "Failed to fetch bookings");
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookings();
-  }, [isAuthenticated, router, user?.bookedEvents?.length]);
+  }, [isAuthenticated, router]);
 
   const now = new Date();
 
