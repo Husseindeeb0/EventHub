@@ -17,15 +17,6 @@ export default function MyEventsPage() {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
-  // Redirect if not authenticated or not organizer
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login"); // Or AuthInitializer handles this
-    } else if (user && user.role !== "organizer") {
-      router.push("/home");
-    }
-  }, [isAuthenticated, user, router]);
-
   const { data, isLoading } = useGetEventsQuery(
     user?._id ? { organizerId: user._id } : { organizerId: "skip" },
     {

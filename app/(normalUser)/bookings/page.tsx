@@ -35,12 +35,6 @@ const BookingPage = () => {
 
   const bookings = data?.bookings || [];
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, router]);
-
   const now = new Date();
 
   const activeBookings = bookings.filter((b) => {
