@@ -1,4 +1,4 @@
-import ProfileClientWrapper from "./ClientWrapper";
+import ProfileClientWrapper from "../../../components/profile/ClientWrapper";
 
 export default function ProfileLayout({
   children,

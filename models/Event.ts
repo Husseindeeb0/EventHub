@@ -25,6 +25,8 @@ export interface IEvent extends Document {
   organizerId: string;
   title: string;
   location?: string;
+  isOnline: boolean;
+  meetingLink?: string;
   startsAt?: Date;
   endsAt?: Date;
   coverImageUrl?: string;
@@ -50,6 +52,13 @@ const EventSchema = new Schema<IEvent>(
     title: {
       type: String,
       required: true,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
+    meetingLink: {
+      type: String,
     },
     averageRating: {
       type: Number,

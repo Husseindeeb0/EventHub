@@ -21,16 +21,17 @@ export async function GET(req: Request) {
         success: true,
         events: [
           {
-            id: 'mock-event-id-456',
-            title: 'Teach Conference',
-            location: 'Lebanon',
-            startsAt: new Date('2024-06-15T10:00:00Z').toISOString(),
-            coverImageUrl: 'https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop',
+            id: "mock-event-id-456",
+            title: "Teach Conference",
+            location: "Lebanon",
+            startsAt: new Date("2024-06-15T10:00:00Z").toISOString(),
+            coverImageUrl:
+              "https://images.unsplash.com/photo-1540575861501-7ad0582373f2?q=80&w=2070&auto=format&fit=crop",
             capacity: 100,
             bookedCount: 1,
-            organizerId: 'org-user-id-456',
-          }
-        ]
+            organizerId: "org-user-id-456",
+          },
+        ],
       });
     }
 
@@ -78,6 +79,27 @@ export async function GET(req: Request) {
       .sort({ startsAt: organizerId ? -1 : 1 }) // Descending for organizer (newest first), Ascending for public (soonest first)
       .lean();
 
+    // If no status filter is applied, sort active events first, then ended events
+    if (!status) {
+      rawEvents.sort((a, b) => {
+        const isAFinished = a.endsAt
+          ? new Date(a.endsAt) < now
+          : a.startsAt
+          ? new Date(a.startsAt) < now
+          : false;
+        const isBFinished = b.endsAt
+          ? new Date(b.endsAt) < now
+          : b.startsAt
+          ? new Date(b.startsAt) < now
+          : false;
+
+        if (isAFinished !== isBFinished) {
+          return isAFinished ? 1 : -1; // Active (false) comes before Finished (true)
+        }
+        return 0; // Maintain existing sort order within sections
+      });
+    }
+
     const ids = rawEvents.map((e) => e._id);
 
     // Get booking counts for all events from Booking collection
@@ -114,6 +136,8 @@ export async function GET(req: Request) {
         id,
         title,
         location,
+        isOnline: !!e.isOnline,
+        meetingLink: e.meetingLink,
         startsAt,
         endsAt,
         coverImageUrl,
@@ -142,6 +166,8 @@ export async function POST(req: Request) {
     const {
       title,
       location,
+      isOnline,
+      meetingLink,
       startsAt,
       endsAt,
       capacity,
@@ -152,9 +178,20 @@ export async function POST(req: Request) {
     } = body;
 
     // Basic validation
-    if (!title || !location || !startsAt || !organizerId) {
+    if (
+      !title ||
+      (!isOnline && !location) ||
+      (isOnline && !meetingLink) ||
+      !startsAt ||
+      !organizerId
+    ) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields" },
+        {
+          success: false,
+          message: isOnline
+            ? "Meeting link is required for online events"
+            : "Location is required for in-person events",
+        },
         { status: 400 }
       );
     }
@@ -169,7 +206,9 @@ export async function POST(req: Request) {
 
     const newEvent = await Event.create({
       title,
-      location,
+      location: isOnline ? "Online" : location,
+      isOnline,
+      meetingLink: isOnline ? meetingLink : undefined,
       startsAt: new Date(startsAt),
       endsAt: endsAt ? new Date(endsAt) : undefined,
       organizerId,
@@ -185,18 +224,65 @@ export async function POST(req: Request) {
       $push: { createdEvents: newEvent._id },
     });
 
-    // Notify followers
+    // Notify followers (in-app notifications and email)
     const { createNotification } = await import("@/lib/notifications");
-    const organizer = await User.findById(organizerId).select("followers name");
+    const { sendEmail } = await import("@/lib/sendEmail");
+    const { generateNewEventEmailTemplate, formatEventDate, formatEventTime } =
+      await import("@/lib/emailTemplates");
+
+    const organizer = await User.findById(organizerId).select(
+      "followers name imageUrl"
+    );
+
     if (organizer && organizer.followers && organizer.followers.length > 0) {
-      for (const followerId of organizer.followers) {
+      // Fetch all followers' details for email
+      const followers = await User.find({
+        _id: { $in: organizer.followers },
+      }).select("_id name email");
+
+      // Base URL for event links
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const eventUrl = `${baseUrl}/home/${newEvent._id}`;
+
+      // Event date/time formatting
+      const eventDate = formatEventDate(new Date(startsAt));
+      const eventTime = formatEventTime(new Date(startsAt));
+
+      // Process each follower
+      for (const follower of followers) {
+        // Create in-app notification
         await createNotification({
-          recipient: followerId.toString(),
+          recipient: follower._id.toString(),
           sender: organizerId,
           type: "NEW_EVENT_FROM_FOLLOWING",
           message: `${organizer.name} posted a new event: ${newEvent.title}`,
           relatedEntityId: newEvent._id.toString(),
           relatedEntityType: "Event",
+        });
+
+        // Send email notification
+        const emailHtml = generateNewEventEmailTemplate({
+          followerName: follower.name,
+          organizerName: organizer.name,
+          organizerImageUrl: organizer.imageUrl,
+          eventTitle: title,
+          eventDescription: description,
+          eventLocation: isOnline ? "Online Event" : location,
+          eventDate,
+          eventTime,
+          eventCategory: category,
+          eventImageUrl: coverImageUrl,
+          eventUrl,
+        });
+
+        // Send email asynchronously
+        sendEmail({
+          to: follower.email,
+          subject: `🎉 New Event from ${organizer.name}: ${title}`,
+          html: emailHtml,
+        }).catch((err) => {
+          console.error(`Failed to send email to ${follower.email}:`, err);
         });
       }
     }

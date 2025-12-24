@@ -4,7 +4,7 @@ import { useGetFollowingQuery } from "@/redux/features/auth/authApi";
 import { Loader2, Building2, UserX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import FollowButton from "@/components/FollowButton";
+import FollowButton from "@/components/follow/FollowButton";
 import { AnimatedCard } from "@/components/animations/PageAnimations";
 
 export default function ProfileFollowing() {

@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import {
   Calendar,
   Ticket,
-  UserCircle,
   PlusCircle,
-  User,
-  Search,
-  FileText,
-  Smartphone,
+  Bot,
+  MessageCircle,
+  Star,
+  UserPlus,
+  Bell,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -29,42 +29,42 @@ const features = [
     gradient: "from-purple-500 to-pink-500",
   },
   {
-    icon: UserCircle,
-    title: "User Authentication",
-    description:
-      "Secure login and registration to manage your event experience.",
-    gradient: "from-indigo-500 to-purple-500",
-  },
-  {
     icon: PlusCircle,
     title: "Create Events",
     description: "Organizers can easily create and publish their own events.",
     gradient: "from-pink-500 to-rose-500",
   },
   {
-    icon: User,
-    title: "Profile Management",
-    description: "Manage your personal information and event preferences.",
+    icon: Bot,
+    title: "AI Assistant",
+    description:
+      "Get instant help from our smart AI bot for any questions about events.",
+    gradient: "from-indigo-500 to-purple-500",
+  },
+  {
+    icon: MessageCircle,
+    title: "Event Discussions",
+    description:
+      "Connect with fellow attendees before the event through discussion chats.",
     gradient: "from-green-500 to-emerald-500",
   },
   {
-    icon: Search,
-    title: "Search & Filter",
-    description:
-      "Find exactly what you're looking for with powerful search tools.",
+    icon: Star,
+    title: "Rate Events",
+    description: "Share your experience by rating events you've attended.",
     gradient: "from-orange-500 to-amber-500",
   },
   {
-    icon: FileText,
-    title: "Event Details",
+    icon: UserPlus,
+    title: "Follow Organizers",
     description:
-      "View comprehensive information about each event before booking.",
+      "Stay connected with your favorite organizers and never miss their events.",
     gradient: "from-violet-500 to-purple-500",
   },
   {
-    icon: Smartphone,
-    title: "Responsive Design",
-    description: "Access EventHub seamlessly on any device, anywhere.",
+    icon: Bell,
+    title: "Smart Notifications",
+    description: "Get notified about new events from organizers you follow.",
     gradient: "from-red-500 to-pink-500",
   },
 ];

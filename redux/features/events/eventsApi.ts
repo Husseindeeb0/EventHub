@@ -4,6 +4,8 @@ export interface Event {
   id: string;
   title: string;
   location: string;
+  isOnline?: boolean;
+  meetingLink?: string;
   category: string;
   startsAt: string;
   endsAt?: string;
@@ -37,6 +39,8 @@ export interface Comment {
 export interface CreateEventData {
   title: string;
   location: string;
+  isOnline?: boolean;
+  meetingLink?: string;
   category?: string;
   startsAt: string;
   endsAt?: string;
@@ -183,6 +187,12 @@ export const eventsApi = api.injectEndpoints({
         { type: "Comment", id: eventId },
       ],
     }),
+    getCategories: builder.query<
+      { success: boolean; categories: string[] },
+      void
+    >({
+      query: () => "/categories",
+    }),
   }),
 });
 
@@ -197,4 +207,5 @@ export const {
   useLikeCommentMutation,
   useDeleteCommentMutation,
   usePinCommentMutation,
+  useGetCategoriesQuery,
 } = eventsApi;

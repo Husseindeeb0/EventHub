@@ -15,11 +15,11 @@ import EventImage from "./EventImage";
 import EventChat from "@/components/chat/EventChat";
 import EventTabs from "@/components/events/EventTabs";
 import { getCurrentUser } from "@/lib/serverAuth";
-import FollowButton from "@/components/FollowButton";
+import FollowButton from "@/components/follow/FollowButton";
 import AutoDownloadTicket from "@/components/ticket/AutoDownloadTicket";
-import FeedbackIntegration from "@/components/FeedbackIntegration";
+import FeedbackIntegration from "@/components/feedback/FeedbackIntegration";
 import Feedback from "@/models/Feedback";
-import GiveFeedbackButton from "@/components/GiveFeedbackButton";
+import GiveFeedbackButton from "@/components/feedback/GiveFeedbackButton";
 
 async function getEvent(id: string) {
   try {
@@ -496,6 +496,8 @@ export default async function EventDetailsPage({
                   event.startsAt && new Date(event.startsAt).toISOString(),
                 description: event.description,
                 coverImageUrl: event.coverImageUrl,
+                isOnline: event.isOnline,
+                meetingLink: event.meetingLink,
                 organizer: organizer
                   ? {
                       _id: organizer._id,
@@ -584,33 +586,79 @@ export default async function EventDetailsPage({
                   {/* Location */}
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50">
                     <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
+                      {event.isOnline ? (
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      )}
                     </div>
                     <div>
                       <p className="text-xs font-bold uppercase text-blue-400">
-                        Location
+                        {event.isOnline ? "Event Type" : "Location"}
                       </p>
-                      <p className="font-semibold text-slate-800 line-clamp-1">
-                        {event.location}
-                      </p>
+                      {event.isOnline ? (
+                        userBooking ? (
+                          <a
+                            href={event.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-blue-600 hover:text-blue-700 underline flex items-center gap-1"
+                          >
+                            Join Meeting
+                            <svg
+                              className="h-3 w-3"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </a>
+                        ) : (
+                          <p className="font-semibold text-slate-800">
+                            Online Event
+                          </p>
+                        )
+                      ) : (
+                        <p className="font-semibold text-slate-800 line-clamp-1">
+                          {event.location}
+                        </p>
+                      )}
                     </div>
                   </div>
 

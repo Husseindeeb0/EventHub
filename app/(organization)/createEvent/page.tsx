@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createEventAction } from "@/app/actions";
 import { useFormStatus } from "react-dom";
 import { motion } from "framer-motion";
-import ImageKitUpload from "@/components/ImageKitUpload";
+import ImageKitUpload from "@/components/imageKit/ImageKitUpload";
 import SpeakerManagement, {
   Speaker,
 } from "@/components/events/SpeakerManagement";
@@ -12,6 +12,7 @@ import ScheduleManagement, {
   ScheduleItem,
 } from "@/components/events/ScheduleManagement";
 import { useState } from "react";
+import { DEFAULT_CATEGORIES } from "@/lib/utils";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -59,6 +60,11 @@ export default function CreateEventPage() {
   const [coverImageFileId, setCoverImageFileId] = useState("");
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+  const [isOnline, setIsOnline] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    DEFAULT_CATEGORIES[0]
+  );
+  const [customCategory, setCustomCategory] = useState("");
 
   return (
     <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-linear-to-br from-indigo-100 via-purple-100 to-cyan-100 p-4 sm:p-8 relative overflow-hidden">
@@ -141,23 +147,76 @@ export default function CreateEventPage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.65 }}
+              className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 bg-purple-50/30"
             >
-              <label
-                htmlFor="location"
-                className="block text-sm font-semibold text-slate-700 mb-2"
-              >
-                Location
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                required
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                placeholder="e.g. Beirut, Lebanon"
-              />
+              <div className="flex items-center h-5">
+                <input
+                  id="isOnline"
+                  name="isOnline"
+                  type="checkbox"
+                  checked={isOnline}
+                  onChange={(e) => setIsOnline(e.target.checked)}
+                  className="h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                />
+              </div>
+              <div className="text-sm">
+                <label
+                  htmlFor="isOnline"
+                  className="font-semibold text-slate-700"
+                >
+                  This is an online event
+                </label>
+                <p className="text-slate-500">
+                  The event will be held via a meeting link (Zoom, Google Meet,
+                  etc.)
+                </p>
+              </div>
             </motion.div>
+
+            {!isOnline ? (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  required={!isOnline}
+                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  placeholder="e.g. Beirut, Lebanon"
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <label
+                  htmlFor="meetingLink"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
+                  Meeting Link
+                </label>
+                <input
+                  type="url"
+                  id="meetingLink"
+                  name="meetingLink"
+                  required={isOnline}
+                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  placeholder="e.g. https://zoom.us/j/..."
+                />
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -165,25 +224,47 @@ export default function CreateEventPage() {
               transition={{ delay: 0.75 }}
             >
               <label
-                htmlFor="category"
+                htmlFor="category-select"
                 className="block text-sm font-semibold text-slate-700 mb-2"
               >
                 Category
               </label>
               <select
-                id="category"
-                name="category"
+                id="category-select"
                 required
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
               >
-                <option value="Music">Music</option>
-                <option value="Tech">Tech</option>
-                <option value="Business">Business</option>
-                <option value="Health">Health</option>
-                <option value="Social">Social</option>
-                <option value="Education">Education</option>
-                <option value="Other">Other</option>
+                {DEFAULT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+                <option value="Other">Other (Custom)</option>
               </select>
+
+              {selectedCategory === "Other" && (
+                <motion.input
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  type="text"
+                  required
+                  placeholder="Enter custom category name..."
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  className="mt-3 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              )}
+              <input
+                type="hidden"
+                name="category"
+                value={
+                  selectedCategory === "Other"
+                    ? customCategory
+                    : selectedCategory
+                }
+              />
             </motion.div>
 
             <motion.div

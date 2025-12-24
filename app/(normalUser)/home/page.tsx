@@ -4,7 +4,10 @@ import React, { useState } from "react";
 import { useGetEventsQuery } from "@/redux/features/events/eventsApi";
 import EventCard from "@/components/events/EventCard";
 import EventSearchBar from "@/components/events/EventSearchBar";
-import { AnimatedCard } from "@/components/animations/PageAnimations";
+import {
+  AnimatedCard,
+  AnimatedPageHeader,
+} from "@/components/animations/PageAnimations";
 import Loading from "@/components/ui/Loading";
 
 export default function EventsPage() {
@@ -79,25 +82,27 @@ export default function EventsPage() {
       {/* Subtle Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-indigo-50/50 to-transparent -z-10" />
 
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-        <header className="relative mb-12">
-          <div className="flex flex-col gap-3 relative z-10 text-center sm:text-left">
-            <span className="inline-flex w-fit mx-auto sm:mx-0 items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-600 border border-indigo-100">
-              Curated Selection
-            </span>
-            <div className="relative group inline-block">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl relative z-10">
-                Popular Events
-              </h1>
-              {/* Subtle Feathered Glow Header */}
-              <div className="absolute -left-10 -right-20 top-1/2 -translate-y-1/2 h-full w-[120%] bg-radial from-indigo-100/30 via-indigo-50/10 to-transparent blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10 relative z-10">
+        <AnimatedPageHeader>
+          <header className="relative mb-8">
+            <div className="flex flex-col gap-2 relative z-10 text-center sm:text-left">
+              <span className="inline-flex w-fit mx-auto sm:mx-0 items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 border border-indigo-100">
+                Curated Selection
+              </span>
+              <div className="relative group inline-block">
+                <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl relative z-10 leading-tight">
+                  Popular Events
+                </h1>
+                {/* Subtle Feathered Glow Header */}
+                <div className="absolute -left-10 -right-20 top-1/2 -translate-y-1/2 h-full w-[120%] bg-radial from-indigo-100/30 via-indigo-50/10 to-transparent blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              </div>
+              <p className="text-sm text-slate-500 font-medium max-w-md">
+                Join thousands of people at the best experiences happening right
+                now.
+              </p>
             </div>
-            <p className="text-base text-slate-500 font-medium max-w-lg">
-              Join thousands of people at the best experiences happening right
-              now.
-            </p>
-          </div>
-        </header>
+          </header>
+        </AnimatedPageHeader>
 
         <EventSearchBar onSearch={handleSearch} />
 

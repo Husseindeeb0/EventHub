@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import ImageKitUpload from "@/components/ImageKitUpload";
+import ImageKitUpload from "@/components/imageKit/ImageKitUpload";
 
 export interface Speaker {
   name: string;

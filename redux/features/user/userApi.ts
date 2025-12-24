@@ -16,7 +16,9 @@ export const userApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["User"],
+      // Use "Follow" tag to update following/followers lists without
+      // invalidating "User" which would trigger a session check
+      invalidatesTags: ["Follow"],
     }),
   }),
 });

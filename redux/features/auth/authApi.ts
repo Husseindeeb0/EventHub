@@ -67,11 +67,11 @@ export const authApi = api.injectEndpoints({
     }),
     getFollowing: builder.query<{ success: boolean; following: any[] }, void>({
       query: () => "/user/following",
-      providesTags: ["User"],
+      providesTags: ["Follow"],
     }),
     getFollowers: builder.query<{ success: boolean; followers: any[] }, void>({
       query: () => "/user/followers",
-      providesTags: ["User"],
+      providesTags: ["Follow"],
     }),
     resendVerification: builder.mutation<
       { success: boolean; message: string },

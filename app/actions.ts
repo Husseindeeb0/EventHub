@@ -17,6 +17,8 @@ export async function createEventAction(formData: FormData) {
 
   const title = formData.get("title") as string;
   const location = formData.get("location") as string;
+  const isOnline = formData.get("isOnline") === "on";
+  const meetingLink = formData.get("meetingLink") as string;
   const startsAt = formData.get("startsAt") as string;
   const endsAt = formData.get("endsAt") as string;
   const capacityStr = formData.get("capacity") as string;
@@ -27,8 +29,17 @@ export async function createEventAction(formData: FormData) {
   const speakersStr = formData.get("speakers") as string;
   const scheduleStr = formData.get("schedule") as string;
 
-  if (!title || !location || !startsAt) {
-    throw new Error("Missing required fields");
+  if (
+    !title ||
+    (!isOnline && !location) ||
+    (isOnline && !meetingLink) ||
+    !startsAt
+  ) {
+    throw new Error(
+      isOnline
+        ? "Meeting link is required for online events"
+        : "Location is required for in-person events"
+    );
   }
 
   await connectDb();
@@ -61,7 +72,9 @@ export async function createEventAction(formData: FormData) {
 
   const newEvent = await Event.create({
     title,
-    location,
+    location: isOnline ? "Online" : location,
+    isOnline,
+    meetingLink: isOnline ? meetingLink : undefined,
     startsAt: new Date(startsAt),
     endsAt: endsAt ? new Date(endsAt) : undefined,
     organizerId: currentUser.userId,
@@ -79,29 +92,72 @@ export async function createEventAction(formData: FormData) {
     $push: { createdEvents: newEvent._id },
   });
 
-  // Notify followers
+  // Notify followers (in-app + email)
   try {
+    // Find all users who follow this organizer
     const followers = await User.find({ following: currentUser.userId }).select(
-      "_id"
+      "_id name email"
     );
 
     if (followers.length > 0) {
-      const organizer = await User.findById(currentUser.userId).select("name");
+      const organizer = await User.findById(currentUser.userId).select(
+        "name imageUrl"
+      );
       const organizerName = organizer?.name || "An organizer";
+      const organizerImageUrl = organizer?.imageUrl;
 
       const { createNotification } = await import("@/lib/notifications");
+      const { sendEmail } = await import("@/lib/sendEmail");
+      const {
+        generateNewEventEmailTemplate,
+        formatEventDate,
+        formatEventTime,
+      } = await import("@/lib/emailTemplates");
 
-      const notificationPromises = followers.map((follower) =>
-        createNotification({
+      // Base URL for event links
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const eventUrl = `${baseUrl}/home/${newEvent._id}`;
+
+      // Event date/time formatting
+      const eventDate = formatEventDate(new Date(startsAt));
+      const eventTime = formatEventTime(new Date(startsAt));
+
+      // Process each follower
+      for (const follower of followers) {
+        // Create in-app notification
+        await createNotification({
           recipient: follower._id.toString(),
           type: "NEW_EVENT_FROM_FOLLOWING",
           message: `${organizerName} posted a new event: "${title}"`,
           relatedEntityId: newEvent._id as any,
           relatedEntityType: "Event",
-        })
-      );
+        });
 
-      await Promise.all(notificationPromises);
+        // Generate and send email notification
+        const emailHtml = generateNewEventEmailTemplate({
+          followerName: follower.name,
+          organizerName,
+          organizerImageUrl,
+          eventTitle: title,
+          eventDescription: description,
+          eventLocation: isOnline ? "Online Event" : location,
+          eventDate,
+          eventTime,
+          eventCategory: category,
+          eventImageUrl: imageUrl,
+          eventUrl,
+        });
+
+        // Send email (non-blocking)
+        sendEmail({
+          to: follower.email,
+          subject: `🎉 New Event from ${organizerName}: ${title}`,
+          html: emailHtml,
+        }).catch((err) => {
+          console.error(`Failed to send email to ${follower.email}:`, err);
+        });
+      }
     }
   } catch (error) {
     console.error("Failed to notify followers:", error);
@@ -119,6 +175,8 @@ export async function updateEventAction(formData: FormData) {
     const id = formData.get("eventId") as string;
     const title = formData.get("title") as string;
     const location = formData.get("location") as string;
+    const isOnline = formData.get("isOnline") === "on";
+    const meetingLink = formData.get("meetingLink") as string;
     const startsAt = formData.get("startsAt") as string;
     const endsAt = formData.get("endsAt") as string;
     const capacityStr = formData.get("capacity") as string;
@@ -129,8 +187,18 @@ export async function updateEventAction(formData: FormData) {
     const speakersStr = formData.get("speakers") as string;
     const scheduleStr = formData.get("schedule") as string;
 
-    if (!id || !title || !location || !startsAt) {
-      throw new Error("Missing required fields");
+    if (
+      !id ||
+      !title ||
+      (!isOnline && !location) ||
+      (isOnline && !meetingLink) ||
+      !startsAt
+    ) {
+      throw new Error(
+        isOnline
+          ? "Meeting link is required for online events"
+          : "Location is required for in-person events"
+      );
     }
 
     await connectDb();
@@ -187,7 +255,9 @@ export async function updateEventAction(formData: FormData) {
 
     await Event.findByIdAndUpdate(id, {
       title,
-      location,
+      location: isOnline ? "Online" : location,
+      isOnline,
+      meetingLink: isOnline ? meetingLink : undefined,
       startsAt: new Date(startsAt),
       endsAt: endsAt ? new Date(endsAt) : undefined,
       capacity: capacity, // undefined means unlimited

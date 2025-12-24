@@ -67,7 +67,7 @@ export default function NotificationsDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-white/90 hover:text-white transition-colors focus:outline-none"
+        className="relative p-2 text-white/90 hover:text-white transition-colors focus:outline-none cursor-pointer"
       >
         <Bell size={24} />
         {unreadCount > 0 && (
@@ -78,7 +78,7 @@ export default function NotificationsDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-1rem)] bg-white rounded-xl shadow-2xl overflow-hidden z-[60] border border-gray-100 ring-1 ring-black/5 origin-top-right transform transition-all">
+        <div className="absolute -right-12 sm:right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden z-[60] border border-gray-100 ring-1 ring-black/5 origin-top transform transition-all">
           <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-semibold text-gray-800">Notifications</h3>
             <div className="flex gap-3 text-xs font-medium">

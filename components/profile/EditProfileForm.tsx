@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useUpdateProfileMutation } from "@/redux/features/auth/authApi";
 import { X, Loader2, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ImageKitUpload from "@/components/ImageKitUpload";
+import ImageKitUpload from "@/components/imageKit/ImageKitUpload";
 
 interface EditProfileFormProps {
   user: {
@@ -105,7 +105,13 @@ export default function EditProfileForm({
             </label>
             <div className="w-32 mx-auto space-y-2">
               <ImageKitUpload
-                onSuccess={(res) => setFormData((prev) => ({ ...prev, imageUrl: res.url, imageFileId: res.fileId }))}
+                onSuccess={(res) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    imageUrl: res.url,
+                    imageFileId: res.fileId,
+                  }))
+                }
                 defaultImage={formData.imageUrl}
                 aspectRatio="aspect-square"
                 variant="compact"
@@ -113,7 +119,13 @@ export default function EditProfileForm({
               {formData.imageUrl && (
                 <button
                   type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, imageUrl: "", imageFileId: "" }))}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      imageUrl: "",
+                      imageFileId: "",
+                    }))
+                  }
                   className="text-xs text-red-500 hover:text-red-600 font-medium w-full text-center hover:underline"
                 >
                   Remove Picture

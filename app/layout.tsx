@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import StoreProvider from "@/redux/StoreProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
 import AIChat from "@/components/ai/AIChat";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 
 export const metadata: Metadata = {
   title: "EventHub",
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true}>
         <StoreProvider>
           <AuthInitializer />
+          <ScrollToTop />
           <Navbar />
           <main>{children}</main>
           <Footer />

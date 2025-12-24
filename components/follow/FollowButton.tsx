@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { UserPlus, UserCheck, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useFollowUserMutation } from "@/redux/features/user/userApi";
 
 interface FollowButtonProps {
@@ -20,7 +19,6 @@ export default function FollowButton({
 }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [followerCount, setFollowerCount] = useState(initialFollowerCount);
-  const router = useRouter();
 
   const [followUser, { isLoading: loading }] = useFollowUserMutation();
 
@@ -31,7 +29,6 @@ export default function FollowButton({
       // Ensure state matches server response exactly
       setIsFollowing(data.isFollowing);
       setFollowerCount(data.followerCount);
-      router.refresh(); // Refresh to update server components if needed
     } catch (error: any) {
       console.error("Follow error:", error);
       alert(
@@ -42,14 +39,14 @@ export default function FollowButton({
   };
 
   return (
-    <div className={`flex flex-col items-center gap-1 ${className}`}>
+    <div className={`flex flex-col items-center gap-2 ${className}`}>
       <button
         onClick={toggleFollow}
         disabled={loading}
-        className={`flex items-center cursor-pointer gap-2 px-4 py-2 rounded-full font-semibold transition-all shadow-sm ${
+        className={`flex items-center justify-center cursor-pointer gap-2 px-6 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-sm w-full ${
           isFollowing
-            ? "bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-300"
-            : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md"
+            ? "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
+            : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20"
         } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
       >
         {loading ? (
@@ -61,7 +58,7 @@ export default function FollowButton({
         )}
         <span>{isFollowing ? "Following" : "Follow"}</span>
       </button>
-      <span className="text-sm font-medium text-gray-500">
+      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
         {followerCount} {followerCount === 1 ? "Follower" : "Followers"}
       </span>
     </div>

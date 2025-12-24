@@ -143,34 +143,52 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
                 isFinished ? "bg-slate-100" : "bg-blue-50"
               }`}
             >
-              <svg
-                className={`h-3.5 w-3.5 shrink-0 ${
-                  isFinished ? "text-slate-400" : "text-blue-500"
-                }`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+              {e.isOnline ? (
+                <svg
+                  className={`h-3.5 w-3.5 shrink-0 ${
+                    isFinished ? "text-slate-400" : "text-blue-500"
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className={`h-3.5 w-3.5 shrink-0 ${
+                    isFinished ? "text-slate-400" : "text-blue-500"
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              )}
             </div>
             <span
               className={`line-clamp-1 font-bold ${
                 isFinished ? "text-slate-400" : "text-slate-600"
               }`}
             >
-              {e.location}
+              {e.isOnline ? "Online" : e.location}
             </span>
           </div>
         </div>

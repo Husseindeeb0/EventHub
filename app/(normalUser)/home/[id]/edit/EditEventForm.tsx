@@ -4,18 +4,21 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { updateEventAction, deleteEventAction } from "@/app/actions";
 import { useState } from "react";
-import ImageKitUpload from "@/components/ImageKitUpload";
+import ImageKitUpload from "@/components/imageKit/ImageKitUpload";
 import SpeakerManagement, {
   Speaker,
 } from "@/components/events/SpeakerManagement";
 import ScheduleManagement, {
   ScheduleItem,
 } from "@/components/events/ScheduleManagement";
+import { DEFAULT_CATEGORIES } from "@/lib/utils";
 
 interface EventData {
   _id: string;
   title: string;
   location?: string;
+  isOnline: boolean;
+  meetingLink?: string;
   startsAt?: Date | string;
   capacity?: number;
   category?: string;
@@ -52,6 +55,17 @@ export default function EditEventForm({ event }: { event: EventData }) {
   const [schedule, setSchedule] = useState<ScheduleItem[]>(
     event.schedule || []
   );
+  const [isOnline, setIsOnline] = useState(event.isOnline || false);
+
+  const isDefaultCategory =
+    event.category &&
+    (DEFAULT_CATEGORIES as readonly string[]).includes(event.category);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    isDefaultCategory ? event.category! : "Other"
+  );
+  const [customCategory, setCustomCategory] = useState(
+    isDefaultCategory ? "" : event.category || ""
+  );
 
   const handleImageUploadSuccess = (res: { url: string; fileId: string }) => {
     setCoverImageUrl(res.url);
@@ -82,22 +96,64 @@ export default function EditEventForm({ event }: { event: EventData }) {
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="location"
-            className="block text-sm font-semibold text-slate-700 mb-2"
-          >
-            Location
-          </label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            required
-            defaultValue={event.location}
-            className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-          />
+        <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 bg-purple-50/30">
+          <div className="flex items-center h-5">
+            <input
+              id="isOnline"
+              name="isOnline"
+              type="checkbox"
+              checked={isOnline}
+              onChange={(e) => setIsOnline(e.target.checked)}
+              className="h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+            />
+          </div>
+          <div className="text-sm">
+            <label htmlFor="isOnline" className="font-semibold text-slate-700">
+              This is an online event
+            </label>
+            <p className="text-slate-500">
+              The event will be held via a meeting link (Zoom, Google Meet,
+              etc.)
+            </p>
+          </div>
         </div>
+
+        {!isOnline ? (
+          <div>
+            <label
+              htmlFor="location"
+              className="block text-sm font-semibold text-slate-700 mb-2"
+            >
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              required={!isOnline}
+              defaultValue={event.location}
+              className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          </div>
+        ) : (
+          <div>
+            <label
+              htmlFor="meetingLink"
+              className="block text-sm font-semibold text-slate-700 mb-2"
+            >
+              Meeting Link
+            </label>
+            <input
+              type="url"
+              id="meetingLink"
+              name="meetingLink"
+              required={isOnline}
+              defaultValue={event.meetingLink}
+              className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              placeholder="e.g. https://zoom.us/j/..."
+            />
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -111,26 +167,43 @@ export default function EditEventForm({ event }: { event: EventData }) {
 
         <div>
           <label
-            htmlFor="category"
+            htmlFor="category-select"
             className="block text-sm font-semibold text-slate-700 mb-2"
           >
             Category
           </label>
           <select
-            id="category"
-            name="category"
+            id="category-select"
             required
-            defaultValue={event.category}
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           >
-            <option value="Music">Music</option>
-            <option value="Tech">Tech</option>
-            <option value="Business">Business</option>
-            <option value="Health">Health</option>
-            <option value="Social">Social</option>
-            <option value="Education">Education</option>
-            <option value="Other">Other</option>
+            {DEFAULT_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+            <option value="Other">Other (Custom)</option>
           </select>
+
+          {selectedCategory === "Other" && (
+            <input
+              type="text"
+              required
+              placeholder="Enter custom category name..."
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="mt-3 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          )}
+          <input
+            type="hidden"
+            name="category"
+            value={
+              selectedCategory === "Other" ? customCategory : selectedCategory
+            }
+          />
         </div>
 
         <div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 import connectDb from "@/lib/connectDb";
 import User from "@/models/User";
 import { getCurrentUser } from "@/lib/serverAuth";
-import FollowButton from "@/components/FollowButton";
+import FollowButton from "@/components/follow/FollowButton";
 import Link from "next/link";
 import {
   Building2,

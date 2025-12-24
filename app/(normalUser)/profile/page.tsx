@@ -3,13 +3,12 @@ import {
   AnimatedPageHeader,
   AnimatedCard,
 } from "@/components/animations/PageAnimations";
-import ProfileHeader from "./_components/ProfileHeader";
-import ProfileInfo from "./_components/ProfileInfo";
-import ProfileAttendedEvents from "./_components/ProfileAttendedEvents";
-import ProfileFollowing from "./_components/ProfileFollowing";
-import ProfileFollowers from "./_components/ProfileFollowers";
-import EditCoverForm from "./_components/EditCoverForm";
-import EditProfileForm from "./_components/EditProfileForm";
+import ProfileHeader from "../../../components/profile/ProfileHeader";
+import ProfileInfo from "../../../components/profile/ProfileInfo";
+import ProfileAttendedEvents from "../../../components/profile/ProfileAttendedEvents";
+import ProfileFollowing from "../../../components/profile/ProfileFollowing";
+import EditCoverForm from "../../../components/profile/EditCoverForm";
+import EditProfileForm from "../../../components/profile/EditProfileForm";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useAppSelector } from "@/redux/store";
