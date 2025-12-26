@@ -52,17 +52,19 @@ export default function GeneralFeedbackPage() {
 
   if (status === "success") {
     return (
-      <main className="min-h-screen bg-linear-to-br from-indigo-50/50 via-purple-50/50 to-blue-50/50 flex items-center justify-center p-4">
+      <main className="min-h-screen dark:bg-transparent flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center space-y-6"
+          className="max-w-md w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8 text-center space-y-6"
         >
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-10 h-10 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Thank You!</h1>
-          <p className="text-slate-600">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Thank You!
+          </h1>
+          <p className="text-slate-600 dark:text-slate-300">
             Your feedback has been submitted successfully. We appreciate your
             input to help us improve the app!
           </p>
@@ -70,7 +72,7 @@ export default function GeneralFeedbackPage() {
           <div className="pt-4">
             <Link
               href="/home"
-              className="inline-flex items-center gap-2 px-6 py-2 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition"
+              className="inline-flex items-center gap-2 px-6 py-2 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 premium-button-purple transition"
             >
               Back to Home
             </Link>
@@ -81,11 +83,11 @@ export default function GeneralFeedbackPage() {
   }
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-indigo-50/50 via-purple-50/50 to-blue-50/50 flex items-center justify-center p-4">
+    <main className="min-h-screen flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+        className="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
       >
         {/* Info Sidebar */}
         <div className="bg-linear-to-b from-indigo-600 to-purple-600 p-8 text-white md:w-1/3 flex flex-col justify-between">
@@ -134,7 +136,7 @@ export default function GeneralFeedbackPage() {
 
             {/* Rating */}
             <div className="space-y-3">
-              <label className="text-sm font-semibold text-slate-700 block">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block">
                 Overall Experience
               </label>
               <div className="flex gap-2">
@@ -161,7 +163,7 @@ export default function GeneralFeedbackPage() {
 
             {/* Category */}
             <div className="space-y-3">
-              <label className="text-sm font-semibold text-slate-700 block">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block">
                 What category does your feedback fall into?
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -173,8 +175,8 @@ export default function GeneralFeedbackPage() {
                       onClick={() => setCategory(cat)}
                       className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                         category === cat
-                          ? "bg-linear-to-r from-indigo-600 to-purple-600 border-indigo-600 text-white shadow-md shadow-indigo-200"
-                          : "bg-white border-slate-200 text-slate-600 hover:border-purple-300 hover:bg-slate-50"
+                          ? "bg-linear-to-r from-indigo-600 to-purple-600 border-indigo-600 text-white premium-button-purple"
+                          : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-slate-50 dark:hover:bg-slate-700"
                       }`}
                     >
                       {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -186,14 +188,14 @@ export default function GeneralFeedbackPage() {
 
             {/* Comment */}
             <div className="space-y-3">
-              <label className="text-sm font-semibold text-slate-700 block">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block">
                 Your detailed feedback
               </label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="What's on your mind? We'd love to hear your thoughts, suggestions, or issues..."
-                className="w-full h-32 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none text-slate-700"
+                className="w-full h-32 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none text-slate-700 dark:text-white placeholder:text-slate-400"
                 maxLength={500}
               />
               <div className="text-right text-xs text-slate-400 mt-1">
@@ -205,7 +207,7 @@ export default function GeneralFeedbackPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:from-indigo-700 hover:to-purple-700 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-xl shadow-purple-100"
+              className="w-full py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:from-indigo-700 hover:to-purple-700 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed premium-button-purple"
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

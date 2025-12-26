@@ -41,7 +41,7 @@ export function SocialProof() {
               className="flex items-center justify-center"
             >
               <div className="group cursor-pointer">
-                <div className="px-6 py-4 rounded-xl bg-gray-50 hover:bg-white border border-gray-100 hover:border-indigo-100 transition-all duration-300 hover:shadow-md">
+                <div className="px-6 py-4 rounded-xl bg-gray-50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 border border-gray-100 dark:border-slate-800 hover:border-indigo-100 transition-all duration-300 hover:premium-shadow">
                   <div className="text-center font-bold text-gray-400 group-hover:text-indigo-600 transition-colors duration-300 text-sm md:text-base">
                     {company}
                   </div>

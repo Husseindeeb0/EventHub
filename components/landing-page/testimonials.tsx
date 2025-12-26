@@ -52,7 +52,7 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 bg-white rounded-[2rem] overflow-hidden">
+              <Card className="h-full border-none premium-shadow hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)] transition-all duration-500 hover:-translate-y-2 bg-white dark:bg-slate-950 rounded-4xl overflow-hidden">
                 <CardContent className="p-8 space-y-6">
                   <Quote className="w-10 h-10 text-indigo-200" />
 
@@ -61,7 +61,7 @@ export function Testimonials() {
                   </p>
 
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                       {testimonial.avatar}
                     </div>
                     <div>

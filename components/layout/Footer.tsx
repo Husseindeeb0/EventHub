@@ -38,7 +38,7 @@ const legal = [
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 border-t border-purple-700/50">
+    <footer className="bg-linear-to-r from-purple-900 via-blue-900 to-indigo-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-t border-purple-700/50 dark:border-slate-800">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Main 3-column layout for large screens, stacked for mobile */}
         <div className="lg:grid lg:grid-cols-3 lg:gap-8 xl:gap-12">

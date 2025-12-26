@@ -42,6 +42,7 @@ export interface IEvent extends Document {
   isPaid: boolean;
   price?: number;
   whishNumber?: string;
+  liveStreamUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +62,9 @@ const EventSchema = new Schema<IEvent>(
       default: false,
     },
     meetingLink: {
+      type: String,
+    },
+    liveStreamUrl: {
       type: String,
     },
     averageRating: {

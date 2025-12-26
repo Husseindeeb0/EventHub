@@ -101,7 +101,7 @@ export default function LoginPage() {
     loginError && "status" in loginError && (loginError as any).status === 403;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ export default function LoginPage() {
         className="w-full max-w-md"
       >
         {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
@@ -120,10 +120,12 @@ export default function LoginPage() {
             >
               <LogIn className="w-8 h-8 text-white" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
               Welcome Back
             </h1>
-            <p className="text-gray-600">Sign in to your EventHub account</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Sign in to your EventHub account
+            </p>
           </div>
 
           {/* Error Message */}
@@ -156,7 +158,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -166,10 +168,10 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
                     validationErrors.email
                       ? "border-red-500"
-                      : "border-gray-300"
+                      : "border-gray-300 dark:border-slate-700"
                   }`}
                   placeholder="john@example.com"
                 />
@@ -183,7 +185,7 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -193,10 +195,10 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
                     validationErrors.password
                       ? "border-red-500"
-                      : "border-gray-300"
+                      : "border-gray-300 dark:border-slate-700"
                   }`}
                   placeholder="••••••••"
                 />
@@ -239,7 +241,7 @@ export default function LoginPage() {
           </form>
 
           {/* Signup Link */}
-          <p className="mt-6 text-center text-gray-600 text-sm">
+          <p className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
             Don't have an account?{" "}
             <Link
               href="/signup"

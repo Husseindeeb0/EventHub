@@ -103,7 +103,7 @@ export default function AIChat() {
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
-            className="fixed bottom-24 right-6 z-50 w-[350px] sm:w-[400px] h-[min(580px,calc(100vh-120px))] bg-white rounded-3xl shadow-2xl border border-indigo-100 flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-6 z-50 w-[350px] sm:w-[400px] h-[min(580px,calc(100vh-120px))] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-indigo-100 dark:border-slate-800 flex flex-col overflow-hidden premium-shadow"
           >
             <div className="p-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between shadow-lg">
               <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function AIChat() {
 
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50"
+              className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/50"
             >
               {messages.map((msg, i) => (
                 <div
@@ -150,7 +150,7 @@ export default function AIChat() {
                       className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
                         msg.role === "user"
                           ? "bg-indigo-600"
-                          : "bg-white border border-indigo-100 text-purple-600"
+                          : "bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 text-purple-600 dark:text-purple-400"
                       }`}
                     >
                       {msg.role === "user" ? (
@@ -163,7 +163,7 @@ export default function AIChat() {
                       className={`p-3.5 rounded-2xl text-[13px] leading-relaxed shadow-sm ${
                         msg.role === "user"
                           ? "bg-indigo-600 text-white rounded-tr-none"
-                          : "bg-white text-slate-700 rounded-tl-none border border-indigo-50"
+                          : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-indigo-50 dark:border-slate-700"
                       }`}
                     >
                       {msg.content}
@@ -174,10 +174,10 @@ export default function AIChat() {
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="flex gap-2.5 max-w-[85%] items-center">
-                    <div className="shrink-0 w-8 h-8 rounded-full bg-white border border-indigo-100 flex items-center justify-center text-purple-600 shadow-sm">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">
                       <Bot size={16} />
                     </div>
-                    <div className="p-3 bg-white border border-indigo-50 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
+                    <div className="p-3 bg-white dark:bg-slate-800 border border-indigo-50 dark:border-slate-700 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
                       <Loader2
                         size={14}
                         className="animate-spin text-indigo-600"
@@ -191,7 +191,7 @@ export default function AIChat() {
               )}
             </div>
 
-            <div className="p-4 bg-white border-t border-indigo-50">
+            <div className="p-4 bg-white dark:bg-slate-900 border-t border-indigo-50 dark:border-slate-800">
               <div className="relative flex items-center gap-2">
                 <div className="relative flex-1">
                   <input
@@ -200,7 +200,7 @@ export default function AIChat() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="Ask about events or features..."
-                    className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                    className="w-full pl-4 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-700 transition-all text-sm text-slate-900 dark:text-white"
                   />
                 </div>
                 <button
@@ -211,7 +211,7 @@ export default function AIChat() {
                   <Send size={18} />
                 </button>
               </div>
-              <p className="mt-3 text-[9px] text-center text-slate-400 font-medium uppercase tracking-widest">
+              <p className="mt-3 text-[9px] text-center text-slate-400 dark:text-slate-500 font-medium uppercase tracking-widest">
                 EventHub Intelligence Console
               </p>
             </div>

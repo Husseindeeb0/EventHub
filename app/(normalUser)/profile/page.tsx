@@ -21,9 +21,9 @@ export default function ProfilePage() {
   const user = useAppSelector(selectUser);
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-linear-to-br from-slate-100 via-indigo-100/60 to-blue-100/80 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] pointer-events-none"></div>
+    <main className="min-h-[calc(100vh-56px)] dark:bg-transparent relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)] dark:hidden pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(59,130,246,0.2),transparent_60%)] dark:hidden pointer-events-none"></div>
 
       <div className="relative max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8 z-10">
         <AnimatedPageHeader>

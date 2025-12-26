@@ -36,12 +36,12 @@ export default async function EditEventPage({
     : "";
 
   return (
-    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-gradient-to-br from-violet-100 via-purple-100 via-indigo-100 to-blue-100 p-4 sm:p-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(124,58,237,0.15),transparent_50%)] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(37,99,235,0.15),transparent_50%)] pointer-events-none"></div>
+    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-white dark:bg-transparent transition-colors duration-300">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(124,58,237,0.1),transparent_50%)] dark:hidden pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(37,99,235,0.1),transparent_50%)] dark:hidden pointer-events-none"></div>
       <div className="w-full max-w-xl relative z-10">
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 mb-4 shadow-lg shadow-purple-500/30">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-purple-600 to-blue-600 mb-4 shadow-lg shadow-purple-500/30">
             <svg
               className="h-8 w-8 text-white"
               fill="none"
@@ -56,10 +56,10 @@ export default async function EditEventPage({
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Edit Event
           </h1>
-          <p className="mt-3 text-lg text-slate-600">
+          <p className="mt-3 text-lg text-slate-600 dark:text-slate-300">
             Update your event details or delete it.
           </p>
         </div>

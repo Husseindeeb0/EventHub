@@ -7,11 +7,11 @@ import { useAppSelector } from "@/redux/store";
 
 export function CTA() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  
+
   return (
     <section className="pt-40 pb-0 relative overflow-hidden">
       {/* Full Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600" />
+      <div className="absolute inset-0 bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600" />
 
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
@@ -28,7 +28,7 @@ export function CTA() {
         >
           <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-white leading-tight">
             Ready to create your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-purple-400">
               next masterpiece?
             </span>
           </h2>
@@ -42,7 +42,7 @@ export function CTA() {
             <Link href={isAuthenticated ? "/home" : "/signup"}>
               <Button
                 size="lg"
-                className="h-20 px-12 text-2xl rounded-full bg-white text-indigo-900 hover:bg-indigo-50 shadow-2xl shadow-indigo-900/50 hover:scale-105 transition-all duration-300 font-bold"
+                className="h-20 px-12 text-2xl rounded-full bg-white text-indigo-900 hover:bg-indigo-50 premium-button-purple hover:scale-105 transition-all duration-300 font-bold"
               >
                 Get Started Now
               </Button>

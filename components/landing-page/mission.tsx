@@ -33,10 +33,10 @@ const missions = [
 
 export function Mission() {
   return (
-    <section className="py-32 bg-slate-50/50">
+    <section className="py-32 bg-slate-50/50 dark:bg-slate-900/50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white">
             Our Mission
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
@@ -53,7 +53,7 @@ export function Mission() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 bg-white rounded-[2rem] overflow-hidden group p-2">
+              <Card className="h-full border-none premium-shadow hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)] transition-all duration-500 hover:-translate-y-1 bg-white dark:bg-slate-950 rounded-4xl overflow-hidden group p-2">
                 <div className="h-full p-6 flex flex-col items-start">
                   <div
                     className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-500 ${
@@ -66,7 +66,7 @@ export function Mission() {
                   >
                     <item.icon className="w-8 h-8" />
                   </div>
-                  <CardTitle className="text-2xl font-bold mb-3 text-gray-900">
+                  <CardTitle className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
                     {item.title}
                   </CardTitle>
                   <CardDescription className="text-lg leading-relaxed text-muted-foreground/80 font-light">

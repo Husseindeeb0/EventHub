@@ -19,6 +19,7 @@ import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import NotificationsDropdown from "./NotificationsDropdown";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 // --- Types ---
 type UserRole = "user" | "organizer" | null;
@@ -136,6 +137,7 @@ export const Navbar = () => {
 
           {/* Auth & Profile Icons */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             {showLoadingState ? (
               // Loading State (Spinner or empty w/ same height)
               <div className="h-11 w-11 flex items-center justify-center">
@@ -144,9 +146,13 @@ export const Navbar = () => {
             ) : isAuthenticated ? (
               <div className="flex items-center gap-4">
                 <NotificationsDropdown />
-                <div className="relative" ref={profileMenuRef}>
+                <div
+                  className="relative"
+                  ref={profileMenuRef}
+                  onMouseEnter={() => setShowProfileMenu(true)}
+                  onMouseLeave={() => setShowProfileMenu(false)}
+                >
                   <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="relative p-0 border-2 border-white/30 hover:border-white rounded-full transition duration-150 ease-in-out overflow-hidden h-11 w-11 flex items-center justify-center cursor-pointer"
                     title="Profile"
                   >
@@ -163,65 +169,73 @@ export const Navbar = () => {
                   </button>
 
                   {/* Profile Dropdown Menu */}
-                  {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl py-2 z-50 border border-slate-100 ring-1 ring-black/5 overflow-hidden">
-                      <div className="px-4 py-3 border-b border-gray-100 bg-slate-50/50">
-                        <p className="text-sm font-bold text-slate-900 truncate">
-                          {user?.name}
-                        </p>
-                        <p className="text-xs text-slate-500 truncate font-medium">
-                          {user?.email}
-                        </p>
-                      </div>
-                      <div className="py-1">
-                        <Link
-                          href="/profile"
-                          onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
-                        >
-                          <UserCircle className="h-4 w-4 mr-3 text-indigo-500" />
-                          Profile
-                        </Link>
-                        {userRole === "organizer" && (
-                          <>
-                            <Link
-                              href="/myEvents"
-                              onClick={() => setShowProfileMenu(false)}
-                              className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
-                            >
-                              <LayoutDashboard className="h-4 w-4 mr-3 text-indigo-500" />
-                              Organizer Hub
-                            </Link>
-                            <Link
-                              href="/requests"
-                              onClick={() => setShowProfileMenu(false)}
-                              className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
-                            >
-                              <ClipboardCheck className="h-4 w-4 mr-3 text-indigo-500" />
-                              Requests
-                            </Link>
-                          </>
-                        )}
-                        <Link
-                          href="/feedback"
-                          onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
-                        >
-                          <MessageSquare className="h-4 w-4 mr-3 text-indigo-500" />
-                          Feedback
-                        </Link>
-                      </div>
-                      <div className="border-t border-gray-100 mt-1 pt-1">
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <LogOut className="h-4 w-4 mr-3" />
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {showProfileMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute right-0 mt-1 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl py-2 z-50 border border-slate-100 dark:border-slate-800 ring-1 ring-black/5 overflow-hidden"
+                      >
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                            {user?.name}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
+                            {user?.email}
+                          </p>
+                        </div>
+                        <div className="py-1">
+                          <Link
+                            href="/profile"
+                            onClick={() => setShowProfileMenu(false)}
+                            className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            <UserCircle className="h-4 w-4 mr-3 text-indigo-500" />
+                            Profile
+                          </Link>
+                          {userRole === "organizer" && (
+                            <>
+                              <Link
+                                href="/myEvents"
+                                onClick={() => setShowProfileMenu(false)}
+                                className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                              >
+                                <LayoutDashboard className="h-4 w-4 mr-3 text-indigo-500" />
+                                Organizer Hub
+                              </Link>
+                              <Link
+                                href="/requests"
+                                onClick={() => setShowProfileMenu(false)}
+                                className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                              >
+                                <ClipboardCheck className="h-4 w-4 mr-3 text-indigo-500" />
+                                Requests
+                              </Link>
+                            </>
+                          )}
+                          <Link
+                            href="/feedback"
+                            onClick={() => setShowProfileMenu(false)}
+                            className="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            <MessageSquare className="h-4 w-4 mr-3 text-indigo-500" />
+                            Feedback
+                          </Link>
+                        </div>
+                        <div className="border-t border-gray-100 dark:border-slate-800 mt-1 pt-1">
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center w-full px-4 py-2.5 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                          >
+                            <LogOut className="h-4 w-4 mr-3" />
+                            Logout
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             ) : (
@@ -229,7 +243,7 @@ export const Navbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group flex items-center space-x-2 text-[11px] font-black uppercase tracking-widest text-indigo-600 bg-white hover:bg-slate-50 px-6 py-2.5 rounded-full transition-all duration-500 shadow-lg shadow-indigo-500/20 active:scale-95 border border-transparent hover:border-indigo-100"
+                  className="group flex items-center space-x-2 text-[11px] font-black uppercase tracking-widest text-indigo-600 bg-white hover:bg-slate-50 px-6 py-2.5 rounded-full transition-all duration-500 premium-button-purple active:scale-95 border border-transparent hover:border-indigo-100"
                 >
                   <link.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-500" />
                   <span>{link.label}</span>
@@ -240,6 +254,7 @@ export const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
             {isAuthenticated && <NotificationsDropdown />}
             <button
               onClick={() => setIsOpen(!isOpen)}

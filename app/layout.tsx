@@ -6,6 +6,9 @@ import StoreProvider from "@/redux/StoreProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
 import AIChat from "@/components/ai/AIChat";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import VantaBackground from "@/components/ui/VantaBackground";
+
+import { ThemeProvider } from "@/components/ui/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "EventHub",
@@ -21,12 +24,15 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <StoreProvider>
-          <AuthInitializer />
-          <ScrollToTop />
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <AIChat />
+          <ThemeProvider defaultTheme="system" storageKey="eventhub-theme">
+            <VantaBackground />
+            <AuthInitializer />
+            <ScrollToTop />
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+            <AIChat />
+          </ThemeProvider>
         </StoreProvider>
       </body>
     </html>

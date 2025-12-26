@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export function PlatformPurpose() {
   return (
-    <section className="py-32 bg-slate-50 overflow-hidden">
+    <section className="py-32 bg-slate-50 dark:bg-slate-900 overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           {/* Left: Text */}
@@ -17,14 +17,14 @@ export function PlatformPurpose() {
             className="space-y-10 order-2 lg:order-1"
           >
             <div className="space-y-6">
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-gray-900 leading-tight">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-tight">
                 Why We Built <br />
                 <span className="text-indigo-600">EventHub</span>
               </h2>
-              <div className="w-24 h-2 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-full" />
+              <div className="w-24 h-2 bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-full" />
             </div>
 
-            <div className="space-y-8 text-xl text-muted-foreground leading-relaxed font-light">
+            <div className="space-y-8 text-xl text-muted-foreground dark:text-gray-400 leading-relaxed font-light">
               <p>
                 We believe that gathering together should be joyful, not
                 stressful. Existing platforms were too cluttered, too expensive,
@@ -39,14 +39,18 @@ export function PlatformPurpose() {
             </div>
 
             <div className="grid grid-cols-2 gap-8 pt-6">
-              <div className="space-y-2 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h4 className="text-3xl font-bold text-gray-900">100%</h4>
+              <div className="space-y-2 p-4 bg-white dark:bg-slate-800 rounded-2xl premium-shadow border border-gray-100 dark:border-slate-700">
+                <h4 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  100%
+                </h4>
                 <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                   Free to Use
                 </p>
               </div>
-              <div className="space-y-2 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h4 className="text-3xl font-bold text-gray-900">24/7</h4>
+              <div className="space-y-2 p-4 bg-white dark:bg-slate-800 rounded-2xl premium-shadow border border-gray-100 dark:border-slate-700">
+                <h4 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  24/7
+                </h4>
                 <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                   Customer Support
                 </p>
@@ -62,10 +66,10 @@ export function PlatformPurpose() {
             transition={{ duration: 0.6 }}
             className="relative order-1 lg:order-2"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 to-indigo-600 rounded-[3rem] rotate-6 opacity-20 blur-2xl" />
-            <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20">
+            <div className="absolute inset-0 bg-linear-to-tr from-purple-600 to-indigo-600 rounded-[3rem] rotate-6 opacity-20 blur-2xl" />
+            <div className="relative rounded-[2.5rem] overflow-hidden premium-shadow border border-white/20">
               <AspectRatio ratio={4 / 5} className="bg-muted">
-                <div className="w-full h-full bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 flex flex-col items-center justify-center text-white p-12 text-center relative overflow-hidden">
+                <div className="w-full h-full bg-linear-to-br from-purple-600 via-blue-600 to-indigo-600 flex flex-col items-center justify-center text-white p-12 text-center relative overflow-hidden">
                   {/* Decorative Circles */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />

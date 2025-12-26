@@ -7,7 +7,7 @@ import { CTA } from "@/components/landing-page/cta";
 
 export default function Home() {
   return (
-    <main className="bg-white font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+    <main className="bg-transparent font-sans text-slate-900 dark:text-slate-200 selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-900 dark:selection:text-indigo-100">
       <Hero />
       <Mission />
       <HowItWorks />

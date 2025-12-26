@@ -27,7 +27,7 @@ export function Hero() {
             The Future of Event Management
           </div>
           <div className="relative group">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 leading-[1.1] relative z-20">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 dark:text-gray-50 leading-[1.1] relative z-20">
               Host Events <br />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600">
                 Like a Pro
@@ -36,7 +36,7 @@ export function Hero() {
             {/* Elegant Faded Highlight */}
             <div className="absolute -left-10 -right-20 top-1/2 -translate-y-1/2 h-full w-[120%] bg-radial from-indigo-50/40 via-indigo-50/10 to-transparent blur-2xl -z-10 pointer-events-none" />
           </div>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-[550px] font-light tracking-wide">
+          <p className="text-lg md:text-xl text-muted-foreground dark:text-gray-400 leading-relaxed max-w-[550px] font-light tracking-wide">
             The all-in-one platform to find your next experience or manage your
             own events with ease.
           </p>
@@ -44,7 +44,7 @@ export function Hero() {
             <Link href="/home">
               <Button
                 size="lg"
-                className="h-16 px-10 text-lg cursor-pointer text-white rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-[0_20px_40px_-15px_rgba(79,70,229,0.3)] hover:shadow-[0_25px_50px_-12px_rgba(79,70,229,0.4)] transition-all hover:-translate-y-1 active:scale-95 overflow-hidden group/btn relative"
+                className="h-16 px-10 text-lg cursor-pointer text-white rounded-full bg-indigo-600 hover:bg-indigo-700 premium-button-purple transition-all hover:-translate-y-1 active:scale-95 overflow-hidden group/btn relative"
               >
                 <span className="relative z-10">Explore Events</span>
                 <div className="absolute inset-0 bg-linear-to-tr from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" />
@@ -54,7 +54,7 @@ export function Hero() {
               <Button
                 variant="outline"
                 size="lg"
-                className="h-16 px-10 text-lg rounded-full border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all"
+                className="h-16 px-10 text-lg rounded-full border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10 dark:text-white transition-all"
               >
                 Become Organizer
               </Button>
@@ -72,15 +72,15 @@ export function Hero() {
           <div className="relative w-full max-w-[600px] aspect-4/5 md:aspect-square">
             {/* Main Card */}
             <div className="absolute inset-0 bg-linear-to-tr from-purple-600 to-indigo-600 rounded-[3rem] rotate-3 opacity-10 blur-2xl" />
-            <div className="relative h-full w-full bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden flex flex-col transform transition-transform hover:scale-[1.02] duration-500">
+            <div className="relative h-full w-full bg-white dark:bg-slate-900 rounded-[2.5rem] premium-shadow border border-gray-100 dark:border-slate-800 overflow-hidden flex flex-col transform transition-transform hover:scale-[1.02] duration-500">
               {/* Header */}
-              <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+              <div className="p-8 border-b border-gray-50 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-xl">
                     EH
                   </div>
                   <div>
-                    <div className="font-bold text-gray-900">
+                    <div className="font-bold text-gray-900 dark:text-white">
                       EventHub Dashboard
                     </div>
                     <div className="text-xs text-muted-foreground">
@@ -96,12 +96,12 @@ export function Hero() {
               </div>
 
               {/* Body */}
-              <div className="flex-1 p-8 bg-gray-50/50 space-y-6">
+              <div className="flex-1 p-8 bg-gray-50/50 dark:bg-slate-800/50 space-y-6">
                 {/* Chart Area */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-800">
                   <div className="flex justify-between items-end mb-4">
                     <div>
-                      <div className="text-3xl font-bold text-gray-900">
+                      <div className="text-3xl font-bold text-gray-900 dark:text-white">
                         2,543
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -116,7 +116,7 @@ export function Hero() {
                     {[40, 70, 45, 90, 65, 85, 55].map((h, i) => (
                       <div
                         key={i}
-                        className="flex-1 bg-indigo-100 rounded-t-lg relative group overflow-hidden"
+                        className="flex-1 bg-indigo-100 dark:bg-slate-700 rounded-t-lg relative group overflow-hidden"
                       >
                         <div
                           className="absolute bottom-0 left-0 right-0 bg-indigo-500 transition-all duration-1000 ease-out rounded-t-lg"
@@ -132,7 +132,7 @@ export function Hero() {
                   {[1, 2].map((i) => (
                     <div
                       key={i}
-                      className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4"
+                      className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-4"
                     >
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -144,8 +144,8 @@ export function Hero() {
                         {i === 1 ? "🎉" : "🎫"}
                       </div>
                       <div className="flex-1">
-                        <div className="h-4 w-24 bg-gray-100 rounded mb-2" />
-                        <div className="h-3 w-16 bg-gray-50 rounded" />
+                        <div className="h-4 w-24 bg-gray-100 dark:bg-slate-700 rounded mb-2" />
+                        <div className="h-3 w-16 bg-gray-50 dark:bg-slate-800 rounded" />
                       </div>
                       <div className="h-8 w-16 bg-gray-100 rounded-full" />
                     </div>
@@ -158,13 +158,13 @@ export function Hero() {
             <motion.div
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-4 lg:-right-16 top-24 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 max-w-[160px] md:max-w-[200px] z-20"
+              className="absolute right-4 lg:-right-16 top-24 bg-white dark:bg-slate-900 p-5 rounded-2xl premium-shadow border border-gray-100 dark:border-slate-800 max-w-[160px] md:max-w-[200px] z-20"
             >
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
                   💰
                 </div>
-                <span className="text-sm font-bold text-gray-900">
+                <span className="text-sm font-bold text-gray-900 dark:text-white">
                   Sold Out!
                 </span>
               </div>
@@ -180,7 +180,7 @@ export function Hero() {
                 ease: "easeInOut",
                 delay: 1,
               }}
-              className="absolute left-4 lg:-left-16 bottom-32 bg-white p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 flex items-center gap-4 z-20"
+              className="absolute left-4 lg:-left-16 bottom-32 bg-white dark:bg-slate-900 p-5 rounded-2xl premium-shadow border border-gray-100 dark:border-slate-800 flex items-center gap-4 z-20"
             >
               <div className="flex -space-x-3">
                 <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
@@ -209,7 +209,7 @@ export function Hero() {
                 </div>
               </div>
               <div>
-                <div className="font-bold text-gray-900 text-sm">
+                <div className="font-bold text-gray-900 dark:text-white text-sm">
                   New Joiners
                 </div>
                 <div className="text-xs text-muted-foreground">Just now</div>

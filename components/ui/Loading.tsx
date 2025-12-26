@@ -14,7 +14,7 @@ export default function Loading({
   const content = (
     <div className="flex flex-col items-center justify-center text-center">
       <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mb-4" />
-      <p className="text-sm font-medium text-slate-500 animate-pulse">
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400 animate-pulse">
         {message}
       </p>
     </div>
@@ -23,7 +23,7 @@ export default function Loading({
   if (fullScreen) {
     return (
       <div
-        className={`min-h-[calc(100vh-64px)] w-full flex items-center justify-center bg-slate-50/50 ${className}`}
+        className={`min-h-[calc(100vh-64px)] w-full flex items-center justify-center bg-slate-50/50 dark:bg-transparent ${className}`}
       >
         {content}
       </div>

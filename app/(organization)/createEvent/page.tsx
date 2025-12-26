@@ -23,7 +23,7 @@ function SubmitButton() {
       whileTap={{ scale: 0.98 }}
       type="submit"
       disabled={pending}
-      className="inline-flex w-full items-center justify-center rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
+      className="inline-flex w-full items-center justify-center rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto premium-button-purple"
     >
       {pending ? (
         <>
@@ -70,9 +70,9 @@ export default function CreateEventPage() {
   const [whishNumber, setWhishNumber] = useState("");
 
   return (
-    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-linear-to-br from-indigo-100 via-purple-100 to-cyan-100 p-4 sm:p-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.15),transparent_50%)] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none"></div>
+    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.15),transparent_50%)] dark:hidden pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.15),transparent_50%)] dark:hidden pointer-events-none"></div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export default function CreateEventPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-3 text-lg text-slate-600"
+            className="mt-3 text-lg text-slate-600 dark:text-slate-300"
           >
             Fill in the details to publish your new event.
           </motion.p>
@@ -122,7 +122,7 @@ export default function CreateEventPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-2xl shadow-purple-500/10"
+          className="overflow-hidden rounded-3xl border border-purple-100 dark:border-slate-800 bg-white dark:bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-purple-500/10 premium-shadow"
         >
           <div className="h-2 bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600"></div>
           <form action={createEventAction} className="flex flex-col gap-6 p-8">
@@ -133,7 +133,7 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="title"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 Event Title
               </label>
@@ -142,7 +142,7 @@ export default function CreateEventPage() {
                 id="title"
                 name="title"
                 required
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                 placeholder="e.g. Deployment Masterclass"
               />
             </motion.div>
@@ -151,7 +151,7 @@ export default function CreateEventPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.65 }}
-              className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 bg-purple-50/30"
+              className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 dark:border-slate-800 bg-purple-50/30 dark:bg-slate-800/30"
             >
               <div className="flex items-center h-5">
                 <input
@@ -160,17 +160,17 @@ export default function CreateEventPage() {
                   type="checkbox"
                   checked={isOnline}
                   onChange={(e) => setIsOnline(e.target.checked)}
-                  className="h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                  className="h-5 w-5 rounded border-purple-300 dark:border-slate-600 text-purple-600 focus:ring-purple-500 dark:bg-slate-700"
                 />
               </div>
               <div className="text-sm">
                 <label
                   htmlFor="isOnline"
-                  className="font-semibold text-slate-700"
+                  className="font-semibold text-slate-700 dark:text-slate-200"
                 >
                   This is an online event
                 </label>
-                <p className="text-slate-500">
+                <p className="text-slate-500 dark:text-slate-400">
                   The event will be held via a meeting link (Zoom, Google Meet,
                   etc.)
                 </p>
@@ -185,7 +185,7 @@ export default function CreateEventPage() {
               >
                 <label
                   htmlFor="location"
-                  className="block text-sm font-semibold text-slate-700 mb-2"
+                  className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
                 >
                   Location
                 </label>
@@ -194,7 +194,7 @@ export default function CreateEventPage() {
                   id="location"
                   name="location"
                   required={!isOnline}
-                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                   placeholder="e.g. Beirut, Lebanon"
                 />
               </motion.div>
@@ -206,7 +206,7 @@ export default function CreateEventPage() {
               >
                 <label
                   htmlFor="meetingLink"
-                  className="block text-sm font-semibold text-slate-700 mb-2"
+                  className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
                 >
                   Meeting Link
                 </label>
@@ -215,7 +215,7 @@ export default function CreateEventPage() {
                   id="meetingLink"
                   name="meetingLink"
                   required={isOnline}
-                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                   placeholder="e.g. https://zoom.us/j/..."
                 />
               </motion.div>
@@ -224,8 +224,35 @@ export default function CreateEventPage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <label
+                htmlFor="liveStreamUrl"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
+              >
+                YouTube Live Stream Link{" "}
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
+                  (Optional)
+                </span>
+              </label>
+              <input
+                type="url"
+                id="liveStreamUrl"
+                name="liveStreamUrl"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
+                placeholder="e.g. https://www.youtube.com/watch?v=..."
+              />
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                Share a YouTube live link to allow people to watch the event
+                directly from our website.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.72 }}
-              className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 bg-emerald-50/30"
+              className="flex items-center gap-3 p-4 rounded-xl border-2 border-purple-100 dark:border-slate-800 bg-emerald-50/30 dark:bg-emerald-900/10"
             >
               <div className="flex items-center h-5">
                 <input
@@ -234,17 +261,17 @@ export default function CreateEventPage() {
                   type="checkbox"
                   checked={isPaid}
                   onChange={(e) => setIsPaid(e.target.checked)}
-                  className="h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                  className="h-5 w-5 rounded border-purple-300 dark:border-slate-600 text-purple-600 focus:ring-purple-500 dark:bg-slate-700"
                 />
               </div>
               <div className="text-sm">
                 <label
                   htmlFor="isPaid"
-                  className="font-semibold text-slate-700"
+                  className="font-semibold text-slate-700 dark:text-slate-200"
                 >
                   This is a paid event
                 </label>
-                <p className="text-slate-500">
+                <p className="text-slate-500 dark:text-slate-400">
                   Attendees will need to pay via Whish to book a spot.
                 </p>
               </div>
@@ -259,7 +286,7 @@ export default function CreateEventPage() {
                 >
                   <label
                     htmlFor="price"
-                    className="block text-sm font-semibold text-slate-700 mb-2"
+                    className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
                   >
                     Ticket Price ($)
                   </label>
@@ -272,7 +299,7 @@ export default function CreateEventPage() {
                     required={isPaid}
                     min="1"
                     step="0.01"
-                    className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                     placeholder="e.g. 20"
                   />
                 </motion.div>
@@ -284,7 +311,7 @@ export default function CreateEventPage() {
                 >
                   <label
                     htmlFor="whishNumber"
-                    className="block text-sm font-semibold text-slate-700 mb-2"
+                    className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
                   >
                     Whish Number for Payment
                   </label>
@@ -295,10 +322,10 @@ export default function CreateEventPage() {
                     value={whishNumber}
                     onChange={(e) => setWhishNumber(e.target.value)}
                     required={isPaid}
-                    className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                     placeholder="e.g. 70123456"
                   />
-                  <p className="mt-2 text-xs text-slate-500">
+                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                     This is the phone number attendees will send the money to
                     via Whish.
                   </p>
@@ -313,7 +340,7 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="category-select"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 Category
               </label>
@@ -322,14 +349,16 @@ export default function CreateEventPage() {
                 required
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
               >
                 {DEFAULT_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className="dark:bg-slate-900">
                     {cat}
                   </option>
                 ))}
-                <option value="Other">Other (Custom)</option>
+                <option value="Other" className="dark:bg-slate-900">
+                  Other (Custom)
+                </option>
               </select>
 
               {selectedCategory === "Other" && (
@@ -340,8 +369,8 @@ export default function CreateEventPage() {
                   required
                   placeholder="Enter custom category name..."
                   value={customCategory}
-                  onChange={(e) => setCustomCategory(e.target.value)}
-                  className="mt-3 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  onChange={(e) => customCategory}
+                  className="mt-3 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                 />
               )}
               <input
@@ -362,7 +391,7 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="startsAt"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 Start Date & Time
               </label>
@@ -371,7 +400,7 @@ export default function CreateEventPage() {
                 id="startsAt"
                 name="startsAt"
                 required
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
               />
             </motion.div>
 
@@ -382,16 +411,18 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="endsAt"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 End Date & Time{" "}
-                <span className="text-slate-400 font-normal">(Optional)</span>
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
+                  (Optional)
+                </span>
               </label>
               <input
                 type="datetime-local"
                 id="endsAt"
                 name="endsAt"
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
               />
             </motion.div>
 
@@ -402,10 +433,12 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="capacity"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 Number of Seats{" "}
-                <span className="text-slate-400 font-normal">(Optional)</span>
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
+                  (Optional)
+                </span>
               </label>
               <input
                 type="number"
@@ -413,10 +446,10 @@ export default function CreateEventPage() {
                 name="capacity"
                 min="1"
                 step="1"
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-slate-900 dark:text-white"
                 placeholder="e.g. 100 (leave empty for unlimited)"
               />
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 Leave empty if you want unlimited seats for this event.
               </p>
             </motion.div>
@@ -426,9 +459,11 @@ export default function CreateEventPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.0 }}
             >
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
                 Cover Image{" "}
-                <span className="text-slate-400 font-normal">(Optional)</span>
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
+                  (Optional)
+                </span>
               </label>
 
               <ImageKitUpload
@@ -444,7 +479,7 @@ export default function CreateEventPage() {
                 value={coverImageFileId}
               />
 
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 Upload a cover image for your event. If left empty, a clean
                 gradient background will be displayed.
               </p>
@@ -457,19 +492,21 @@ export default function CreateEventPage() {
             >
               <label
                 htmlFor="description"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
               >
                 Event Description{" "}
-                <span className="text-slate-400 font-normal">(Optional)</span>
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
+                  (Optional)
+                </span>
               </label>
               <textarea
                 id="description"
                 name="description"
                 rows={5}
-                className="mt-2 block w-full rounded-xl border-2 border-purple-100 bg-purple-50/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-none"
+                className="mt-2 block w-full rounded-xl border-2 border-purple-100 dark:border-slate-700 bg-purple-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm font-medium shadow-sm transition-all placeholder:text-slate-400 focus:border-purple-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-none text-slate-900 dark:text-white"
                 placeholder="Describe your event... What will attendees experience? What should they expect?"
               />
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 Provide details about your event to help attendees understand
                 what to expect.
               </p>
@@ -512,7 +549,7 @@ export default function CreateEventPage() {
               <SubmitButton />
               <Link
                 href="/myEvents"
-                className="inline-flex w-full items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2 sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-800 focus:ring-offset-2 sm:w-auto"
               >
                 Cancel
               </Link>

@@ -28,7 +28,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Show loading state while checking authentication
   if (loading || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 z-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-transparent z-50">
         <Loading message="Verifying your session..." />
       </div>
     );

@@ -135,23 +135,23 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-white dark:bg-transparent selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-900 dark:selection:text-indigo-100">
       {/* Hero Section */}
       <section className="relative pt-20 pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_50%,rgba(99,102,241,0.08)_0%,rgba(255,255,255,0)_100%)]" />
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimatedPageHeader>
             <div className="text-center max-w-3xl mx-auto">
-              <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600 ring-1 ring-inset ring-indigo-600/10 mb-6">
+              <span className="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 ring-1 ring-inset ring-indigo-600/10 dark:ring-indigo-400/20 mb-6">
                 Our Story
               </span>
-              <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-7xl mb-8 leading-[1.1]">
+              <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-7xl mb-8 leading-[1.1]">
                 Empowering Every{" "}
                 <span className="bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Student Moment
                 </span>
               </h1>
-              <p className="text-lg sm:text-xl leading-relaxed text-slate-600 mb-10">
+              <p className="text-lg sm:text-xl leading-relaxed text-slate-600 dark:text-slate-300 mb-10">
                 {isAuthenticated && user?.name
                   ? `Hi ${user.name.split(" ")[0]}, `
                   : ""}
@@ -163,7 +163,7 @@ export default function AboutPage() {
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/home"
-                  className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:shadow-indigo-300 transition-all flex items-center gap-2 group"
+                  className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold premium-button-purple hover:bg-indigo-700 transition-all flex items-center gap-2 group"
                 >
                   Explore Events
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -171,7 +171,7 @@ export default function AboutPage() {
                 {!isAuthenticated && (
                   <Link
                     href="/signup"
-                    className="px-8 py-4 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-bold hover:bg-slate-50 transition-all"
+                    className="px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-100 dark:border-slate-800 rounded-2xl font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                   >
                     Join the Community
                   </Link>
@@ -184,7 +184,7 @@ export default function AboutPage() {
 
       <AnimatedPageContent>
         {/* Stats Section */}
-        <section className="py-20 bg-slate-50/50">
+        <section className="py-20 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map((stat, index) => (
@@ -196,13 +196,13 @@ export default function AboutPage() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group relative"
                 >
-                  <div className="h-full bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100/50 transition-all duration-500 hover:shadow-xl hover:shadow-indigo-500/5 flex flex-col items-center text-center">
+                  <div className="h-full bg-white dark:bg-slate-950 rounded-[2.5rem] p-8 premium-shadow border border-slate-100/50 dark:border-slate-800/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)] flex flex-col items-center text-center">
                     <div
                       className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 ${stat.colorClass} group-hover:scale-110`}
                     >
                       <stat.icon className="w-7 h-7" />
                     </div>
-                    <div className="text-4xl font-black text-slate-900 mb-2">
+                    <div className="text-4xl font-black text-slate-900 dark:text-white mb-2">
                       {stat.value}
                     </div>
                     <div className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -223,12 +223,12 @@ export default function AboutPage() {
                 <h2 className="text-sm font-black uppercase tracking-widest text-indigo-600 mb-4">
                   Our Mission
                 </h2>
-                <h3 className="text-3xl sm:text-5xl font-black text-slate-900 mb-8 leading-tight">
+                <h3 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mb-8 leading-tight">
                   Bridging the Gap Between{" "}
                   <span className="text-indigo-600">Campus</span> &{" "}
                   <span className="text-purple-600">Career</span>
                 </h3>
-                <p className="text-lg text-slate-600 leading-relaxed mb-8">
+                <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8">
                   We believe that what happens outside the classroom is just as
                   important as what happens inside. EventHub provides organizers
                   with professional tools to host seamless experiences, while
@@ -239,13 +239,15 @@ export default function AboutPage() {
                   {values.map((v) => (
                     <div key={v.title} className="flex gap-4">
                       <div
-                        className={`shrink-0 w-12 h-12 rounded-xl ${v.bg} flex items-center justify-center`}
+                        className={`shrink-0 w-12 h-12 rounded-xl ${v.bg} dark:bg-slate-800 flex items-center justify-center`}
                       >
                         <v.icon className={`w-6 h-6 ${v.color}`} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-900">{v.title}</h4>
-                        <p className="text-sm text-slate-500 mt-1">
+                        <h4 className="font-bold text-slate-900 dark:text-white">
+                          {v.title}
+                        </h4>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                           {v.description}
                         </p>
                       </div>
@@ -254,7 +256,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="relative">
-                <div className="absolute -inset-4 bg-indigo-50 rounded-[3rem] -rotate-2 -z-10" />
+                <div className="absolute -inset-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-[3rem] -rotate-2 -z-10" />
                 <div className="relative aspect-square rounded-[2.5rem] bg-indigo-600 overflow-hidden shadow-2xl">
                   <Image
                     src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop"
@@ -275,13 +277,13 @@ export default function AboutPage() {
         </section>
 
         {/* Team Section */}
-        <section className="py-24 bg-slate-50">
+        <section className="py-24 bg-slate-50 dark:bg-slate-900/30">
           <div className="mx-auto max-max-w-7xl px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-sm font-black uppercase tracking-widest text-indigo-600 mb-4">
                 The Creators
               </h2>
-              <h3 className="text-3xl sm:text-5xl font-black text-slate-900">
+              <h3 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white">
                 Meet the Team
               </h3>
             </div>
@@ -296,16 +298,16 @@ export default function AboutPage() {
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                   className="group"
                 >
-                  <div className="relative h-full bg-white rounded-3xl p-8 shadow-sm border border-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10">
+                  <div className="relative h-full bg-white dark:bg-slate-950 rounded-3xl p-8 premium-shadow border border-slate-100 dark:border-slate-800 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)]">
                     <div className="flex flex-col items-center text-center">
                       <div
-                        className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${member.bgClass}`}
+                        className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${member.bgClass} dark:bg-slate-800`}
                       >
                         <member.icon
                           className={`w-10 h-10 ${member.iconClass}`}
                         />
                       </div>
-                      <h4 className="text-xl font-black text-slate-900 mb-1">
+                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1">
                         {member.name}
                       </h4>
                       <p className="text-sm font-bold text-indigo-600 mb-4">
@@ -316,7 +318,7 @@ export default function AboutPage() {
                         href={member.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-[#0077b5] hover:text-white rounded-xl text-xs font-bold text-slate-500 transition-all duration-300"
+                        className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#0077b5] dark:hover:bg-[#0077b5] hover:text-white rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 transition-all duration-300"
                       >
                         <Linkedin className="w-4 h-4" />
                         Connect
@@ -344,7 +346,7 @@ export default function AboutPage() {
                 </p>
                 <Link
                   href={isAuthenticated ? "/home" : "/signup"}
-                  className="inline-flex items-center gap-2 px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black uppercase tracking-widest premium-button-purple hover:scale-105 active:scale-95 transition-all"
                 >
                   Get Started Now
                   <Sparkles className="w-5 h-5" />
