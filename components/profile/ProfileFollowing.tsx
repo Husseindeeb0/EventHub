@@ -12,15 +12,15 @@ export default function ProfileFollowing() {
   const following = data?.following || [];
 
   return (
-    <div className="bg-white rounded-3xl border border-indigo-50 p-8 shadow-xl shadow-indigo-500/5">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-indigo-50 dark:border-slate-800 p-8 shadow-xl shadow-indigo-500/5">
       <div className="flex items-center gap-3 mb-8">
-        <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600">
+        <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">
           <Building2 className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+        <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
           Following Organizations
         </h2>
-        <span className="ml-auto px-3 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-600 border border-slate-200">
+        <span className="ml-auto px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
           {following.length}
         </span>
       </div>
@@ -39,9 +39,9 @@ export default function ProfileFollowing() {
           {following.map((org: any, index: number) => (
             <AnimatedCard key={org._id} delay={index * 0.1}>
               <div
-                className={`group relative flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 transition-all duration-300 ${
+                className={`group relative flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 transition-all duration-300 ${
                   org.role === "organizer"
-                    ? "hover:bg-white hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-500/10"
+                    ? "hover:bg-white dark:hover:bg-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/50 hover:shadow-lg hover:shadow-indigo-500/10"
                     : "cursor-default"
                 }`}
               >
@@ -50,7 +50,7 @@ export default function ProfileFollowing() {
                     href={`/organizers/${org._id}`}
                     className="shrink-0 relative"
                   >
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm group-hover:scale-105 transition-transform">
                       {org.imageUrl ? (
                         <Image
                           src={org.imageUrl}
@@ -59,7 +59,7 @@ export default function ProfileFollowing() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-indigo-100 flex items-center justify-center text-indigo-500 font-bold text-lg">
+                        <div className="w-full h-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 dark:text-indigo-400 font-bold text-lg">
                           {org.name.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -67,7 +67,7 @@ export default function ProfileFollowing() {
                   </Link>
                 ) : (
                   <div className="shrink-0 relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
                       {org.imageUrl ? (
                         <Image
                           src={org.imageUrl}
@@ -76,7 +76,7 @@ export default function ProfileFollowing() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-lg">
+                        <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 font-bold text-lg">
                           {org.name.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -88,16 +88,16 @@ export default function ProfileFollowing() {
                   <div className="flex-1 min-w-0 pr-4">
                     {org.role === "organizer" ? (
                       <Link href={`/organizers/${org._id}`} className="block">
-                        <h3 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">
+                        <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
                           {org.name}
                         </h3>
                       </Link>
                     ) : (
-                      <h3 className="font-bold text-slate-900 leading-tight">
+                      <h3 className="font-bold text-slate-900 dark:text-white leading-tight">
                         {org.name}
                       </h3>
                     )}
-                    <p className="text-xs font-medium text-slate-500 mt-0.5">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
                       {org.role === "organizer"
                         ? `${org.followersCount} Followers`
                         : "Normal User"}

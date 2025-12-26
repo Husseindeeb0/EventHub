@@ -24,7 +24,7 @@ export default function GiveFeedbackButton({ eventId }: { eventId?: string }) {
   return (
     <button
       onClick={handleClick}
-      className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-50 px-6 py-3 text-sm font-semibold text-indigo-600 border border-indigo-200 shadow-sm transition-all hover:bg-indigo-100 hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer"
+      className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-slate-700 premium-button-purple hover:bg-indigo-100 dark:hover:bg-slate-700 hover:border-indigo-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer transition-all"
     >
       <MessageSquarePlus className="w-5 h-5" />
       Give Feedback

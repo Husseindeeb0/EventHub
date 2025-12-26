@@ -32,24 +32,24 @@ export default function MyEventsPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-gradient-to-br from-blue-100 via-indigo-100/60 via-purple-100/70 to-pink-100/50 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(99,102,241,0.18),transparent_50%)] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(168,85,247,0.18),transparent_50%)] pointer-events-none"></div>
+    <main className="min-h-[calc(100vh-56px)] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(99,102,241,0.12),transparent_50%)] dark:hidden pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(168,85,247,0.12),transparent_50%)] dark:hidden pointer-events-none"></div>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
         <AnimatedPageHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-12">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent sm:text-5xl">
+              <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent sm:text-5xl">
                 My Events
               </h1>
-              <p className="mt-3 text-lg text-slate-600">
+              <p className="mt-3 text-lg text-slate-600 dark:text-slate-300">
                 Manage your events and track attendee bookings.
               </p>
             </div>
 
             <Link
               href="/createEvent"
-              className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="group inline-flex items-center justify-center rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             >
               <span className="mr-2 text-lg leading-none">+</span> Create Event
             </Link>
@@ -58,8 +58,8 @@ export default function MyEventsPage() {
 
         <div className="mt-10">
           {events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 py-24 text-center">
-              <div className="rounded-full bg-gradient-to-br from-purple-100 to-blue-100 p-6 shadow-lg">
+            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-purple-200 dark:border-slate-800 bg-linear-to-br from-purple-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 py-24 text-center">
+              <div className="rounded-full bg-linear-to-br from-purple-100 to-blue-100 dark:from-slate-800 dark:to-slate-700 p-6 shadow-lg">
                 <svg
                   className="h-12 w-12 text-purple-600"
                   fill="none"
@@ -74,16 +74,16 @@ export default function MyEventsPage() {
                   />
                 </svg>
               </div>
-              <h2 className="mt-6 text-2xl font-bold text-slate-900">
+              <h2 className="mt-6 text-2xl font-bold text-slate-900 dark:text-white">
                 No events found
               </h2>
-              <p className="mt-2 text-base text-slate-600 max-w-sm">
+              <p className="mt-2 text-base text-slate-600 dark:text-slate-400 max-w-sm">
                 Get started by creating your first event. It only takes a few
                 minutes.
               </p>
               <Link
                 href="/createEvent"
-                className="mt-8 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40"
+                className="mt-8 inline-flex items-center justify-center rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:shadow-purple-500/40"
               >
                 Create your first event
               </Link>

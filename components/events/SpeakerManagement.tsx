@@ -98,13 +98,13 @@ export default function SpeakerManagement({
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
           Event Speakers
         </label>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
-          className="text-sm text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-1.5"
+          className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold flex items-center gap-1.5"
         >
           <svg
             className="h-4 w-4"
@@ -125,10 +125,10 @@ export default function SpeakerManagement({
 
       {/* Speaker Form */}
       {showForm && (
-        <div className="bg-purple-50/50 border-2 border-purple-100 p-5 rounded-xl mb-4">
+        <div className="bg-purple-50/50 dark:bg-slate-800/50 border-2 border-purple-100 dark:border-slate-700 p-5 rounded-xl mb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Name *
               </label>
               <input
@@ -136,12 +136,12 @@ export default function SpeakerManagement({
                 name="name"
                 value={currentSpeaker.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="Speaker name"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Title/Role
               </label>
               <input
@@ -149,14 +149,14 @@ export default function SpeakerManagement({
                 name="title"
                 value={currentSpeaker.title}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="e.g., CEO, Developer"
               />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Bio
             </label>
             <textarea
@@ -164,14 +164,14 @@ export default function SpeakerManagement({
               value={currentSpeaker.bio}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+              className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none text-slate-900 dark:text-white placeholder:text-slate-400"
               placeholder="Brief biography..."
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 LinkedIn
               </label>
               <input
@@ -179,12 +179,12 @@ export default function SpeakerManagement({
                 name="linkedinLink"
                 value={currentSpeaker.linkedinLink}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="https://linkedin.com/in/..."
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Instagram
               </label>
               <input
@@ -192,12 +192,12 @@ export default function SpeakerManagement({
                 name="instagramLink"
                 value={currentSpeaker.instagramLink}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="https://instagram.com/..."
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Twitter
               </label>
               <input
@@ -205,14 +205,14 @@ export default function SpeakerManagement({
                 name="twitterLink"
                 value={currentSpeaker.twitterLink}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-purple-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border-2 border-purple-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="https://twitter.com/..."
               />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-700 mb-2">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Profile Image
             </label>
             <ImageKitUpload
@@ -234,13 +234,13 @@ export default function SpeakerManagement({
       )}
 
       {/* Speakers List */}
-      <div className="bg-white rounded-xl border-2 border-purple-100">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border-2 border-purple-100 dark:border-slate-800">
         {speakers.length > 0 ? (
-          <ul className="divide-y divide-purple-100">
+          <ul className="divide-y divide-purple-100 dark:divide-slate-800">
             {speakers.map((speaker, index) => (
               <li
                 key={index}
-                className="p-4 flex items-center justify-between hover:bg-purple-50/30 transition"
+                className="p-4 flex items-center justify-between hover:bg-purple-50/30 dark:hover:bg-slate-800/30 transition"
               >
                 <div className="flex items-center gap-3">
                   {speaker.profileImageUrl ? (
@@ -255,11 +255,13 @@ export default function SpeakerManagement({
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-slate-900 dark:text-white">
                       {speaker.name}
                     </p>
                     {speaker.title && (
-                      <p className="text-sm text-slate-600">{speaker.title}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {speaker.title}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -267,7 +269,7 @@ export default function SpeakerManagement({
                   <button
                     type="button"
                     onClick={() => handleEdit(index)}
-                    className="text-indigo-600 hover:text-indigo-800 p-2"
+                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 p-2"
                   >
                     <svg
                       className="h-4 w-4"
@@ -307,7 +309,7 @@ export default function SpeakerManagement({
             ))}
           </ul>
         ) : (
-          <p className="p-4 text-center text-sm text-slate-500">
+          <p className="p-4 text-center text-sm text-slate-500 dark:text-slate-400 font-medium italic">
             No speakers added yet
           </p>
         )}

@@ -24,8 +24,8 @@ export default function ProfileAttendedEvents() {
   if (!user) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-6 shadow-md">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         Attended Events
       </h2>
 
@@ -39,7 +39,7 @@ export default function ProfileAttendedEvents() {
             <div key={event.id} className="relative">
               <Link
                 href={`/home/${event.id}`}
-                className="group relative flex gap-4 p-3 rounded-2xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
+                className="group relative flex gap-4 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
               >
                 <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
                   <Image
@@ -50,16 +50,16 @@ export default function ProfileAttendedEvents() {
                   />
                 </div>
                 <div className="flex flex-col justify-center min-w-0">
-                  <h3 className="font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                  <h3 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 transition-colors">
                     {event.title}
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="px-1.5 py-0.5 rounded bg-slate-50 text-slate-400 text-[8px] font-black uppercase tracking-widest border border-slate-100">
+                    <span className="px-1.5 py-0.5 rounded bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[8px] font-black uppercase tracking-widest border border-slate-100 dark:border-slate-700">
                       {event.category || "Other"}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1 mt-1">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">
                       <Clock className="w-3 h-3 text-indigo-400" />
                       {event.startsAt
                         ? new Date(event.startsAt).toLocaleDateString(
@@ -72,7 +72,7 @@ export default function ProfileAttendedEvents() {
                           )
                         : "TBA"}
                     </div>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">
                       <MapPin className="w-3 h-3 text-purple-400" />
                       <span className="truncate">{event.location}</span>
                     </div>
@@ -85,7 +85,7 @@ export default function ProfileAttendedEvents() {
                   e.stopPropagation();
                   setSelectedEventForRating(event);
                 }}
-                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 shadow-sm hover:bg-amber-50 text-slate-400 hover:text-amber-500 transition-all border border-slate-100"
+                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-sm hover:bg-amber-50 dark:hover:bg-amber-900/20 text-slate-400 dark:text-slate-400 hover:text-amber-500 transition-all border border-slate-100 dark:border-slate-700"
                 title="Rate Event"
               >
                 <Star className="w-4 h-4" />
@@ -94,7 +94,7 @@ export default function ProfileAttendedEvents() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <p>You haven't attended any events yet.</p>
         </div>
       )}

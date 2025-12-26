@@ -66,8 +66,8 @@ export default function ImageKitUpload({
 
   const containerClasses =
     variant === "compact"
-      ? "relative border-2 border-dashed border-purple-200 rounded-xl bg-purple-50/50 h-32 w-full flex items-center justify-center p-2 transition-all hover:bg-purple-50 hover:border-purple-300 group"
-      : "relative border-2 border-dashed border-purple-200 rounded-xl bg-purple-50/50 min-h-[200px] flex items-center justify-center p-6 transition-all hover:bg-purple-50 hover:border-purple-300 group";
+      ? "relative border-2 border-dashed border-purple-200 dark:border-purple-900/50 rounded-xl bg-purple-50/50 dark:bg-purple-900/10 h-32 w-full flex items-center justify-center p-2 transition-all hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-800 group"
+      : "relative border-2 border-dashed border-purple-200 dark:border-purple-900/50 rounded-xl bg-purple-50/50 dark:bg-purple-900/10 min-h-[200px] flex items-center justify-center p-6 transition-all hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-800 group";
 
   return (
     <ImageKitProvider
@@ -80,13 +80,13 @@ export default function ImageKitUpload({
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             {!preview && !uploading && (
               <>
-                <div className="bg-white p-3 rounded-xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
-                  <ImageIcon className="w-6 h-6 text-purple-600" />
+                <div className="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm mb-3 group-hover:scale-110 transition-transform border border-transparent dark:border-slate-700">
+                  <ImageIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
-                <p className="text-sm font-medium text-slate-700">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Click or Drag to Upload
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
                   JPG, PNG, WEBP up to 5MB
                 </p>
               </>
@@ -105,9 +105,9 @@ export default function ImageKitUpload({
           />
 
           {uploading && (
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
-              <Loader2 className="w-8 h-8 text-purple-600 animate-spin mb-2" />
-              <p className="text-sm font-medium text-purple-700">
+            <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
+              <Loader2 className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-2" />
+              <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
                 Uploading...
               </p>
             </div>

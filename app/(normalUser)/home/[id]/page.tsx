@@ -142,12 +142,12 @@ export default async function EventDetailsPage({
     <div className="space-y-8">
       {/* Description */}
       <AnimatedCard delay={0.4}>
-        <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
+        <div className="rounded-3xl border border-purple-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl shadow-purple-500/5">
           <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight">
             About this event
           </h2>
           {event.description ? (
-            <p className="text-lg leading-relaxed text-slate-700 whitespace-pre-line font-medium">
+            <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line font-medium">
               {event.description}
             </p>
           ) : (
@@ -161,7 +161,7 @@ export default async function EventDetailsPage({
       {/* Speakers Section */}
       {event.speakers && event.speakers.length > 0 && (
         <AnimatedCard delay={0.45}>
-          <div className="rounded-3xl border border-purple-100 bg-white p-8 shadow-xl shadow-purple-500/5">
+          <div className="rounded-3xl border border-purple-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl shadow-purple-500/5">
             <h2 className="text-2xl font-black bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
               <svg
                 className="h-6 w-6 text-purple-600"
@@ -182,7 +182,7 @@ export default async function EventDetailsPage({
               {event.speakers.map((speaker: any, index: number) => (
                 <div
                   key={index}
-                  className="flex gap-4 items-start p-4 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-md"
+                  className="flex gap-4 items-start p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-md"
                 >
                   {speaker.profileImageUrl ? (
                     <img
@@ -196,14 +196,16 @@ export default async function EventDetailsPage({
                     </div>
                   )}
                   <div>
-                    <h3 className="font-bold text-slate-900">{speaker.name}</h3>
+                    <h3 className="font-bold text-slate-900 dark:text-white">
+                      {speaker.name}
+                    </h3>
                     {speaker.title && (
                       <p className="text-sm font-medium text-purple-600 mb-1">
                         {speaker.title}
                       </p>
                     )}
                     {speaker.bio && (
-                      <p className="text-sm text-slate-600 line-clamp-2 mb-2">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
                         {speaker.bio}
                       </p>
                     )}
@@ -270,7 +272,7 @@ export default async function EventDetailsPage({
   const ScheduleContent = (
     <div className="space-y-6">
       <AnimatedCard delay={0.2}>
-        <div className="rounded-3xl border border-indigo-100 bg-white p-8 shadow-xl shadow-indigo-500/5">
+        <div className="rounded-3xl border border-indigo-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl shadow-indigo-500/5">
           <h2 className="text-2xl font-black bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 uppercase tracking-tight flex items-center gap-2">
             <svg
               className="h-6 w-6 text-indigo-600"
@@ -293,19 +295,19 @@ export default async function EventDetailsPage({
               .map((item: any, index: number) => (
                 <div
                   key={index}
-                  className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all"
+                  className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all"
                 >
                   <div className="w-24 shrink-0 flex flex-col items-center">
                     <span className="font-bold text-lg text-indigo-600">
                       {item.startTime}
                     </span>
                     {item.endTime && (
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-400 dark:text-slate-500">
                         {item.endTime}
                       </span>
                     )}
                   </div>
-                  <div className="flex-1 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                  <div className="flex-1 pb-4 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0">
                     <div className="flex items-center gap-2 mb-1">
                       {item.type !== "session" && (
                         <span
@@ -316,18 +318,18 @@ export default async function EventDetailsPage({
                               ? "bg-green-100 text-green-600"
                               : item.type === "closing"
                               ? "bg-red-100 text-red-600"
-                              : "bg-slate-100 text-slate-600"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
                           }`}
                         >
                           {item.type}
                         </span>
                       )}
-                      <h3 className="font-bold text-slate-900 text-lg leading-tight">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">
                         {item.title}
                       </h3>
                     </div>
                     {item.presenter && (
-                      <p className="text-sm font-medium text-slate-500 mb-2 flex items-center gap-1">
+                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
                         <svg
                           className="h-3 w-3"
                           fill="none"
@@ -345,7 +347,7 @@ export default async function EventDetailsPage({
                       </p>
                     )}
                     {item.description && (
-                      <p className="text-slate-600 text-sm">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">
                         {item.description}
                       </p>
                     )}
@@ -374,12 +376,12 @@ export default async function EventDetailsPage({
     <main
       className={`min-h-screen relative overflow-hidden ${
         isFinished
-          ? "grayscale-sm bg-slate-100"
-          : "bg-linear-to-br from-indigo-100/70 via-purple-100/80 to-blue-100/90"
+          ? "grayscale-sm bg-slate-100 dark:bg-slate-900"
+          : ""
       }`}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.15),transparent_70%)] dark:hidden pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)] dark:hidden pointer-events-none"></div>
 
       {/* Hero Section */}
       <AnimatedHero>
@@ -437,6 +439,18 @@ export default async function EventDetailsPage({
                     <span className="inline-flex items-center rounded-full bg-slate-500/80 backdrop-blur-md px-4 py-1 text-xs font-black uppercase tracking-widest text-white ring-1 ring-white/20">
                       This Event has Ended
                     </span>
+                  )}
+                  {event.liveStreamUrl && !isFinished && (
+                    <Link
+                      href={`/home/${event._id}/live`}
+                      className="inline-flex items-center gap-2 rounded-full bg-red-600/90 backdrop-blur-md px-4 py-1 text-xs font-black uppercase tracking-widest text-white ring-1 ring-white/20 shadow-lg hover:bg-red-700 transition-all animate-pulse"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                      </span>
+                      Watch Live Now
+                    </Link>
                   )}
                 </div>
                 <h1
@@ -588,10 +602,10 @@ export default async function EventDetailsPage({
             <div className="lg:col-span-2 space-y-8">
               {/* Event Info Bar */}
               <AnimatedCard delay={0.3}>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 rounded-2xl bg-white/60 backdrop-blur-md p-4 shadow-sm border border-white/50">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-md p-4 shadow-sm border border-white/50 dark:border-slate-800/50">
                   {/* Date & Time */}
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50/50">
-                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50/50 dark:bg-purple-900/20">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
                       <svg
                         className="h-5 w-5"
                         fill="none"
@@ -610,15 +624,15 @@ export default async function EventDetailsPage({
                       <p className="text-xs font-bold uppercase text-purple-400">
                         Date & Time
                       </p>
-                      <p className="font-semibold text-slate-800">
+                      <p className="font-semibold text-slate-800 dark:text-slate-200">
                         {formatEventDate(event.startsAt)}
                       </p>
                     </div>
                   </div>
 
                   {/* Location */}
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50">
-                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50 dark:bg-blue-900/20">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                       {event.isOnline ? (
                         <svg
                           className="h-5 w-5"
@@ -683,12 +697,12 @@ export default async function EventDetailsPage({
                             </svg>
                           </a>
                         ) : (
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">
                             Online Event
                           </p>
                         )
                       ) : (
-                        <p className="font-semibold text-slate-800 line-clamp-1">
+                        <p className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1">
                           {event.location}
                         </p>
                       )}
@@ -697,7 +711,7 @@ export default async function EventDetailsPage({
 
                   {/* Organizer & Follow */}
                   {organizer && (
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 border sm:col-span-2 lg:col-span-1 min-w-0 shadow-sm">
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-800/50 border dark:border-slate-700 sm:col-span-2 lg:col-span-1 min-w-0 shadow-sm">
                       <div className="flex flex-col items-start gap-2.5 min-w-0 flex-1">
                         <Link
                           href={`/organizers/${organizer._id}`}
@@ -718,11 +732,11 @@ export default async function EventDetailsPage({
                         <div className="min-w-0 w-full">
                           <Link
                             href={`/organizers/${organizer._id}`}
-                            className="font-black text-slate-900 hover:text-indigo-600 transition-colors block text-sm leading-tight truncate"
+                            className="font-black text-slate-900 dark:text-white hover:text-indigo-600 transition-colors block text-sm leading-tight truncate"
                           >
                             {organizer.name}
                           </Link>
-                          <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-wider">
+                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">
                             {organizer.followers.length} Followers
                           </p>
                         </div>
@@ -760,12 +774,14 @@ export default async function EventDetailsPage({
                   className={`sticky top-24 rounded-3xl border p-8 shadow-2xl transition-all ${
                     isFinished
                       ? "border-slate-200 bg-slate-50/50 shadow-slate-200/50"
-                      : "border-purple-100 bg-white shadow-purple-500/10 ring-1 ring-purple-50"
+                      : "border-purple-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-purple-500/10 ring-1 ring-purple-50 dark:ring-slate-800"
                   }`}
                 >
                   <h3
                     className={`text-xl font-black mb-8 uppercase tracking-widest ${
-                      isFinished ? "text-slate-400" : "text-slate-900"
+                      isFinished
+                        ? "text-slate-400 dark:text-slate-600"
+                        : "text-slate-900 dark:text-white"
                     }`}
                   >
                     {isFinished
@@ -776,14 +792,14 @@ export default async function EventDetailsPage({
                   </h3>
 
                   <div className="space-y-6 mb-8">
-                    <div className="flex justify-between items-center pb-4 border-b border-indigo-50">
-                      <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                    <div className="flex justify-between items-center pb-4 border-b border-indigo-50 dark:border-slate-800">
+                      <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                         Attendance
                       </span>
                       <span
                         className={`text-[13px] font-black ${
                           isFinished
-                            ? "text-slate-400"
+                            ? "text-slate-400 dark:text-slate-600"
                             : event.isPaid
                             ? "text-emerald-600"
                             : "text-indigo-600"

@@ -71,10 +71,10 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-32 bg-white">
+    <section className="py-32 bg-white dark:bg-slate-950">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gray-900 dark:text-white">
             Everything You Need
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
@@ -90,16 +90,16 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
             >
-              <Card className="h-full border-none shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl p-6 group">
+              <Card className="h-full border-none dark:border dark:border-slate-800 premium-shadow hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)] transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-slate-900 rounded-2xl p-6 group">
                 <CardContent className="p-0 space-y-4">
                   <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} p-0.5 group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} p-0.5 group-hover:scale-110 transition-transform duration-300`}
                   >
-                    <div className="w-full h-full bg-white rounded-xl flex items-center justify-center">
-                      <feature.icon className="w-6 h-6 text-gray-700" />
+                    <div className="w-full h-full bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                      <feature.icon className="w-6 h-6 text-gray-700 dark:text-white" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                     {feature.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed font-light">

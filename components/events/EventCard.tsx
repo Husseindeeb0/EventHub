@@ -22,22 +22,22 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
     <div
       className={`group relative flex flex-col overflow-hidden rounded-2xl border transition-all duration-500 ${
         isFinished
-          ? "border-slate-100 bg-white"
-          : "border-indigo-100 bg-white hover:border-purple-200 hover:shadow-2xl hover:shadow-purple-500/10"
+          ? "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900"
+          : "border-indigo-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-200 premium-shadow transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_60px_-12px_rgba(168,85,247,0.3)]"
       }`}
     >
       {/* Visual Content Section (No Link) */}
       <div className="flex-1">
-        <div className="relative aspect-video w-full overflow-hidden bg-indigo-50">
+        <div className="relative aspect-video w-full overflow-hidden bg-indigo-50 dark:bg-indigo-900/20">
           {e.coverImageUrl ? (
             <div className="h-full w-full">
               <EventImage src={e.coverImageUrl} alt={e.title} />
             </div>
           ) : (
-            <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-indigo-100 to-purple-100">
+            <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950">
               <div className="text-center p-4">
                 <svg
-                  className="h-8 w-8 mx-auto text-indigo-400 mb-2 opacity-50"
+                  className="h-8 w-8 mx-auto text-indigo-400 dark:text-indigo-300 mb-2 opacity-50"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -63,7 +63,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
                   ? "bg-slate-500 border-slate-600 text-white"
                   : full
                   ? "bg-linear-to-r from-rose-500 to-pink-500 border-rose-600 text-white"
-                  : "bg-linear-to-r from-indigo-600 to-purple-600 border-indigo-400 text-white shadow-indigo-200"
+                  : "bg-linear-to-r from-indigo-600 to-purple-600 border-indigo-400 text-white premium-button-purple"
               }`}
             >
               {isFinished ? "Ended" : full ? "Sold Out" : "Join Now"}
@@ -84,8 +84,8 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             <div
               className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md ${
                 isFinished
-                  ? "text-slate-400 bg-slate-50"
-                  : "text-indigo-600 bg-indigo-50"
+                  ? "text-slate-400 bg-slate-50 dark:bg-slate-800 dark:text-slate-500"
+                  : "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20"
               }`}
             >
               <svg
@@ -108,7 +108,9 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             </div>
             <div
               className={`${
-                isFinished ? "text-slate-300" : "text-slate-400"
+                isFinished
+                  ? "text-slate-300 dark:text-slate-600"
+                  : "text-slate-400 dark:text-slate-500"
               } font-bold`}
             >
               {new Intl.DateTimeFormat("en-US", {
@@ -119,13 +121,13 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest border border-slate-100">
+            <span className="px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest border border-slate-100 dark:border-slate-700">
               {e.category || "Other"}
             </span>
             {isFinished && (
               <div className="flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-100">
                 <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                <span className="text-[10px] font-bold text-slate-700">
+                <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200">
                   {e.averageRating ? e.averageRating.toFixed(1) : "New"}
                   <span className="text-slate-400 ml-0.5">
                     ({e.ratingCount || 0})
@@ -139,7 +141,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             className={`line-clamp-1 text-base font-black transition-colors duration-300 ${
               isFinished
                 ? "text-slate-500"
-                : "text-slate-900 group-hover:text-indigo-600"
+                : "text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
             }`}
           >
             {e.title}
@@ -148,7 +150,9 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
           <div className="flex items-center gap-2 text-xs text-slate-500 font-bold">
             <div
               className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                isFinished ? "bg-slate-100" : "bg-blue-50"
+                isFinished
+                  ? "bg-slate-100 dark:bg-slate-800"
+                  : "bg-blue-50 dark:bg-blue-900/20"
               }`}
             >
               {e.isOnline ? (
@@ -193,7 +197,9 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             </div>
             <span
               className={`line-clamp-1 font-bold ${
-                isFinished ? "text-slate-400" : "text-slate-600"
+                isFinished
+                  ? "text-slate-400 dark:text-slate-600"
+                  : "text-slate-600 dark:text-slate-300"
               }`}
             >
               {e.isOnline ? "Online" : e.location}
@@ -205,14 +211,16 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
       <div className="px-5 pb-6">
         <div
           className={`flex items-center justify-between border-t pt-5 ${
-            isFinished ? "border-slate-100" : "border-indigo-50"
+            isFinished
+              ? "border-slate-100 dark:border-slate-800"
+              : "border-indigo-50 dark:border-slate-800"
           }`}
         >
           <div className="flex flex-col">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
               Bookings
             </span>
-            <div className="flex items-center gap-2 text-[13px] font-black text-slate-800">
+            <div className="flex items-center gap-2 text-[13px] font-black text-slate-800 dark:text-slate-200">
               <svg
                 className="w-4 h-4"
                 viewBox="0 0 24 24"
@@ -275,7 +283,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
                 ) : (
                   <>
                     {e.bookedCount}{" "}
-                    <span className="text-slate-400 font-normal">
+                    <span className="text-slate-400 dark:text-slate-500 font-normal">
                       Registered
                     </span>
                   </>
@@ -301,7 +309,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
             <div className="flex items-center gap-2">
               <Link
                 href={`/attendees?eventId=${e.id}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-indigo-500/30 transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-500/40 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-xs font-semibold text-white premium-button-purple transition-all hover:bg-indigo-700 cursor-pointer"
                 title="View Attendees"
               >
                 <svg
@@ -321,7 +329,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
               </Link>
               <Link
                 href={`/home/${e.id}/edit`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-purple-600 to-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-purple-500/30 transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg hover:shadow-purple-500/40 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-purple-600 to-blue-600 px-3 py-1.5 text-xs font-semibold text-white premium-button-purple transition-all hover:bg-purple-700 cursor-pointer"
               >
                 Manage
                 <svg
@@ -349,7 +357,7 @@ export default function EventCard({ e, showManage = false }: EventCardProps) {
           ) : (
             <Link
               href={`/home/${e.id}`}
-              className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-95 shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 cursor-pointer"
+              className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:from-indigo-700 hover:to-purple-700 premium-button-purple active:scale-95 cursor-pointer ring-4 ring-indigo-50/50 dark:ring-indigo-900/20"
             >
               Book Now
             </Link>

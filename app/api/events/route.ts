@@ -157,6 +157,7 @@ export async function GET(req: Request) {
         isPaid: e.isPaid,
         price: e.price,
         whishNumber: e.whishNumber,
+        liveStreamUrl: e.liveStreamUrl,
       };
     });
 
@@ -188,6 +189,7 @@ export async function POST(req: Request) {
       isPaid,
       price,
       whishNumber,
+      liveStreamUrl,
     } = body;
 
     // Basic validation
@@ -233,6 +235,7 @@ export async function POST(req: Request) {
       isPaid,
       price: isPaid ? price : 0,
       whishNumber: isPaid ? whishNumber : undefined,
+      liveStreamUrl: liveStreamUrl || undefined,
     });
 
     // Add event to user's createdEvents array

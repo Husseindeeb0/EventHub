@@ -11,15 +11,15 @@ export default function ProfileFollowers() {
   const followers = data?.followers || [];
 
   return (
-    <div className="bg-white rounded-3xl border border-indigo-50 p-8 shadow-xl shadow-indigo-500/5">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-indigo-50 dark:border-slate-800 p-8 shadow-xl shadow-indigo-500/5">
       <div className="flex items-center gap-3 mb-8">
-        <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600">
+        <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
           <Users className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+        <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
           Your Followers
         </h2>
-        <span className="ml-auto px-3 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-600 border border-slate-200">
+        <span className="ml-auto px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
           {followers.length}
         </span>
       </div>
@@ -38,9 +38,9 @@ export default function ProfileFollowers() {
           {followers.map((follower: any, index: number) => (
             <AnimatedCard key={follower._id} delay={index * 0.1}>
               <div
-                className={`group relative flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 transition-all duration-300 ${
+                className={`group relative flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 transition-all duration-300 ${
                   follower.role === "organizer"
-                    ? "hover:bg-white hover:border-purple-100 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                    ? "hover:bg-white dark:hover:bg-slate-800 hover:border-purple-100 dark:hover:border-purple-900/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
                     : "cursor-default"
                 }`}
               >
@@ -49,7 +49,7 @@ export default function ProfileFollowers() {
                     href={`/organizers/${follower._id}`}
                     className="shrink-0 relative"
                   >
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm group-hover:scale-105 transition-transform">
                       {follower.imageUrl ? (
                         <Image
                           src={follower.imageUrl}
@@ -58,7 +58,7 @@ export default function ProfileFollowers() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-purple-100 flex items-center justify-center text-purple-500 font-bold text-lg">
+                        <div className="w-full h-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-500 dark:text-purple-400 font-bold text-lg">
                           {follower.name.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -66,7 +66,7 @@ export default function ProfileFollowers() {
                   </Link>
                 ) : (
                   <div className="shrink-0 relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
                       {follower.imageUrl ? (
                         <Image
                           src={follower.imageUrl}
@@ -75,7 +75,7 @@ export default function ProfileFollowers() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-lg">
+                        <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 font-bold text-lg">
                           {follower.name.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -89,16 +89,16 @@ export default function ProfileFollowers() {
                       href={`/organizers/${follower._id}`}
                       className="block"
                     >
-                      <h3 className="font-bold text-slate-900 group-hover:text-purple-600 transition-colors leading-tight">
+                      <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
                         {follower.name}
                       </h3>
                     </Link>
                   ) : (
-                    <h3 className="font-bold text-slate-900 leading-tight">
+                    <h3 className="font-bold text-slate-900 dark:text-white leading-tight">
                       {follower.name}
                     </h3>
                   )}
-                  <p className="text-xs font-medium text-slate-500 mt-0.5">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
                     {follower.role === "organizer"
                       ? "Official Organizer"
                       : "Event Attendee"}

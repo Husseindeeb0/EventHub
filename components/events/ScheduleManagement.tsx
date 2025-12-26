@@ -88,13 +88,13 @@ export default function ScheduleManagement({
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
           Event Schedule
         </label>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
-          className="text-sm text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-1.5"
+          className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold flex items-center gap-1.5"
         >
           <svg
             className="h-4 w-4"
@@ -115,26 +115,34 @@ export default function ScheduleManagement({
 
       {/* Schedule Form */}
       {showForm && (
-        <div className="bg-indigo-50/50 border-2 border-indigo-100 p-5 rounded-xl mb-4">
+        <div className="bg-indigo-50/50 dark:bg-slate-800/50 border-2 border-indigo-100 dark:border-slate-700 p-5 rounded-xl mb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Type
               </label>
               <select
                 name="type"
                 value={currentItem.type}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
               >
-                <option value="session">Session</option>
-                <option value="break">Break</option>
-                <option value="opening">Opening</option>
-                <option value="closing">Closing</option>
+                <option value="session" className="dark:bg-slate-900">
+                  Session
+                </option>
+                <option value="break" className="dark:bg-slate-900">
+                  Break
+                </option>
+                <option value="opening" className="dark:bg-slate-900">
+                  Opening
+                </option>
+                <option value="closing" className="dark:bg-slate-900">
+                  Closing
+                </option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Title *
               </label>
               <input
@@ -142,7 +150,7 @@ export default function ScheduleManagement({
                 name="title"
                 value={currentItem.title}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="Session title"
               />
             </div>
@@ -150,7 +158,7 @@ export default function ScheduleManagement({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Start Time *
               </label>
               <input
@@ -158,11 +166,11 @@ export default function ScheduleManagement({
                 name="startTime"
                 value={currentItem.startTime}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 End Time
               </label>
               <input
@@ -170,11 +178,11 @@ export default function ScheduleManagement({
                 name="endTime"
                 value={currentItem.endTime}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Date
               </label>
               <input
@@ -182,14 +190,14 @@ export default function ScheduleManagement({
                 name="date"
                 value={currentItem.date}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
               />
             </div>
           </div>
 
           {currentItem.type === "session" && (
             <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Presenter
               </label>
               <input
@@ -197,14 +205,14 @@ export default function ScheduleManagement({
                 name="presenter"
                 value={currentItem.presenter}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="Presenter name"
               />
             </div>
           )}
 
           <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Description
             </label>
             <textarea
@@ -212,7 +220,7 @@ export default function ScheduleManagement({
               value={currentItem.description}
               onChange={handleInputChange}
               rows={2}
-              className="w-full px-3 py-2 border-2 border-indigo-100 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="w-full px-3 py-2 border-2 border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none text-slate-900 dark:text-white placeholder:text-slate-400"
               placeholder="Brief description..."
             />
           </div>
@@ -230,34 +238,37 @@ export default function ScheduleManagement({
       )}
 
       {/* Schedule List */}
-      <div className="bg-white rounded-xl border-2 border-indigo-100">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border-2 border-indigo-100 dark:border-slate-800">
         {schedule.length > 0 ? (
-          <ul className="divide-y divide-indigo-100">
+          <ul className="divide-y divide-indigo-100 dark:divide-slate-800">
             {schedule.map((item, index) => (
-              <li key={index} className="p-4 hover:bg-indigo-50/30 transition">
+              <li
+                key={index}
+                className="p-4 hover:bg-indigo-50/30 dark:hover:bg-slate-800/30 transition"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-slate-900">
+                      <span className="font-semibold text-slate-900 dark:text-white">
                         {item.title}
                       </span>
-                      <span className="text-sm text-slate-500">
+                      <span className="text-sm text-slate-500 dark:text-slate-400">
                         ({item.startTime}
                         {item.endTime && ` - ${item.endTime}`})
                       </span>
                       {item.type !== "session" && (
-                        <span className="px-2 py-0.5 text-xs bg-slate-100 text-slate-600 rounded-full">
+                        <span className="px-2 py-0.5 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border dark:border-slate-700">
                           {item.type}
                         </span>
                       )}
                     </div>
                     {item.presenter && (
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
                         Presenter: {item.presenter}
                       </p>
                     )}
                     {item.description && (
-                      <p className="text-sm text-slate-600 mt-1">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                         {item.description}
                       </p>
                     )}
@@ -266,7 +277,7 @@ export default function ScheduleManagement({
                     <button
                       type="button"
                       onClick={() => handleEdit(index)}
-                      className="text-indigo-600 hover:text-indigo-800 p-2"
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 p-2"
                     >
                       <svg
                         className="h-4 w-4"
@@ -307,7 +318,7 @@ export default function ScheduleManagement({
             ))}
           </ul>
         ) : (
-          <p className="p-4 text-center text-sm text-slate-500">
+          <p className="p-4 text-center text-sm text-slate-500 dark:text-slate-400 font-medium italic">
             No schedule items added yet
           </p>
         )}

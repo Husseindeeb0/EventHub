@@ -26,12 +26,14 @@ interface EventChatProps {
   eventId: string;
   organizerId: string;
   currentUserId?: string;
+  className?: string;
 }
 
 export default function EventChat({
   eventId,
   organizerId,
   currentUserId,
+  className,
 }: EventChatProps) {
   const { data: comments = [], isLoading } = useGetCommentsQuery(eventId, {
     pollingInterval: 5000,
@@ -118,15 +120,19 @@ export default function EventChat({
   const regularComments = comments.filter((c) => !c.isPinned);
 
   return (
-    <div className="flex flex-col h-[600px] w-full bg-white rounded-3xl border border-purple-100 shadow-xl overflow-hidden relative">
+    <div
+      className={`flex flex-col w-full bg-white dark:bg-[#0f0c1a] rounded-3xl border border-purple-100 dark:border-slate-800 shadow-xl overflow-hidden relative ${
+        className || "h-[600px]"
+      }`}
+    >
       {/* Header */}
       <div className="p-4 bg-linear-to-r from-purple-600 to-blue-600 text-white flex items-center gap-3 shadow-md z-10">
-        <div className="p-2 bg-white/20 rounded-full">
+        <div className="p-2 bg-white/20 dark:bg-slate-900/40 rounded-full">
           <MessageCircle className="w-6 h-6" />
         </div>
         <div>
           <h3 className="font-bold text-lg">Event Chat</h3>
-          <p className="text-xs text-purple-100">
+          <p className="text-xs text-purple-100 dark:text-purple-200">
             Discuss plans & updates live
           </p>
         </div>
@@ -142,17 +148,19 @@ export default function EventChat({
                 key={pin._id}
                 className="p-3 flex items-start gap-2 text-sm border-b border-amber-100 last:border-0 hover:bg-amber-100/50 transition-colors"
               >
-                <Pin className="w-3 h-3 text-amber-600 mt-1 shrink-0 fill-current" />
+                <Pin className="w-3 h-3 text-amber-600 dark:text-amber-500 mt-1 shrink-0 fill-current" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-amber-800 text-xs">
+                    <span className="font-bold text-amber-800 dark:text-amber-200 text-xs">
                       {pinUser.name}
                     </span>
-                    <span className="text-[10px] text-amber-600/70">
+                    <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70">
                       Pinned Message
                     </span>
                   </div>
-                  <p className="text-amber-900 truncate">{pin.content}</p>
+                  <p className="text-amber-900 dark:text-amber-100 truncate">
+                    {pin.content}
+                  </p>
                 </div>
                 {currentUserId === organizerId && (
                   <button
@@ -169,7 +177,7 @@ export default function EventChat({
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50 dark:bg-slate-900/20">
         {isLoading ? (
           <div className="flex justify-center items-center h-full text-slate-400">
             Loading messages...
@@ -232,7 +240,7 @@ export default function EventChat({
               <div key={comment._id} className="space-y-6">
                 {isNewDay && (
                   <div className="flex justify-center my-8">
-                    <span className="px-4 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 shadow-xs">
+                    <span className="px-4 py-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 shadow-xs">
                       {formatDateSeparator(commentDate)}
                     </span>
                   </div>
@@ -240,7 +248,9 @@ export default function EventChat({
                 <div
                   id={`msg-${comment._id}`}
                   className={`flex gap-3 p-2 rounded-xl transition-colors duration-1000 ${
-                    isHighlighted ? "bg-purple-100/50" : ""
+                    isHighlighted
+                      ? "bg-purple-100/50 dark:bg-purple-900/30"
+                      : ""
                   } ${isMe ? "flex-row-reverse" : "flex-row"}`}
                 >
                   {/* Avatar */}
@@ -250,10 +260,10 @@ export default function EventChat({
                       <img
                         src={user.imageUrl}
                         alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-slate-800 shadow-sm"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center border-2 border-white shadow-sm text-purple-600">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-slate-800 flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm text-purple-600 dark:text-purple-400">
                         <UserIcon className="w-5 h-5" />
                       </div>
                     )}
@@ -266,7 +276,7 @@ export default function EventChat({
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-slate-600">
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                         {isMe ? "You" : user.name}
                       </span>
                       {isOrganizer && (
@@ -289,9 +299,9 @@ export default function EventChat({
                         onClick={() =>
                           handleScrollToReply(comment.replyTo?._id)
                         }
-                        className={`mb-1 px-3 py-1.5 rounded-lg text-xs border-l-2 bg-white/50 border-purple-300 text-slate-500 w-full cursor-pointer hover:bg-white/80 transition-colors`}
+                        className={`mb-1 px-3 py-1.5 rounded-lg text-xs border-l-2 bg-white/50 dark:bg-slate-800/50 border-purple-300 dark:border-purple-600 text-slate-500 dark:text-slate-400 w-full cursor-pointer hover:bg-white/80 dark:hover:bg-slate-800 transition-colors`}
                       >
-                        <span className="font-bold mr-1">
+                        <span className="font-bold mr-1 text-slate-700 dark:text-slate-300">
                           {comment.replyTo.user
                             ? comment.replyTo.user.name
                             : "Deleted User"}
@@ -309,8 +319,8 @@ export default function EventChat({
                           isMe
                             ? "bg-blue-600 text-white rounded-tr-none"
                             : isOrganizer
-                            ? "bg-amber-50 border border-amber-100 text-slate-800 rounded-tl-none"
-                            : "bg-white border border-slate-100 text-slate-700 rounded-tl-none"
+                            ? "bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 text-slate-800 dark:text-slate-200 rounded-tl-none"
+                            : "bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-tl-none"
                         }`}
                       >
                         {comment.content}
@@ -321,8 +331,10 @@ export default function EventChat({
                         onClick={() => handleLike(comment._id)}
                         className={`absolute -bottom-3 ${
                           isMe ? "-left-2" : "-right-2"
-                        } bg-white rounded-full p-1 shadow-sm border border-slate-100 flex items-center gap-1 hover:scale-110 transition-transform ${
-                          isLiked ? "text-red-500" : "text-slate-400"
+                        } bg-white dark:bg-slate-800 rounded-full p-1 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-1 hover:scale-110 transition-transform ${
+                          isLiked
+                            ? "text-red-500"
+                            : "text-slate-400 dark:text-slate-500"
                         }`}
                         disabled={!currentUserId}
                       >
@@ -340,12 +352,12 @@ export default function EventChat({
                       <div
                         className={`absolute top-1/2 -translate-y-1/2 ${
                           isMe ? "-left-20" : "-right-20"
-                        } opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all bg-white/80 p-1 rounded-full shadow-sm backdrop-blur-sm`}
+                        } opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all bg-white/80 dark:bg-slate-800/80 p-1 rounded-full shadow-sm backdrop-blur-sm`}
                       >
                         {/* Reply Action */}
                         <button
                           onClick={() => setReplyingTo(comment)}
-                          className="p-1.5 text-slate-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50"
+                          className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20"
                           title="Reply"
                         >
                           <Reply className="w-3.5 h-3.5" />
@@ -355,10 +367,10 @@ export default function EventChat({
                         {canPin && (
                           <button
                             onClick={() => handlePin(comment._id)}
-                            className={`p-1.5 transition-colors rounded-full hover:bg-amber-50 ${
+                            className={`p-1.5 transition-colors rounded-full hover:bg-amber-50 dark:hover:bg-amber-900/20 ${
                               comment.isPinned
                                 ? "text-amber-500 hover:text-amber-700"
-                                : "text-slate-400 hover:text-amber-500"
+                                : "text-slate-400 dark:text-slate-500 hover:text-amber-500"
                             }`}
                             title={
                               comment.isPinned ? "Unpin message" : "Pin message"
@@ -376,7 +388,7 @@ export default function EventChat({
                         {canDelete && (
                           <button
                             onClick={() => handleDelete(comment._id)}
-                            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                             title="Delete message"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -395,13 +407,13 @@ export default function EventChat({
 
       {/* Reply Indicator */}
       {replyingTo && (
-        <div className="px-4 py-2 bg-slate-50 border-t border-purple-50 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2 text-slate-600 overflow-hidden">
-            <Reply className="w-4 h-4 text-purple-500 flip-x" />
+        <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border-t border-purple-50 dark:border-slate-700 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300 overflow-hidden">
+            <Reply className="w-4 h-4 text-purple-500 dark:text-purple-400 flip-x" />
             <span className="font-semibold">
               Replying to {replyingTo.user.name}
             </span>
-            <span className="text-slate-400 truncate max-w-[200px] text-xs">
+            <span className="text-slate-400 dark:text-slate-500 truncate max-w-[200px] text-xs">
               "{replyingTo.content}"
             </span>
           </div>
@@ -415,7 +427,7 @@ export default function EventChat({
       )}
 
       {/* Input Area */}
-      <div className="p-4 bg-white border-t border-purple-50">
+      <div className="p-4 bg-white dark:bg-slate-900 border-t border-purple-50 dark:border-slate-800">
         {currentUserId ? (
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <input
@@ -427,24 +439,24 @@ export default function EventChat({
                   ? `Reply to ${replyingTo.user.name}...`
                   : "Type your message..."
               }
-              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+              className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               disabled={isSending}
               autoFocus
             />
             <button
               type="submit"
               disabled={!newMessage.trim() || isSending}
-              className="p-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-200"
+              className="p-3 bg-purple-600 dark:bg-purple-700 text-white rounded-xl hover:bg-purple-700 dark:hover:bg-purple-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-200 dark:shadow-none"
             >
               <Send className="w-5 h-5" />
             </button>
           </form>
         ) : (
-          <div className="text-center py-2 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-500 text-sm">
+          <div className="text-center py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm">
             Please{" "}
             <a
               href="/login"
-              className="text-purple-600 font-semibold hover:underline"
+              className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
             >
               log in
             </a>{" "}

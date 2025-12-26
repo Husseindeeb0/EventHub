@@ -47,7 +47,7 @@ export default function FollowButton({
         disabled={loading}
         className={`flex items-center justify-center cursor-pointer gap-2 px-6 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-sm w-full ${
           isFollowing
-            ? "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
+            ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
             : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20"
         } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
       >

@@ -89,7 +89,9 @@ export default function SignupPage() {
 
       if (result.data?.success) {
         // Redirect to verification page
-        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+        router.push(
+          `/verify-email?email=${encodeURIComponent(formData.email)}`
+        );
       }
     } catch {
       // Error is handled by the mutation state (signupError)
@@ -97,7 +99,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,21 +107,23 @@ export default function SignupPage() {
         className="w-full max-w-md"
       >
         {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-block p-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full mb-4"
+              className="inline-block p-3 bg-linear-to-br from-purple-500 to-blue-500 rounded-full mb-4"
             >
               <UserCircle className="w-8 h-8 text-white" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
               Create Account
             </h1>
-            <p className="text-gray-600">Join EventHub today</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Join EventHub today
+            </p>
           </div>
 
           {/* Error Message */}
@@ -132,8 +136,8 @@ export default function SignupPage() {
               {typeof signupError === "string"
                 ? signupError
                 : (signupError as any)?.data?.message ||
-                (signupError as any)?.message ||
-                "Signup failed"}
+                  (signupError as any)?.message ||
+                  "Signup failed"}
             </motion.div>
           )}
 
@@ -141,7 +145,7 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -151,8 +155,11 @@ export default function SignupPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.name ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
+                    validationErrors.name
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-slate-700"
+                  }`}
                   placeholder="John Doe"
                 />
               </div>
@@ -175,10 +182,11 @@ export default function SignupPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.email
-                    ? "border-red-500"
-                    : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
+                    validationErrors.email
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-slate-700"
+                  }`}
                   placeholder="john@example.com"
                 />
               </div>
@@ -201,8 +209,11 @@ export default function SignupPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.password ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
+                    validationErrors.password
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-slate-700"
+                  }`}
                   placeholder="••••••••"
                 />
               </div>
@@ -225,8 +236,11 @@ export default function SignupPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${validationErrors.confirmPassword ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white ${
+                    validationErrors.confirmPassword
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-slate-700"
+                  }`}
                   placeholder="••••••••"
                 />
               </div>
@@ -239,14 +253,14 @@ export default function SignupPage() {
 
             {/* Role Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Account Type
               </label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition dark:bg-slate-800 dark:text-white"
               >
                 <option value="user">Normal User</option>
                 <option value="organizer">Organizer</option>
@@ -260,7 +274,7 @@ export default function SignupPage() {
 
             {/* Description Field (Optional) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description (Optional)
               </label>
               <div className="relative">
@@ -270,7 +284,7 @@ export default function SignupPage() {
                   value={formData.description}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition resize-none"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition resize-none dark:bg-slate-800 dark:text-white"
                   placeholder="Tell us about yourself..."
                 />
               </div>
@@ -282,7 +296,7 @@ export default function SignupPage() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+              className="w-full bg-linear-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -296,7 +310,7 @@ export default function SignupPage() {
           </form>
 
           {/* Login Link */}
-          <p className="mt-6 text-center text-gray-600 text-sm">
+          <p className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
             Already have an account?{" "}
             <Link
               href="/login"

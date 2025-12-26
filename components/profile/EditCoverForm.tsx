@@ -50,10 +50,12 @@ export default function EditCoverForm({ user, onClose }: EditCoverFormProps) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden"
+        className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-slate-800"
       >
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900">Edit Cover Photo</h2>
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-slate-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Edit Cover Photo
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -64,13 +66,13 @@ export default function EditCoverForm({ user, onClose }: EditCoverFormProps) {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
-            <p className="block text-sm font-medium text-gray-700 mb-2">
+            <p className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
               Upload New Cover{" "}
-              <span className="text-gray-400 font-normal">
+              <span className="text-gray-400 dark:text-slate-500 font-normal">
                 (Recommended size: 1200x400)
               </span>
             </p>
-            <div className="aspect-[3/1] w-full relative group">
+            <div className="aspect-3/1 w-full relative group">
               <ImageKitUpload
                 onSuccess={(res) => {
                   setCoverImageUrl(res.url);
@@ -111,7 +113,7 @@ export default function EditCoverForm({ user, onClose }: EditCoverFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
               Cancel
             </button>

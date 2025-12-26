@@ -88,6 +88,8 @@ export async function PUT(request: Request, { params }: Params) {
     if (typeof body.price === "number") update.price = body.price;
     if (typeof body.whishNumber === "string")
       update.whishNumber = body.whishNumber.trim();
+    if (typeof body.liveStreamUrl === "string")
+      update.liveStreamUrl = body.liveStreamUrl.trim();
 
     // capacity handling (number)
     if (typeof body.capacity === "number") {

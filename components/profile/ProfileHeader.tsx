@@ -27,7 +27,9 @@ export default function ProfileHeader({ onEditClick }: ProfileHeaderProps) {
         {/* Cover Image */}
         <div
           className="relative h-48 w-full overflow-hidden rounded-xl bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200 group cursor-pointer"
-          onClick={() => user.coverImageUrl && setViewingImage(user.coverImageUrl)}
+          onClick={() =>
+            user.coverImageUrl && setViewingImage(user.coverImageUrl)
+          }
         >
           <Image
             src={user.coverImageUrl || "/event-cover.png"}
@@ -52,7 +54,7 @@ export default function ProfileHeader({ onEditClick }: ProfileHeaderProps) {
           <div className="relative flex items-end -mt-16 mb-4">
             {/* Avatar */}
             <div
-              className="relative h-32 w-32 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg group cursor-pointer"
+              className="relative h-32 w-32 rounded-full border-4 border-white dark:border-slate-900 overflow-hidden bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg group cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 user.imageUrl && setViewingImage(user.imageUrl);
@@ -85,7 +87,7 @@ export default function ProfileHeader({ onEditClick }: ProfileHeaderProps) {
                   e.stopPropagation(); // Prevent triggering cover click
                   onEditClick();
                 }}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-lg font-medium text-sm hover:bg-gray-50 transition-colors cursor-pointer shadow-sm relative z-10"
+                className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer shadow-sm relative z-10"
               >
                 Edit Cover Photo
               </button>
@@ -93,8 +95,10 @@ export default function ProfileHeader({ onEditClick }: ProfileHeaderProps) {
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-            <p className="text-gray-500">{user.email}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {user.name}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">{user.email}</p>
           </div>
         </div>
       </div>
@@ -111,7 +115,7 @@ export default function ProfileHeader({ onEditClick }: ProfileHeaderProps) {
           >
             <button
               onClick={() => setViewingImage(null)}
-              className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-8 h-8" />
             </button>

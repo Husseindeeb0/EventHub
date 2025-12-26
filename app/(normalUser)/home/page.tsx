@@ -44,10 +44,10 @@ export default function EventsPage() {
 
   if (error) {
     return (
-      <main className="min-h-[calc(100vh-56px)] bg-slate-50 relative overflow-hidden">
+      <main className="min-h-[calc(100vh-56px)] relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-white border border-red-50 rounded-2xl p-10 text-center shadow-sm max-w-md mx-auto">
-            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-slate-800 border border-red-50 dark:border-red-900/30 rounded-2xl p-10 text-center shadow-sm max-w-md mx-auto">
+            <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-6 h-6 text-red-500"
                 fill="none"
@@ -62,10 +62,10 @@ export default function EventsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
               Something went wrong
             </h2>
-            <p className="text-sm text-slate-500 mb-6 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">
               We couldn't load the events. Please try again or check back later.
             </p>
             <button
@@ -81,25 +81,22 @@ export default function EventsPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-slate-50 relative overflow-hidden">
-      {/* Subtle Background Elements */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-indigo-50/50 to-transparent -z-10" />
-
+    <main className="min-h-[calc(100vh-56px)] relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10 relative z-10">
         <AnimatedPageHeader>
           <header className="relative mb-8">
             <div className="flex flex-col gap-2 relative z-10 text-center sm:text-left">
-              <span className="inline-flex w-fit mx-auto sm:mx-0 items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 border border-indigo-100">
+              <span className="inline-flex w-fit mx-auto sm:mx-0 items-center rounded-full bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
                 Curated Selection
               </span>
               <div className="relative group inline-block">
-                <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl relative z-10 leading-tight">
+                <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl relative z-10 leading-tight">
                   Popular Events
                 </h1>
                 {/* Subtle Feathered Glow Header */}
                 <div className="absolute -left-10 -right-20 top-1/2 -translate-y-1/2 h-full w-[120%] bg-radial from-indigo-100/30 via-indigo-50/10 to-transparent blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               </div>
-              <p className="text-sm text-slate-500 font-medium max-w-md">
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-md">
                 Join thousands of people at the best experiences happening right
                 now.
               </p>
@@ -111,8 +108,8 @@ export default function EventsPage() {
 
         <div className="mt-8">
           {events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-white py-32 text-center shadow-xs">
-              <div className="rounded-2xl bg-slate-50 p-5 mb-4">
+            <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-32 text-center shadow-xs">
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800 p-5 mb-4">
                 <svg
                   className="h-10 w-10 text-slate-300"
                   fill="none"
@@ -127,7 +124,7 @@ export default function EventsPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-black text-slate-900">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">
                 No events found
               </h2>
               <p className="mt-3 text-sm text-slate-400 max-w-xs font-medium leading-relaxed">

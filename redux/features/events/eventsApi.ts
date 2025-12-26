@@ -19,6 +19,7 @@ export interface Event {
   isPaid?: boolean;
   price?: number;
   whishNumber?: string;
+  liveStreamUrl?: string;
 }
 
 export interface Comment {
@@ -54,6 +55,7 @@ export interface CreateEventData {
   isPaid?: boolean;
   price?: number;
   whishNumber?: string;
+  liveStreamUrl?: string;
 }
 
 export interface UpdateEventData extends Partial<CreateEventData> {

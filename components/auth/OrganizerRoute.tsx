@@ -33,7 +33,7 @@ export default function OrganizerRoute({ children }: OrganizerRouteProps) {
   // Show loading state while checking authentication
   if (loading || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-transparent">
         <Loading message="Verifying organizer access..." />
       </div>
     );

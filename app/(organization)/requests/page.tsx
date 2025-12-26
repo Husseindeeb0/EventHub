@@ -45,14 +45,14 @@ export default function RequestsPage() {
   const requests = data?.requests || [];
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-linear-to-br from-indigo-100 via-purple-100 to-cyan-100 p-4 sm:p-8">
+    <main className="min-h-[calc(100vh-56px)] p-4 sm:p-8">
       <div className="mx-auto max-w-5xl">
         <AnimatedPageHeader>
-          <div className="mb-8">
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl uppercase">
+          <div className="mb-8 uppercase">
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
               Payment <span className="text-purple-600">Requests</span>
             </h1>
-            <p className="mt-3 text-lg text-slate-600 font-medium">
+            <p className="mt-3 text-lg text-slate-600 dark:text-slate-400 font-medium normal-case">
               Verify Whish payments and approve booking requests for your paid
               events.
             </p>
@@ -63,13 +63,15 @@ export default function RequestsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl border-2 border-dashed border-purple-200 bg-white/50 p-12 text-center"
+            className="rounded-3xl border-2 border-dashed border-purple-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/90 p-12 text-center"
           >
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-600 mb-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400 mb-4">
               <Check className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">All caught up!</h3>
-            <p className="mt-2 text-slate-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+              All caught up!
+            </h3>
+            <p className="mt-2 text-slate-600 dark:text-slate-400">
               There are no pending payment requests at the moment.
             </p>
           </motion.div>
@@ -83,13 +85,13 @@ export default function RequestsPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="overflow-hidden rounded-3xl border border-white bg-white/70 backdrop-blur-md shadow-xl transition-all hover:shadow-2xl hover:bg-white"
+                  className="overflow-hidden rounded-3xl border border-white dark:border-slate-800 bg-white/70 dark:bg-slate-950 shadow-xl transition-all hover:shadow-2xl hover:bg-white dark:hover:bg-slate-900 premium-shadow"
                 >
                   <div className="flex flex-col md:flex-row">
                     {/* User Info */}
                     <div className="flex-1 p-6">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 overflow-hidden shadow-inner border-2 border-white">
+                        <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 overflow-hidden shadow-inner border-2 border-white dark:border-slate-700">
                           {request.userImage ? (
                             <img
                               src={request.userImage}
@@ -101,25 +103,27 @@ export default function RequestsPage() {
                           )}
                         </div>
                         <div>
-                          <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+                          <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
                             {request.userName}
                           </h3>
-                          <p className="text-sm font-bold text-purple-600">
+                          <p className="text-sm font-bold text-purple-600 dark:text-purple-400">
                             {request.eventTitle}
                           </p>
                         </div>
                       </div>
 
                       <div className="grid sm:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
+                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                           <Mail className="h-4 w-4 text-purple-500" />
-                          {request.userEmail}
+                          <span className="truncate max-w-[200px]">
+                            {request.userEmail}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
+                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                           <Phone className="h-4 w-4 text-purple-500" />
                           {request.phone}
                         </div>
-                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
+                        <div className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                           <Calendar className="h-4 w-4 text-purple-500" />
                           Requested on{" "}
                           {format(new Date(request.bookedAt), "MMM d, yyyy")}
@@ -128,11 +132,11 @@ export default function RequestsPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-3 bg-slate-50/50 p-6 border-t md:border-t-0 md:border-l border-slate-100">
+                    <div className="flex items-center gap-3 bg-slate-50/50 dark:bg-slate-900/50 p-6 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
                       <button
                         onClick={() => handleReject(request._id)}
                         disabled={isApproving || isRejecting}
-                        className="flex-1 md:flex-none flex items-center justify-center h-12 w-12 rounded-2xl bg-white border-2 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
+                        className="flex-1 md:flex-none flex items-center justify-center h-12 w-12 rounded-2xl bg-white dark:bg-slate-800 border-2 border-rose-100 dark:border-rose-900/30 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
                         title="Reject Request"
                       >
                         <X className="h-6 w-6" />
