@@ -15,7 +15,7 @@ import { Suspense, use } from "react";
 
 function SuccessContent({ eventId }: { eventId: string }) {
   const searchParams = useSearchParams();
-  const type = searchParams.get("type") || "create";
+  const type = searchParams?.get("type") || "create";
 
   const isEdit = type === "edit";
 

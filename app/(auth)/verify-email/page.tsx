@@ -10,7 +10,7 @@ import { useVerifyEmailMutation } from "@/redux/features/auth/authApi";
 function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialEmail = searchParams.get("email");
+  const initialEmail = searchParams?.get("email");
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [status, setStatus] = useState<

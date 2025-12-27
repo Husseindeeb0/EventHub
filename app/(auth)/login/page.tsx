@@ -11,6 +11,7 @@ import {
 } from "@/redux/features/auth/authApi";
 import { useAppSelector } from "@/redux/store";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -104,10 +105,10 @@ export default function LoginPage() {
   const handleResendVerification = async () => {
     try {
       await resendVerification({ email: formData.email }).unwrap();
-      alert("Verification email resent! Please check your inbox.");
+      toast.success("Verification email resent! Please check your inbox.");
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
-      alert("Failed to resend verification email.");
+      toast.error("Failed to resend verification email.");
     }
   };
 
