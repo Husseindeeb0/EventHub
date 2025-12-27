@@ -10,7 +10,7 @@ import { useResetPasswordMutation } from "@/redux/features/auth/authApi";
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialEmail = searchParams.get("email") || "";
+  const initialEmail = searchParams?.get("email") || "";
 
   const [formData, setFormData] = useState({
     email: initialEmail,
